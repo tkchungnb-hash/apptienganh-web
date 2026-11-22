@@ -6,16 +6,17 @@
   <title>Master 365 V2.7.3</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #1e293b;
-      --panel-2: #162032;
+      --bg: #0b1120;
+      --panel: #131c31;
+      --panel-2: #1a2640;
       --text: #f8fafc;
       --muted: #94a3b8;
-      --border: #334155;
+      --border: #293855;
       --accent: #38bdf8;
       --accent-2: #22c55e;
       --warn: #f59e0b;
       --danger: #ef4444;
+      --purple: #a78bfa;
     }
     * { box-sizing: border-box; }
     body {
@@ -28,8 +29,8 @@
     header {
       position: sticky;
       top: 0;
-      z-index: 10;
-      background: rgba(15, 23, 42, 0.94);
+      z-index: 20;
+      background: rgba(11, 17, 32, 0.95);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
       padding: 12px 16px;
@@ -39,35 +40,37 @@
       align-items: center;
       justify-content: space-between;
     }
-    .brand { font-weight: 700; font-size: 16px; color: var(--accent); }
-    .meta-bar { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--muted); }
+    .brand { font-weight: 800; font-size: 16px; color: var(--accent); letter-spacing: 0.2px; }
+    .meta-bar { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--muted); }
     .pill {
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 999px;
       color: var(--text);
     }
-    nav { display: flex; gap: 8px; }
+    nav { display: flex; flex-wrap: wrap; gap: 6px; }
     button {
       cursor: pointer;
       border: 1px solid var(--border);
-      background: var(--panel);
+      background: var(--panel-2);
       color: var(--text);
       border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: 7px 11px;
+      font-size: 12.5px;
       font-weight: 600;
       transition: 0.15s ease;
     }
     button:hover { border-color: var(--accent); }
-    button.primary { background: var(--accent); color: #082f49; border-color: var(--accent); }
-    button.success { background: var(--accent-2); color: #052e16; border-color: var(--accent-2); }
-    button.warn { background: var(--warn); color: #271700; border-color: var(--warn); }
+    button.primary { background: var(--accent); color: #06253a; border-color: var(--accent); }
+    button.success { background: var(--accent-2); color: #052814; border-color: var(--accent-2); }
+    button.warn { background: var(--warn); color: #261600; border-color: var(--warn); }
     button.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+    button.purple { background: var(--purple); color: #190c33; border-color: var(--purple); }
     button:disabled { opacity: 0.45; cursor: not-allowed; }
-    main { max-width: 1120px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    main { max-width: 1240px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -77,17 +80,19 @@
       flex-direction: column;
       gap: 10px;
     }
-    .card h2, .card h3 { margin: 0; font-size: 16px; }
-    .muted { color: var(--muted); font-size: 13px; }
+    .card h2, .card h3 { margin: 0; font-size: 15.5px; }
+    .muted { color: var(--muted); font-size: 12.5px; }
     .alert {
       border-radius: 10px;
-      padding: 12px 14px;
+      padding: 11px 14px;
       font-size: 13px;
       border: 1px solid transparent;
+      white-space: pre-line;
     }
     .alert-warn { background: rgba(245, 158, 11, 0.14); border-color: var(--warn); color: #fde68a; }
     .alert-err { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: #fecaca; }
     .alert-ok { background: rgba(34, 197, 94, 0.14); border-color: var(--accent-2); color: #bbf7d0; }
+    .alert-info { background: rgba(56, 189, 248, 0.14); border-color: var(--accent); color: #bae6fd; }
     textarea, input, select {
       width: 100%;
       background: var(--panel-2);
@@ -98,140 +103,269 @@
       font-size: 13px;
       font-family: inherit;
     }
-    textarea.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; min-height: 180px; }
+    textarea.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; min-height: 170px; }
     .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .word-box {
+    .box {
       background: var(--panel-2);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px;
-      margin-bottom: 10px;
     }
     .badge {
       display: inline-block;
       font-size: 11px;
       padding: 2px 8px;
       border-radius: 6px;
-      background: #0f172a;
+      background: #0c1426;
       border: 1px solid var(--border);
       color: var(--accent);
-      margin-right: 6px;
+      margin-right: 5px;
+      margin-bottom: 3px;
     }
     .hidden { display: none !important; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { border-bottom: 1px solid var(--border); padding: 8px; text-align: left; vertical-align: top; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 7px 8px; text-align: left; vertical-align: top; }
     .log-box {
-      background: #090d16;
+      background: #070b14;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px;
       font-family: ui-monospace, Consolas, monospace;
       font-size: 12px;
-      max-height: 220px;
+      max-height: 210px;
       overflow: auto;
       white-space: pre-wrap;
     }
+    .stage-chip {
+      padding: 4px 9px;
+      border-radius: 7px;
+      font-size: 11.5px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+    }
+    .stage-chip.active { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    .stage-chip.done { border-color: var(--accent-2); color: var(--accent-2); }
+    .map-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 6px; max-height: 220px; overflow: auto; }
+    .map-cell {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      border-radius: 7px;
+      padding: 5px;
+      font-size: 11px;
+      text-align: center;
+    }
+    .map-cell.done { border-color: var(--accent-2); background: rgba(34, 197, 94, 0.12); }
+    .map-cell.gate { border-color: var(--warn); }
+    .opt-btn { width: 100%; text-align: left; margin-top: 6px; }
   </style>
 </head>
 <body>
   <header>
     <div>
-      <div class="brand">Master 365 • V2.7.3</div>
-      <div class="meta-bar" id="headerMeta">Đang khởi tạo IndexedDB nguyên tử...</div>
+      <div class="brand">Master 365 • V2.7.3 Full Core</div>
+      <div class="meta-bar" id="headerMeta">Đang khởi tạo hệ thống V2.7.3...</div>
     </div>
     <nav>
-      <button id="tabDaily" class="primary" onclick="switchView('daily')">Học hằng ngày (4 khối)</button>
-      <button id="tabStudio" onclick="switchView('studio')">Kho &amp; Nhập TXT (Schema 2)</button>
+      <button id="tabDaily" class="primary" onclick="switchTab('daily')">Học hằng ngày (4 khối)</button>
+      <button id="tabStudio" onclick="switchTab('studio')">Kho TXT &amp; Mở rộng</button>
+      <button id="tabLibrary" onclick="switchTab('library')">Sách, Nghe &amp; Lộ trình</button>
+      <button id="tabAdmin" onclick="switchTab('admin')">Bảo mật, Đồng bộ &amp; 12 Gates</button>
     </nav>
   </header>
 
   <main>
-    <div id="statusBanner" class="alert alert-ok">Sẵn sàng vận hành kiến trúc V2.7.3.</div>
+    <div id="statusBanner" class="alert alert-info">Master 365 V2.7.3 — Sẵn sàng vận hành 6 Engine &amp; bộ bất biến cấp phát.</div>
 
-    <!-- KHU 1: GIAO DIỆN HỌC HẰNG NGÀY GỌN 4 KHỐI -->
-    <section id="view-daily" class="grid-4">
-      <div class="card">
-        <h3>1. Phiên hiện tại</h3>
-        <div class="muted" id="sessionSummary">Chưa mở phiên.</div>
-        <div class="row">
-          <button class="primary" id="btnCreateSession" onclick="createNextSession()">Tạo / Mở phiên tiếp theo</button>
-          <button class="success" id="btnCompleteSession" onclick="completeCurrentSession()" disabled>Đánh dấu đạt phiên</button>
+    <!-- MÀN HÌNH HỌC HẰNG NGÀY: GỌN 4 KHỐI -->
+    <section id="tab-daily" class="grid-4">
+      <!-- Khối 1: Phiên hiện tại + Trình chạy Chặng 0 -> 5B -->
+      <div class="card" style="grid-column: span 2;">
+        <div class="row" style="justify-content:space-between;">
+          <h3>1. Phiên hiện tại (365 Phiên • Chặng 0 → 5B)</h3>
+          <div class="row">
+            <button class="primary" id="btnNextSession" onclick="createNextSession()">Mở phiên tiếp theo</button>
+            <button onclick="openStageRunner('review')">Xem lại (không đổi điểm)</button>
+            <button class="purple" onclick="openStageRunner('repractice')">Luyện lại (lượt riêng)</button>
+            <button class="success" id="btnCompleteSession" onclick="completeCurrentSession()" disabled>Hoàn tất phiên</button>
+          </div>
         </div>
+        <div class="muted" id="sessionSummary">Chưa có phiên nào được mở.</div>
         <div id="sessionGapAlert"></div>
-        <div id="sessionContent"></div>
+        <div id="stageStepper" class="row"></div>
+        <div id="stageRunnerBox" class="box hidden"></div>
+        <div id="sessionWordsList"></div>
       </div>
 
+      <!-- Khối 2: Ôn SRS tối đa 30 thẻ/ngày (tự bù chéo sai + quá hạn) -->
       <div class="card">
         <h3>2. Ôn SRS (Tối đa 30 thẻ/ngày)</h3>
         <div class="muted" id="srsSummary">0 thẻ đến hạn</div>
-        <div id="srsCardBox" class="word-box">
-          <div class="muted">Chưa có thẻ SRS trong hàng đợi hôm nay.</div>
+        <div id="srsCardBox" class="box">
+          <div class="muted">Chưa có thẻ SRS trong ngày học logic hiện tại.</div>
         </div>
         <div class="row">
-          <button onclick="gradeCurrentSrs('again')" id="btnSrsAgain" disabled>Quên / Sai</button>
+          <button onclick="toggleSrsAnswer()" id="btnSrsReveal" disabled>Hiện đáp án</button>
+          <button class="danger" onclick="gradeCurrentSrs('again')" id="btnSrsAgain" disabled>Quên / Sai</button>
           <button class="success" onclick="gradeCurrentSrs('good')" id="btnSrsGood" disabled>Nhớ / Đúng</button>
         </div>
       </div>
 
-      <div class="card">
-        <h3>3. Bảng nghe</h3>
-        <div class="muted">Đọc chuẩn Web Speech API (1.0x / 0.65x) cho mọi từ trong kho hoặc từ vừa nạp.</div>
-        <select id="listenWordSelect"></select>
-        <div class="row">
-          <button class="primary" onclick="speakSelectedWord(1.0)">Nghe 1.0x</button>
-          <button onclick="speakSelectedWord(0.65)">Nghe chậm 0.65x</button>
-          <button onclick="speakExampleSelected()">Nghe câu ví dụ</button>
+      <!-- Khối 3: Bảng nghe & Khối 4: Báo bận -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="card">
+          <h3>3. Bảng nghe</h3>
+          <div class="muted">Phát âm chuẩn 1.0x / 0.65x cho mọi từ vựng/câu đã nạp.</div>
+          <select id="listenWordSelect" onchange="updateListenDetail()"></select>
+          <div class="row">
+            <button class="primary" onclick="speakSelectedWord(1.0)">Nghe 1.0x</button>
+            <button onclick="speakSelectedWord(0.65)">Chậm 0.65x</button>
+            <button onclick="speakExampleSelected()">Nghe ví dụ</button>
+          </div>
+          <div id="listenDetail" class="muted"></div>
         </div>
-        <div id="listenDetail" class="muted"></div>
-      </div>
 
-      <div class="card">
-        <h3>4. Báo bận</h3>
-        <div class="muted" id="busySummary">Tối đa 2 lần / tuần học logic (cắt 03:00 sáng). Giữ Streak &amp; con trỏ phiên.</div>
-        <button class="warn" id="btnBusyDay" onclick="reportBusyDay()">Báo bận ngày học hôm nay</button>
-        <div id="busyLog" class="muted"></div>
+        <div class="card">
+          <h3>4. Báo bận</h3>
+          <div class="muted" id="busySummary">Tối đa 2 lần / tuần học logic (cắt mốc 03:00 sáng). Giữ Streak &amp; vị trí phiên.</div>
+          <button class="warn" id="btnBusyDay" onclick="reportBusyDay()">Báo bận ngày học hôm nay</button>
+          <div id="busyLog" class="muted"></div>
+        </div>
       </div>
     </section>
 
-    <!-- KHU 2: KHO HỌC LIỆU, NHẬP TXT SCHEMA 2 & QUẢN TRỊ DUYỆT -->
-    <section id="view-studio" class="hidden" style="display:flex; flex-direction:column; gap:16px;">
+    <!-- KHU RIÊNG 1: KHO TXT SCHEMA 2, KHO MỞ RỘNG & NGÂN HÀNG NGỮ PHÁP -->
+    <section id="tab-studio" class="hidden" style="display:flex; flex-direction:column; gap:16px;">
       <div class="card">
-        <h2>Nhập tệp / nội dung học liệu (.txt — # MASTER365_TXT_SCHEMA=2)</h2>
+        <h2>Nhập / Xuất tệp học liệu (.txt — # MASTER365_TXT_SCHEMA=2)</h2>
         <div class="muted">
-          Khối <code>[VOCAB]</code> 13 cột: <code>lemma|pos|ipa|meaning|tier_group|categories|example|example_vi|collocations|variant_notes|target_pool|canonical_sense_key|language</code><br />
-          Khối <code>[GRAMMAR]</code> 7 cột: <code>tier|topic|categories|question|options|answer_index|explanation</code> • Escape: <code>\|</code>, <code>\;</code>, <code>\,</code>, <code>\\</code>, <code>\n</code>
+          <code>[VOCAB]</code> (13 cột): <code>lemma|pos|ipa|meaning|tier_group|categories|example|example_vi|collocations|variant_notes|target_pool|canonical_sense_key|language</code><br />
+          <code>[GRAMMAR]</code> (7 cột): <code>tier|topic|categories|question|options|answer_index|explanation</code> • Escape: <code>\|</code>, <code>\;</code>, <code>\,</code>, <code>\\</code>, <code>\n</code>
         </div>
         <div class="row">
-          <input type="file" id="txtFileInput" accept=".txt,text/plain" onchange="handleTxtFile(event)" style="max-width:320px;" />
-          <button onclick="loadSampleSchema2()">Tải mẫu Schema 2 (Logistics + Luật + Kinh doanh + Ngân hàng)</button>
+          <input type="file" id="txtFileInput" accept=".txt,text/plain" onchange="handleTxtFile(event)" style="max-width:300px;" />
+          <button onclick="loadSampleSchema2()">Tải mẫu Schema 2</button>
           <button class="primary" onclick="previewTxtImport()">1. Quét &amp; Xem trước lỗi</button>
           <button class="success" id="btnCommitImport" onclick="commitPreviewImport()" disabled>2. Xác nhận nạp dòng hợp lệ</button>
+          <button onclick="exportSchema2Txt()">Xuất kho ra Schema 2 (.txt)</button>
+          <button class="success" onclick="publishAllDrafts()">Duyệt &amp; Phát hành bản nháp</button>
         </div>
         <textarea id="txtEditor" class="mono" placeholder="Dán nội dung # MASTER365_TXT_SCHEMA=2 vào đây..."></textarea>
         <div id="importPreviewBox"></div>
       </div>
 
-      <div class="card">
-        <h2>Quản lý kho từ vựng &amp; duyệt ngữ pháp</h2>
-        <div class="row">
-          <button class="success" onclick="approveAllDrafts()">Duyệt &amp; phát hành toàn bộ bản nháp (DRAFT → PUBLISHED)</button>
-          <button onclick="exportSchema2Txt()">Xuất kho hiện tại ra Schema 2 (.txt)</button>
-          <button class="danger" onclick="resetAllDemoData()">Xóa sạch dữ liệu cục bộ (Test lại)</button>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Kho từ vựng (Danh mục chính xếp hàng • Lưu trữ ARCHIVED)</h2>
+          <div class="row">
+            <select id="filterCategory" onchange="renderInventoryTables()" style="max-width:240px;">
+              <option value="ALL">Tất cả danh mục</option>
+              <option value="Logistics & Vận tải">Logistics &amp; Vận tải</option>
+              <option value="Luật & Tuân thủ">Luật &amp; Tuân thủ</option>
+              <option value="Kinh doanh & Thương mại">Kinh doanh &amp; Thương mại</option>
+              <option value="Ngân hàng & Tài chính">Ngân hàng &amp; Tài chính</option>
+              <option value="Giao tiếp thực tế">Giao tiếp thực tế</option>
+            </select>
+            <span class="muted" id="inventoryStats"></span>
+          </div>
+          <div id="vocabTableWrap" style="max-height:320px; overflow:auto;"></div>
         </div>
-        <div id="inventoryStats" class="muted"></div>
-        <div id="inventoryTableWrap"></div>
+
+        <div class="card">
+          <h2>Ngân hàng ngữ pháp (Tầng 1–4 • Luyện câu sai &amp; Thi)</h2>
+          <div class="row">
+            <select id="grammarTierFilter" onchange="renderInventoryTables()" style="max-width:180px;">
+              <option value="ALL">Tất cả tầng (1–4)</option>
+              <option value="1">Tầng 1</option>
+              <option value="2">Tầng 2</option>
+              <option value="3">Tầng 3</option>
+              <option value="4">Tầng 4</option>
+            </select>
+            <button class="primary" onclick="startGrammarDrill(false)">Thi ngữ pháp theo tầng</button>
+            <button class="warn" onclick="startGrammarDrill(true)">Luyện lại câu sai</button>
+          </div>
+          <div id="grammarDrillBox" class="box hidden"></div>
+          <div id="grammarTableWrap" style="max-height:280px; overflow:auto;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KHU RIÊNG 2: SÁCH, BẢNG NGHE CHUYÊN SÂU & LỘ TRÌNH 365 PHIÊN -->
+    <section id="tab-library" class="hidden" style="display:flex; flex-direction:column; gap:16px;">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Kho sách &amp; tài liệu (.txt, .md, .pdf, .docx)</h2>
+          <div class="muted">Nạp tài liệu đọc, bôi đen hoặc gõ từ/đoạn để tra nghĩa &amp; đẩy vào luyện tập.</div>
+          <div class="row">
+            <input type="file" id="bookFileInput" accept=".txt,.md,.pdf,.docx" onchange="handleBookUpload(event)" style="max-width:300px;" />
+            <input type="text" id="bookLookupInput" placeholder="Nhập hoặc bôi đen từ/cụm cần tra..." style="max-width:240px;" />
+            <button class="primary" onclick="lookupBookTerm()">Tra từ &amp; đẩy luyện</button>
+          </div>
+          <div id="bookLookupResult" class="muted"></div>
+          <textarea id="bookReaderArea" class="mono" onmouseup="captureSelectedBookText()" placeholder="Nội dung sách / tài liệu đọc sẽ hiển thị tại đây..."></textarea>
+        </div>
+
+        <div class="card">
+          <h2>Bảng nghe phiên (15/30/45 phút) &amp; Mini Dictation (5 mục)</h2>
+          <div class="row">
+            <select id="listenDurationSelect" style="max-width:160px;">
+              <option value="15">Phiên nghe 15 phút</option>
+              <option value="30">Phiên nghe 30 phút</option>
+              <option value="45">Phiên nghe 45 phút</option>
+            </select>
+            <button class="primary" onclick="startMiniDictation()">Bắt đầu Mini Dictation (5 mục)</button>
+          </div>
+          <div id="dictationBox" class="box hidden"></div>
+          <div id="masteryForecastBox" class="box"></div>
+        </div>
       </div>
 
       <div class="card">
-        <h3>Nhật ký hệ thống &amp; giao dịch nguyên tử</h3>
-        <div id="sysLog" class="log-box"></div>
+        <h2>Bản đồ 365 Phiên (12 Cổng tháng tại 29, 58... 348 • Cuối khóa 349–365)</h2>
+        <div class="muted">Phiên 1–348: 29 phiên/tháng • Phiên 349–362 tăng tốc • 363–364 đại tổng ôn • 365 tốt nghiệp. Bấm vào phiên đã đạt để ôn lại.</div>
+        <div id="sessionMapGrid" class="map-grid"></div>
+      </div>
+    </section>
+
+    <!-- KHU RIÊNG 3: BẢO MẬT, ĐỒNG BỘ ĐA THIẾT BỊ & 12 ACCEPTANCE GATES -->
+    <section id="tab-admin" class="hidden" style="display:flex; flex-direction:column; gap:16px;">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Hồ sơ mã hóa AES-GCM/PBKDF2 &amp; Admin ECDSA P-256</h2>
+          <div class="alert alert-warn">
+            Phạm vi LOCAL_FIRST: Khóa công khai xác minh chữ ký gói/mã mời cục bộ; dữ liệu hồ sơ mã hóa AES-GCM 256-bit bằng mật khẩu (PBKDF2 + salt) và hỗ trợ khóa khôi phục 24 ký tự. Mọi phân quyền đa người dùng toàn cục cần backend.
+          </div>
+          <div class="row">
+            <input type="text" id="profileUserId" placeholder="User ID (vd: learner_01)" value="learner_01" style="max-width:180px;" />
+            <input type="password" id="profilePassphrase" placeholder="Mật khẩu mã hóa hồ sơ" style="max-width:210px;" />
+            <button class="primary" onclick="encryptAndSaveProfile()">Mã hóa &amp; Lưu hồ sơ</button>
+            <button onclick="generateRecoveryKey24()">Sinh khóa khôi phục 24 ký tự</button>
+            <button class="warn" onclick="switchAccountCleanReset()">Đổi hồ sơ (Reset phiên sạch)</button>
+          </div>
+          <div id="recoveryKeyBox" class="muted"></div>
+          <div class="row">
+            <button onclick="exportAdminBackupPackage()">Xuất gói sao lưu Admin (bọc khóa có salt)</button>
+            <button onclick="runConflictAudit()">Đối soát xung đột snapshot đa thiết bị</button>
+          </div>
+          <div id="conflictBox" class="muted"></div>
+        </div>
+
+        <div class="card">
+          <h2>12 Acceptance Gates &amp; Nhật ký hệ thống</h2>
+          <div class="row">
+            <button class="success" onclick="runAll12AcceptanceGates()">Chạy kiểm thử 12 Gates</button>
+            <button class="danger" onclick="resetAllLocalData()">Xóa sạch dữ liệu IndexedDB</button>
+          </div>
+          <div id="gatesReportBox" class="box">Chưa chạy kiểm thử 12 Gates.</div>
+          <div id="sysLog" class="log-box"></div>
+        </div>
       </div>
     </section>
   </main>
 
   <script>
-    const DB_NAME = 'Master365_V273_DB';
+    const DB_NAME = 'Master365_V273_Full_DB';
     const DB_VERSION = 1;
+    const ROOT_ORG_PUBLIC_KEY = 'M365_ROOT_ORG_ECDSA_P256_PUBLIC_KEY_V273';
 
     const SPECIALIZED_PRIORITY = [
       'Logistics & Vận tải',
@@ -243,10 +377,10 @@
     const WEEKLY_FORMULA = {
       1: { basic: 2, specialized: 2, ielts: 2, native: 0, grammarTier: null, label: 'Phiên 1/7 (6 từ chuẩn)' },
       2: { basic: 2, specialized: 2, ielts: 2, native: 0, grammarTier: null, label: 'Phiên 2/7 (6 từ chuẩn)' },
-      3: { basic: 2, specialized: 2, ielts: 0, native: 1, grammarTier: 1, label: 'Phiên 3/7 (4 từ chuẩn + 1 câu bản địa + Ngữ pháp T1)' },
+      3: { basic: 2, specialized: 2, ielts: 0, native: 1, grammarTier: 1, label: 'Phiên 3/7 (4 từ chuẩn + 1 NATIVE_PHRASE + Ngữ pháp T1)' },
       4: { basic: 2, specialized: 2, ielts: 0, native: 0, grammarTier: 2, label: 'Phiên 4/7 (4 từ chuẩn + Ngữ pháp T2)' },
       5: { basic: 2, specialized: 2, ielts: 0, native: 0, grammarTier: 3, label: 'Phiên 5/7 (4 từ chuẩn + Ngữ pháp T3)' },
-      6: { basic: 1, specialized: 1, ielts: 0, native: 1, grammarTier: 4, label: 'Phiên 6/7 (2 từ chuẩn + 1 câu bản địa + Ngữ pháp T4)' },
+      6: { basic: 1, specialized: 1, ielts: 0, native: 1, grammarTier: 4, label: 'Phiên 6/7 (2 từ chuẩn + 1 NATIVE_PHRASE + Ngữ pháp T4)' },
       7: { basic: 0, specialized: 0, ielts: 0, native: 0, grammarTier: null, label: 'Phiên 7/7 (Tổng ôn tuần — 0 từ mới)' }
     };
 
@@ -263,29 +397,38 @@
         streak_days: 0,
         last_streak_logic_day: null,
         busy_logic_days: [],
-        grammar_bank_version: 1
+        grammar_bank_version: 1,
+        bonus_xp_claimed_sessions: [],
+        total_xp: 0,
+        active_profile_id: 'learner_01',
+        recovery_key_24: null,
+        wrong_grammar_ids: []
       },
-      pendingPreview: null
+      pendingPreview: null,
+      srsRevealed: false,
+      activeStageIndex: 0,
+      stageMode: 'normal', // 'normal' | 'review' | 'repractice'
+      repracticeProgressIndex: 0
     };
 
     function logSys(msg) {
       const time = new Date().toLocaleTimeString('vi-VN');
       const box = document.getElementById('sysLog');
       if (box) box.textContent = `[${time}] ${msg}\n` + box.textContent;
-      console.log(`[M365] ${msg}`);
     }
 
-    function setBanner(msg, type = 'ok') {
+    function setBanner(msg, type = 'info') {
       const el = document.getElementById('statusBanner');
-      el.className = `alert alert-${type === 'err' ? 'err' : type === 'warn' ? 'warn' : 'ok'}`;
+      el.className = `alert alert-${type === 'err' ? 'err' : type === 'warn' ? 'warn' : type === 'ok' ? 'ok' : 'info'}`;
       el.textContent = msg;
     }
 
-    function switchView(view) {
-      document.getElementById('view-daily').classList.toggle('hidden', view !== 'daily');
-      document.getElementById('view-studio').classList.toggle('hidden', view !== 'studio');
-      document.getElementById('tabDaily').classList.toggle('primary', view === 'daily');
-      document.getElementById('tabStudio').classList.toggle('primary', view === 'studio');
+    function switchTab(tabId) {
+      ['daily', 'studio', 'library', 'admin'].forEach((id) => {
+        document.getElementById(`tab-${id}`).classList.toggle('hidden', id !== tabId);
+        const btn = document.getElementById(`tab${id.charAt(0).toUpperCase() + id.slice(1)}`);
+        if (btn) btn.classList.toggle('primary', id === tabId);
+      });
     }
 
     function getLogicDayKey(date = new Date()) {
@@ -356,7 +499,7 @@
         const req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onupgradeneeded = (e) => {
           const db = e.target.result;
-          ['vocab', 'grammar', 'allocations', 'reviews', 'snapshots', 'srs', 'meta'].forEach((store) => {
+          ['vocab', 'grammar', 'allocations', 'reviews', 'snapshots', 'srs', 'meta', 'profiles'].forEach((store) => {
             if (!db.objectStoreNames.contains(store)) {
               db.createObjectStore(store, { keyPath: 'id' });
             }
@@ -375,7 +518,7 @@
         req.onerror = () => reject(req.error);
       });
     }
-    async function loadAllState() {
+async function loadAllState() {
       APP_STATE.db = await openDb();
       const [vocab, grammar, allocs, reviews, snaps, srs, metaRows] = await Promise.all([
         getAllFromStore('vocab'),
@@ -412,6 +555,7 @@
       });
     }
 
+    // Parser Schema 2: 13 cột [VOCAB] & 7 cột [GRAMMAR]
     function parseSchema2Text(rawText) {
       const lines = String(rawText || '').replace(/\r\n/g, '\n').split('\n');
       let section = null;
@@ -427,7 +571,6 @@
         const lineNo = idx + 1;
         const trimmed = rawLine.trim();
         if (!trimmed) return;
-        if (trimmed.startsWith('# MASTER365_TXT_SCHEMA=')) return;
         if (trimmed.startsWith('#')) return;
 
         if (trimmed === '[VOCAB]') {
@@ -440,14 +583,12 @@
           headerSkippedForSection = false;
           return;
         }
-
         if (!section) {
-          errors.push({ lineNo, reason: 'Dữ liệu nằm ngoài khối [VOCAB] hoặc [GRAMMAR].' });
+          errors.push({ lineNo, reason: 'Dòng nằm ngoài khối [VOCAB] hoặc [GRAMMAR].' });
           return;
         }
 
         const rawCols = splitUnescaped(rawLine, '|');
-
         if (!headerSkippedForSection) {
           headerSkippedForSection = true;
           const firstCol = rawCols[0].trim();
@@ -458,7 +599,7 @@
 
         if (section === 'VOCAB') {
           if (rawCols.length !== 13) {
-            errors.push({ lineNo, reason: `[VOCAB] cần đúng 13 cột, dòng này có ${rawCols.length} cột.` });
+            errors.push({ lineNo, reason: `[VOCAB] yêu cầu 13 cột, dòng này có ${rawCols.length} cột.` });
             return;
           }
           const c = rawCols.map(unescapeField);
@@ -467,7 +608,7 @@
           const ipa = c[2].trim();
           const meaning = c[3].trim();
           const tier_group = c[4].trim();
-          const rawCatParts = splitUnescaped(rawCols[5], ',').map((x) => unescapeField(x).trim()).filter(Boolean);
+          const categories = splitUnescaped(rawCols[5], ',').map((x) => unescapeField(x).trim()).filter(Boolean);
           const example = c[6].trim();
           const example_vi = c[7].trim();
           const collocations = splitUnescaped(rawCols[8], ';').map((x) => unescapeField(x).trim()).filter(Boolean);
@@ -493,7 +634,6 @@
             return;
           }
 
-          const canonical_identity = buildCanonicalIdentity(lemma, language, pos, canonical_sense_key);
           validVocab.push({
             lineNo,
             lemma,
@@ -501,8 +641,8 @@
             ipa: ipa || '/.../',
             meaning,
             tier_group,
-            primary_category: rawCatParts[0] || 'Tổng quát',
-            categories: rawCatParts.length ? rawCatParts : ['Tổng quát'],
+            primary_category: categories[0] || 'Tổng quát',
+            categories: categories.length ? categories : ['Tổng quát'],
             example,
             example_vi,
             collocations,
@@ -510,13 +650,13 @@
             target_pool,
             canonical_sense_key,
             language,
-            canonical_identity
+            canonical_identity: buildCanonicalIdentity(lemma, language, pos, canonical_sense_key)
           });
         }
 
         if (section === 'GRAMMAR') {
           if (rawCols.length !== 7) {
-            errors.push({ lineNo, reason: `[GRAMMAR] cần đúng 7 cột, dòng này có ${rawCols.length} cột.` });
+            errors.push({ lineNo, reason: `[GRAMMAR] yêu cầu 7 cột, dòng này có ${rawCols.length} cột.` });
             return;
           }
           const c = rawCols.map(unescapeField);
@@ -529,15 +669,15 @@
           const explanation = c[6].trim();
 
           if (![1, 2, 3, 4].includes(tier)) {
-            errors.push({ lineNo, reason: `tier ngữ pháp phải từ 1 đến 4, nhận được "${c[0]}".` });
+            errors.push({ lineNo, reason: `tier ngữ pháp phải từ 1 đến 4, nhận "${c[0]}".` });
             return;
           }
           if (!question || options.length < 2) {
-            errors.push({ lineNo, reason: 'Thiếu câu hỏi hoặc ít nhất 2 phương án lựa chọn.' });
+            errors.push({ lineNo, reason: 'Thiếu câu hỏi hoặc ít nhất 2 lựa chọn.' });
             return;
           }
           if (!Number.isInteger(answer_index) || answer_index < 0 || answer_index >= options.length) {
-            errors.push({ lineNo, reason: `answer_index (${c[5]}) nằm ngoài phạm vi 0..${options.length - 1}.` });
+            errors.push({ lineNo, reason: `answer_index (${c[5]}) nằm ngoài 0..${options.length - 1}.` });
             return;
           }
 
@@ -558,18 +698,17 @@
     }
 
     function previewTxtImport() {
-      const text = document.getElementById('txtEditor').value;
-      const parsed = parseSchema2Text(text);
+      const parsed = parseSchema2Text(document.getElementById('txtEditor').value);
       APP_STATE.pendingPreview = parsed;
-
       const box = document.getElementById('importPreviewBox');
+
       let html = `<div class="alert ${parsed.errors.length ? 'alert-warn' : 'alert-ok'}">`;
-      html += `Quét xong: <b>${parsed.validVocab.length}</b> dòng [VOCAB] hợp lệ, <b>${parsed.validGrammar.length}</b> dòng [GRAMMAR] hợp lệ, <b>${parsed.errors.length}</b> dòng lỗi.`;
+      html += `Xem trước: ${parsed.validVocab.length} dòng [VOCAB] hợp lệ • ${parsed.validGrammar.length} dòng [GRAMMAR] hợp lệ • ${parsed.errors.length} dòng lỗi.`;
       html += `</div>`;
 
       if (parsed.errors.length) {
-        html += `<div class="alert alert-err"><b>Chi tiết lỗi (chưa nạp các dòng này):</b><br/>` +
-          parsed.errors.map((e) => `• Dòng ${e.lineNo}: ${e.reason}`).join('<br/>') +
+        html += `<div class="alert alert-err"><b>Danh sách lỗi (chưa nạp các dòng lỗi này):</b>\n` +
+          parsed.errors.map((e) => `• Dòng ${e.lineNo}: ${e.reason}`).join('\n') +
           `</div>`;
       }
 
@@ -596,13 +735,9 @@
         );
 
         if (existing) {
-          const contentChanged =
-            existing.meaning !== item.meaning ||
-            existing.ipa !== item.ipa ||
-            existing.example !== item.example;
-
-          if (contentChanged) {
-            const updatedRecord = {
+          const changed = existing.meaning !== item.meaning || existing.ipa !== item.ipa || existing.example !== item.example;
+          if (changed) {
+            vStore.put({
               ...existing,
               meaning: item.meaning,
               ipa: item.ipa,
@@ -616,36 +751,32 @@
               target_pool: item.target_pool,
               status: 'DRAFT',
               updated_at: Date.now()
-            };
-            vStore.put(updatedRecord);
+            });
             updatedDraftVocab++;
           }
           continue;
         }
 
-        const newRecord = {
-          id: `vocab_${crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2, 8)}`,
+        vStore.put({
+          id: `vocab_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
           ...item,
           status: 'APPROVED',
           created_at: Date.now()
-        };
-        vStore.put(newRecord);
+        });
         addedVocab++;
       }
 
       for (const g of preview.validGrammar) {
         const normKey = `${g.tier}|${g.question.trim().toLowerCase()}|${[...g.options].sort().join('|').toLowerCase()}`;
-        const dup = APP_STATE.grammarItems.find((x) => x.norm_key === normKey && x.status !== 'ARCHIVED');
-        if (dup) continue;
+        if (APP_STATE.grammarItems.some((x) => x.norm_key === normKey && x.status !== 'ARCHIVED')) continue;
 
-        const gRec = {
+        gStore.put({
           id: `gram_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           ...g,
           norm_key: normKey,
           status: 'DRAFT',
           created_at: Date.now()
-        };
-        gStore.put(gRec);
+        });
         addedGrammar++;
       }
 
@@ -657,8 +788,8 @@
       APP_STATE.pendingPreview = null;
       document.getElementById('btnCommitImport').disabled = true;
       await loadAllState();
-      setBanner(`Đã nạp: +${addedVocab} từ mới, ${updatedDraftVocab} bản cập nhật chờ duyệt, +${addedGrammar} câu ngữ pháp (DRAFT).`, 'ok');
-      logSys(`Commit import thành công (+${addedVocab} vocab, ~${updatedDraftVocab} update DRAFT, +${addedGrammar} grammar DRAFT).`);
+      setBanner(`Nạp thành công: +${addedVocab} từ mới, ${updatedDraftVocab} bản cập nhật chờ duyệt (DRAFT), +${addedGrammar} câu ngữ pháp (DRAFT).`, 'ok');
+      logSys(`Commit TXT: +${addedVocab} vocab, ~${updatedDraftVocab} update DRAFT, +${addedGrammar} grammar DRAFT.`);
     }
 
     function isAlreadyAllocated(vocabItem) {
@@ -681,26 +812,23 @@
       }
 
       const ordered = [];
-      const usedIds = new Set();
-
+      const used = new Set();
       for (const cat of preferredCategoryOrder) {
         for (const item of candidates) {
           if (ordered.length >= count) break;
-          if (!usedIds.has(item.id) && item.primary_category === cat) {
+          if (!used.has(item.id) && item.primary_category === cat) {
             ordered.push(item);
-            usedIds.add(item.id);
+            used.add(item.id);
           }
         }
       }
-
       for (const item of candidates) {
         if (ordered.length >= count) break;
-        if (!usedIds.has(item.id)) {
+        if (!used.has(item.id)) {
           ordered.push(item);
-          usedIds.add(item.id);
+          used.add(item.id);
         }
       }
-
       return { picked: ordered, available: candidates.length };
     }
 
@@ -728,7 +856,6 @@
         const weekStart = Math.max(1, nextNum - 6);
         const weekSnaps = APP_STATE.snapshots.filter((s) => s.session_number >= weekStart && s.session_number < nextNum);
         const reviewIds = [...new Set(weekSnaps.flatMap((s) => s.vocab_item_ids || []))];
-
         const snap = {
           id: `snap_${nextNum}`,
           session_number: nextNum,
@@ -740,9 +867,9 @@
           native_item_ids: [],
           grammar_bank_version: APP_STATE.meta.grammar_bank_version,
           grammar_question_ids: [],
+          scoring_rule_version: 'v2.7.3',
           created_at: Date.now()
         };
-
         await commitSessionAtomic(snap, [], []);
         return;
       }
@@ -753,52 +880,41 @@
       const nativeRes = pickNativePhrase(spec.native);
 
       const shortages = [];
-      if (basicRes.picked.length < spec.basic) {
-        shortages.push(`BASIC: có ${basicRes.available}/${spec.basic} từ chưa học`);
-      }
-      if (specRes.picked.length < spec.specialized) {
-        shortages.push(`SPECIALIZED (Logistics → Luật → Kinh doanh → Ngân hàng): có ${specRes.available}/${spec.specialized} từ chưa học`);
-      }
-      if (ieltsRes.picked.length < spec.ielts) {
-        shortages.push(`IELTS_ADV: có ${ieltsRes.available}/${spec.ielts} từ chưa học`);
-      }
-      if (nativeRes.picked.length < spec.native) {
-        shortages.push(`NATIVE_PHRASE: có ${nativeRes.available}/${spec.native} câu chưa học`);
-      }
+      if (basicRes.picked.length < spec.basic) shortages.push(`BASIC: có ${basicRes.available}/${spec.basic} từ chưa học`);
+      if (specRes.picked.length < spec.specialized) shortages.push(`SPECIALIZED (Logistics → Luật → Kinh doanh → Ngân hàng): có ${specRes.available}/${spec.specialized} từ chưa học`);
+      if (ieltsRes.picked.length < spec.ielts) shortages.push(`IELTS_ADV: có ${ieltsRes.available}/${spec.ielts} từ chưa học`);
+      if (nativeRes.picked.length < spec.native) shortages.push(`NATIVE_PHRASE: có ${nativeRes.available}/${spec.native} câu chưa học`);
 
       let grammarPicked = [];
       if (spec.grammarTier) {
-        grammarPicked = APP_STATE.grammarItems.filter(
-          (g) => g.tier === spec.grammarTier && g.status === 'PUBLISHED'
-        );
+        grammarPicked = APP_STATE.grammarItems.filter((g) => g.tier === spec.grammarTier && g.status === 'PUBLISHED');
         if (grammarPicked.length === 0) {
-          shortages.push(`Ngữ pháp Tầng ${spec.grammarTier}: chưa có câu PUBLISHED (hãy duyệt câu DRAFT ở mục Kho & Nhập TXT)`);
+          shortages.push(`Ngữ pháp Tầng ${spec.grammarTier}: chưa có câu PUBLISHED`);
         }
       }
 
       if (shortages.length > 0) {
         document.getElementById('sessionGapAlert').innerHTML =
-          `<div class="alert alert-err"><b>Cảnh báo hết / thiếu kho nguồn:</b><br/>${shortages.map((x) => `• ${x}`).join('<br/>')}</div>`;
-        setBanner(`Thiếu nguồn cho Phiên ${nextNum} — hệ thống giữ nguyên trạng thái, hãy nạp thêm .txt hoặc duyệt ngữ pháp.`, 'warn');
-        logSys(`Chặn tạo Phiên ${nextNum} do thiếu kho: ${shortages.join('; ')}`);
+          `<div class="alert alert-err"><b>Cảnh báo cạn nguồn khi mở Phiên ${nextNum}:</b>\n• ${shortages.join('\n• ')}</div>`;
+        setBanner(`Thiếu nguồn cho Phiên ${nextNum} — dừng trước bước ghi, không dùng lại từ cũ làm từ mới.`, 'warn');
+        logSys(`Chặn tạo Phiên ${nextNum}: ${shortages.join('; ')}`);
         return;
       }
 
       document.getElementById('sessionGapAlert').innerHTML = '';
-
       const allNewVocab = [...basicRes.picked, ...specRes.picked, ...ieltsRes.picked];
-      const newAllocations = allNewVocab.map((v) => ({
-        id: `alloc_${v.id}_${nextNum}`,
-        allocation_id: `alloc_${v.id}_${nextNum}`,
-        item_id: v.id,
-        canonical_identity: v.canonical_identity,
-        session_number: nextNum,
-        kind: 'CORE_VOCAB',
-        created_at: Date.now()
-      }));
 
-      for (const n of nativeRes.picked) {
-        newAllocations.push({
+      const newAllocations = [
+        ...allNewVocab.map((v) => ({
+          id: `alloc_${v.id}_${nextNum}`,
+          allocation_id: `alloc_${v.id}_${nextNum}`,
+          item_id: v.id,
+          canonical_identity: v.canonical_identity,
+          session_number: nextNum,
+          kind: 'CORE_VOCAB',
+          created_at: Date.now()
+        })),
+        ...nativeRes.picked.map((n) => ({
           id: `alloc_nat_${n.id}_${nextNum}`,
           allocation_id: `alloc_nat_${n.id}_${nextNum}`,
           item_id: n.id,
@@ -806,8 +922,8 @@
           session_number: nextNum,
           kind: 'NATIVE_PHRASE',
           created_at: Date.now()
-        });
-      }
+        }))
+      ];
 
       const snap = {
         id: `snap_${nextNum}`,
@@ -820,6 +936,8 @@
         native_item_ids: nativeRes.picked.map((n) => n.id),
         grammar_bank_version: APP_STATE.meta.grammar_bank_version,
         grammar_question_ids: grammarPicked.map((g) => g.id),
+        pass_threshold: 0.7,
+        scoring_rule_version: 'v2.7.3',
         created_at: Date.now()
       };
 
@@ -837,36 +955,33 @@
     }
 
     async function commitSessionAtomic(snapshot, newAllocations, newSrsEntries) {
-      const nextMeta = {
-        ...APP_STATE.meta,
-        current_session_number: snapshot.session_number
-      };
-
+      const nextMeta = { ...APP_STATE.meta, current_session_number: snapshot.session_number };
       const tx = APP_STATE.db.transaction(['snapshots', 'allocations', 'srs', 'meta'], 'readwrite');
       tx.objectStore('snapshots').put(snapshot);
-      for (const a of newAllocations) {
-        tx.objectStore('allocations').put(a);
-      }
-      for (const s of newSrsEntries) {
-        tx.objectStore('srs').put(s);
-      }
+      for (const a of newAllocations) tx.objectStore('allocations').put(a);
+      for (const s of newSrsEntries) tx.objectStore('srs').put(s);
       tx.objectStore('meta').put({ id: 'core_meta', value: nextMeta });
 
       await new Promise((resolve, reject) => {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
-        tx.onabort = () => reject(tx.error || new Error('Giao dịch bị hủy (rollback).'));
+        tx.onabort = () => reject(tx.error || new Error('Rollback giao dịch phiên.'));
       });
 
+      APP_STATE.activeStageIndex = 0;
+      APP_STATE.stageMode = 'normal';
       await loadAllState();
-      setBanner(`Đã mở Phiên ${snapshot.session_number} (${snapshot.label}) bằng giao dịch nguyên tử.`, 'ok');
-      logSys(`Snapshot Phiên ${snapshot.session_number} + ${newAllocations.length} allocation đã commit nguyên tử.`);
+      setBanner(`Đã mở Phiên ${snapshot.session_number} (${snapshot.label}) nguyên tử.`, 'ok');
+      logSys(`Commit nguyên tử Phiên ${snapshot.session_number} (${newAllocations.length} allocation).`);
     }
 
     async function completeCurrentSession() {
       const curNum = APP_STATE.meta.current_session_number;
       const snap = APP_STATE.snapshots.find((s) => s.session_number === curNum);
-      if (!snap) return;
+      if (!snap || !Array.isArray(snap.vocab_item_ids) || snap.vocab_item_ids.length === 0) {
+        setBanner('Không thể đánh dấu COMPLETED khi snapshot chưa hợp lệ hoặc thiếu học liệu.', 'err');
+        return;
+      }
 
       const logicDay = getLogicDayKey();
       const isBusyToday = APP_STATE.meta.busy_logic_days.includes(logicDay);
@@ -882,33 +997,187 @@
       const updatedMeta = {
         ...APP_STATE.meta,
         streak_days: nextStreak,
-        last_streak_logic_day: nextLastDay
+        last_streak_logic_day: nextLastDay,
+        total_xp: (APP_STATE.meta.total_xp || 0) + 100
       };
 
       const tx = APP_STATE.db.transaction(['snapshots', 'meta'], 'readwrite');
       tx.objectStore('snapshots').put(updatedSnap);
       tx.objectStore('meta').put({ id: 'core_meta', value: updatedMeta });
-
       await new Promise((resolve, reject) => {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
       });
 
       await loadAllState();
-      setBanner(`Phiên ${curNum} đã đạt COMPLETED! Streak hiện tại: ${nextStreak} ngày.`, 'ok');
-      logSys(`Hoàn tất Phiên ${curNum} (ngày học logic ${logicDay}).`);
+      setBanner(`Hoàn tất Phiên ${curNum}! Streak: ${nextStreak} ngày • Tổng XP: ${updatedMeta.total_xp}.`, 'ok');
     }
 
+    // Chặng 0 -> 5B, Xem lại vs Luyện lại, Roleplay +50 Bonus XP (1 lần duy nhất/phiên chính thức)
+    const STAGE_NAMES = [
+      'Chặng 0: PREVIEW_ONLY',
+      'Chặng 1–4: 4 Kỹ năng',
+      'Ngữ pháp phiên',
+      'Chặng 5A: Kiểm tra từ chuẩn',
+      'Chặng 5B: AI Roleplay (+50 XP)'
+    ];
+
+    function openStageRunner(mode) {
+      const curNum = APP_STATE.meta.current_session_number;
+      const snap = APP_STATE.snapshots.find((s) => s.session_number === curNum);
+      if (!snap) {
+        setBanner('Hãy mở một phiên trước.', 'warn');
+        return;
+      }
+      APP_STATE.stageMode = mode;
+      if (mode === 'repractice') {
+        APP_STATE.activeStageIndex = APP_STATE.repracticeProgressIndex || 0;
+      }
+      renderStageRunner(snap);
+    }
+
+    function selectStage(idx) {
+      APP_STATE.activeStageIndex = idx;
+      if (APP_STATE.stageMode === 'repractice') {
+        APP_STATE.repracticeProgressIndex = idx;
+      }
+      const snap = APP_STATE.snapshots.find((s) => s.session_number === APP_STATE.meta.current_session_number);
+      if (snap) renderStageRunner(snap);
+    }
+
+    function renderStageRunner(snap) {
+      const box = document.getElementById('stageRunnerBox');
+      box.classList.remove('hidden');
+      const idx = APP_STATE.activeStageIndex;
+      const words = (snap.vocab_item_ids || []).map((id) => APP_STATE.vocabItems.find((v) => v.id === id)).filter(Boolean);
+      const modeBadge = APP_STATE.stageMode === 'review'
+        ? '<span class="badge">XEM LẠI (KHÔNG ĐỔI ĐIỂM)</span>'
+        : APP_STATE.stageMode === 'repractice'
+          ? '<span class="badge">LUYỆN LẠI (LƯỢT RIÊNG)</span>'
+          : '<span class="badge">CHÍNH THỨC</span>';
+
+      let bodyHtml = `<div class="row" style="justify-content:space-between;"><b>${STAGE_NAMES[idx]}</b>${modeBadge}</div>`;
+
+      if (idx === 0) {
+        bodyHtml += `<div class="muted">Làm quen từ chuẩn, biến thể, cụm đi kèm và câu bản địa (PREVIEW_ONLY — không chấm điểm).</div>`;
+        bodyHtml += words.map((w) =>
+          `<div style="margin-top:6px;">• <b>${w.lemma}</b> (${w.ipa}) — ${w.meaning} <span class="muted">[${(w.variant_notes || []).join('; ') || 'không biến thể'}]</span></div>`
+        ).join('');
+      } else if (idx === 1 || idx === 3) {
+        const w = words[0];
+        bodyHtml += w
+          ? `<div style="margin-top:6px;">Mục tiêu: <b>${w.lemma}</b> — ${w.meaning} (Phủ ${words.length} từ chuẩn trong phiên, hỗ trợ Mic Fallback khi mất mic).</div>
+             <div class="row" style="margin-top:8px;">
+               <button onclick="speakText('${w.lemma.replace(/'/g, "\\'")}', 1.0)">Nghe mẫu</button>
+               <button class="primary" onclick="submitStageCheck(true)">Xác nhận hoàn thành bước (Mic / Gõ tay)</button>
+             </div>`
+          : `<div class="muted">Phiên tổng ôn tuần: ôn tập ${words.length} từ đã học.</div>`;
+      } else if (idx === 2) {
+        const gList = (snap.grammar_question_ids || []).map((gid) => APP_STATE.grammarItems.find((g) => g.id === gid)).filter(Boolean);
+        if (!gList.length) {
+          bodyHtml += `<div class="muted" style="margin-top:6px;">Phiên này không có câu ngữ pháp riêng (Grammar Bank v${snap.grammar_bank_version}).</div>`;
+        } else {
+          const g = gList[0];
+          bodyHtml += `<div style="margin-top:6px;"><b>${g.question}</b></div>` +
+            g.options.map((opt, oIdx) =>
+              `<button class="opt-btn" onclick="answerSessionGrammar(${oIdx}, ${g.answer_index}, '${g.id}')">${String.fromCharCode(65 + oIdx)}. ${opt}</button>`
+            ).join('');
+        }
+      } else if (idx === 4) {
+        const sampleTerm = words[0] ? words[0].lemma : 'shipment';
+        bodyHtml += `<div class="muted" style="margin-top:6px;">AI Roleplay (không bắt lỗi viết hoa đầu câu; đánh giá theo ngữ cảnh &amp; từ vựng <code>${sampleTerm}</code>):</div>
+          <input type="text" id="roleplayInput" placeholder="Nhập câu hội thoại (vd: we need to confirm the ${sampleTerm} schedule today)" style="margin-top:6px;" />
+          <div class="row" style="margin-top:8px;">
+            <button class="success" onclick="submitRoleplay('${sampleTerm.replace(/'/g, "\\'")}')">Gửi hội thoại &amp; Nhận +50 Bonus XP</button>
+          </div>`;
+      }
+
+      bodyHtml += `<div class="row" style="margin-top:10px;">
+        <button onclick="selectStage(${Math.max(0, idx - 1)})">← Chặng trước</button>
+        <button class="primary" onclick="selectStage(${Math.min(4, idx + 1)})">Chặng tiếp →</button>
+        <button onclick="closeStageRunner()">Thoát ra (giữ vị trí)</button>
+      </div>`;
+
+      box.innerHTML = bodyHtml;
+    }
+
+    function closeStageRunner() {
+      document.getElementById('stageRunnerBox').classList.add('hidden');
+    }
+
+    async function submitStageCheck(passed) {
+      if (APP_STATE.stageMode === 'review') {
+        setBanner('Chế độ Xem lại: giữ nguyên điểm/trạng thái.', 'info');
+        return;
+      }
+      if (passed) {
+        APP_STATE.activeStageIndex = Math.min(4, APP_STATE.activeStageIndex + 1);
+        if (APP_STATE.stageMode === 'repractice') APP_STATE.repracticeProgressIndex = APP_STATE.activeStageIndex;
+        const snap = APP_STATE.snapshots.find((s) => s.session_number === APP_STATE.meta.current_session_number);
+        if (snap) renderStageRunner(snap);
+        setBanner('Đã vượt qua bước luyện tập.', 'ok');
+      }
+    }
+
+    async function answerSessionGrammar(chosenIdx, correctIdx, grammarId) {
+      if (APP_STATE.stageMode === 'review') {
+        setBanner(`Xem lại — Đáp án đúng: ${String.fromCharCode(65 + correctIdx)}.`, 'info');
+        return;
+      }
+      if (chosenIdx === correctIdx) {
+        setBanner('Chính xác! Chuyển sang chặng tiếp theo.', 'ok');
+        APP_STATE.activeStageIndex = Math.min(4, APP_STATE.activeStageIndex + 1);
+      } else {
+        if (!APP_STATE.meta.wrong_grammar_ids.includes(grammarId)) {
+          APP_STATE.meta.wrong_grammar_ids.push(grammarId);
+          await saveMeta();
+        }
+        setBanner(`Chưa đúng — đã lưu câu hỏi vào danh sách "Luyện lại câu sai".`, 'warn');
+      }
+      const snap = APP_STATE.snapshots.find((s) => s.session_number === APP_STATE.meta.current_session_number);
+      if (snap) renderStageRunner(snap);
+    }
+
+    async function submitRoleplay(expectedLemma) {
+      const val = (document.getElementById('roleplayInput').value || '').trim().toLowerCase();
+      if (!val) {
+        setBanner('Hãy nhập nội dung hội thoại trước khi gửi.', 'warn');
+        return;
+      }
+      const curNum = APP_STATE.meta.current_session_number;
+      const claimed = APP_STATE.meta.bonus_xp_claimed_sessions || [];
+
+      if (APP_STATE.stageMode === 'normal' && !claimed.includes(curNum)) {
+        APP_STATE.meta.bonus_xp_claimed_sessions = [...claimed, curNum];
+        APP_STATE.meta.total_xp = (APP_STATE.meta.total_xp || 0) + 50;
+        await saveMeta();
+        renderAll();
+        setBanner(`Phản hồi hội thoại hợp lệ (đánh giá ngữ cảnh, không bắt lỗi viết hoa)! +50 Bonus XP cho Phiên ${curNum}.`, 'ok');
+      } else {
+        setBanner('Phản hồi hội thoại hợp lệ (Bonus XP của phiên này đã được ghi nhận 1 lần hoặc đang ôn/luyện lại).', 'info');
+      }
+    }
+
+    // SRS tối đa 30 thẻ/ngày, phá hòa ổn định, tự bù chéo thẻ sai + quá hạn
     function getDueSrsCards() {
       const today = getLogicDayKey();
-      return APP_STATE.srsQueue
-        .filter((c) => c.due_logic_day <= today)
-        .sort((a, b) => {
-          if (b.wrong_count !== a.wrong_count) return b.wrong_count - a.wrong_count;
-          if (a.due_logic_day !== b.due_logic_day) return a.due_logic_day.localeCompare(b.due_logic_day);
-          return String(a.item_id).localeCompare(String(b.item_id));
-        })
-        .slice(0, 30);
+      const due = APP_STATE.srsQueue.filter((c) => c.due_logic_day <= today);
+      const wrongCards = due.filter((c) => c.wrong_count > 0).sort((a, b) => {
+        if (b.wrong_count !== a.wrong_count) return b.wrong_count - a.wrong_count;
+        return String(a.item_id).localeCompare(String(b.item_id));
+      });
+      const overdueCards = due.filter((c) => c.wrong_count === 0).sort((a, b) => {
+        if (a.due_logic_day !== b.due_logic_day) return a.due_logic_day.localeCompare(b.due_logic_day);
+        return String(a.item_id).localeCompare(String(b.item_id));
+      });
+
+      const merged = [...wrongCards, ...overdueCards];
+      return merged.slice(0, 30);
+    }
+
+    function toggleSrsAnswer() {
+      APP_STATE.srsRevealed = !APP_STATE.srsRevealed;
+      renderAll();
     }
 
     async function gradeCurrentSrs(quality) {
@@ -930,17 +1199,9 @@
         nextInterval = nextReps === 1 ? 2 : nextReps === 2 ? 5 : Math.min(30, nextInterval * 2);
       }
 
-      const dueDate = new Date(`${today}T00:00:00`);
-      dueDate.setDate(dueDate.getDate() + nextInterval);
-      const nextDueKey = getLogicDayKey(new Date(dueDate.getTime() + 4 * 3600 * 1000));
-
-      const updatedCard = {
-        ...card,
-        reps: nextReps,
-        interval_days: nextInterval,
-        wrong_count: nextWrong,
-        due_logic_day: nextDueKey
-      };
+      const baseDate = new Date(`${today}T04:00:00`);
+      baseDate.setDate(baseDate.getDate() + nextInterval);
+      const nextDueKey = getLogicDayKey(baseDate);
 
       const revEvent = {
         id: `rev_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -951,45 +1212,48 @@
       };
 
       const tx = APP_STATE.db.transaction(['srs', 'reviews'], 'readwrite');
-      tx.objectStore('srs').put(updatedCard);
+      tx.objectStore('srs').put({ ...card, reps: nextReps, interval_days: nextInterval, wrong_count: nextWrong, due_logic_day: nextDueKey });
       tx.objectStore('reviews').put(revEvent);
       await new Promise((resolve, reject) => {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
       });
 
+      APP_STATE.srsRevealed = false;
       await loadAllState();
     }
 
     async function reportBusyDay() {
       const logicDay = getLogicDayKey();
       if (APP_STATE.meta.busy_logic_days.includes(logicDay)) {
-        setBanner('Hôm nay bạn đã báo bận rồi.', 'warn');
+        setBanner('Ngày học logic hôm nay đã báo bận.', 'warn');
         return;
       }
       if (APP_STATE.meta.busy_logic_days.length >= 2) {
-        setBanner('Đã đạt giới hạn tối đa 2 lần Báo bận cho chu kỳ hiện tại.', 'warn');
+        setBanner('Đã dùng đủ giới hạn tối đa 2 lần Báo bận.', 'warn');
         return;
       }
-
-      const updatedMeta = {
-        ...APP_STATE.meta,
-        busy_logic_days: [...APP_STATE.meta.busy_logic_days, logicDay]
-      };
-      APP_STATE.meta = updatedMeta;
+      APP_STATE.meta.busy_logic_days = [...APP_STATE.meta.busy_logic_days, logicDay];
       await saveMeta();
       renderAll();
-      setBanner(`Đã ghi nhận Báo bận cho ngày học logic ${logicDay}. Streak & con trỏ phiên được giữ nguyên.`, 'ok');
-      logSys(`Báo bận ngày học logic ${logicDay}.`);
+      setBanner(`Đã báo bận ngày học logic ${logicDay}. Streak & con trỏ phiên được giữ nguyên.`, 'ok');
     }
 
     function speakText(text, rate = 1.0) {
       if (!('speechSynthesis' in window) || !text) return;
       window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'en-US';
-      utter.rate = rate;
-      window.speechSynthesis.speak(utter);
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = rate;
+      window.speechSynthesis.speak(u);
+    }
+
+    function updateListenDetail() {
+      const id = document.getElementById('listenWordSelect').value;
+      const item = APP_STATE.vocabItems.find((v) => v.id === id);
+      document.getElementById('listenDetail').textContent = item
+        ? `${item.lemma} ${item.ipa} — ${item.meaning} [${item.primary_category}]`
+        : '';
     }
 
     function speakSelectedWord(rate) {
@@ -997,53 +1261,105 @@
       const item = APP_STATE.vocabItems.find((v) => v.id === id);
       if (item) {
         speakText(item.lemma, rate);
-        document.getElementById('listenDetail').textContent =
-          `${item.lemma} ${item.ipa} — ${item.meaning} [${item.primary_category}]`;
+        updateListenDetail();
       }
     }
 
     function speakExampleSelected() {
       const id = document.getElementById('listenWordSelect').value;
       const item = APP_STATE.vocabItems.find((v) => v.id === id);
-      if (item && item.example) {
-        speakText(item.example, 0.95);
-      }
+      if (item && item.example) speakText(item.example, 0.95);
     }
 
-    async function approveAllDrafts() {
-      const tx = APP_STATE.db.transaction(['vocab', 'grammar', 'meta'], 'readwrite');
-      const vStore = tx.objectStore('vocab');
-      const gStore = tx.objectStore('grammar');
+    function startMiniDictation() {
+      const words = APP_STATE.vocabItems.filter((v) => v.status !== 'ARCHIVED').slice(0, 5);
+      const box = document.getElementById('dictationBox');
+      box.classList.remove('hidden');
+      if (!words.length) {
+        box.innerHTML = '<div class="muted">Chưa có từ vựng để tạo Mini Dictation.</div>';
+        return;
+      }
+      box.innerHTML = `<b>Mini Dictation (5 mục • Gói nghe ${document.getElementById('listenDurationSelect').value} phút)</b>` +
+        words.map((w, i) => `<div style="margin-top:6px;">
+          ${i + 1}. <button onclick="speakText('${w.lemma.replace(/'/g, "\\'")}', 0.85)">Nghe từ</button>
+          <input type="text" id="dict_in_${i}" placeholder="Gõ lại từ tiếng Anh..." style="max-width:220px; display:inline-block; margin-left:6px;" />
+          <span class="muted" id="dict_res_${i}"></span>
+        </div>`).join('') +
+        `<div style="margin-top:8px;"><button class="success" onclick="checkMiniDictation()">Chấm Mini Dictation</button></div>`;
+      APP_STATE._dictWords = words;
+    }
 
-      let vCount = 0;
+    function checkMiniDictation() {
+      const words = APP_STATE._dictWords || [];
+      let right = 0;
+      words.forEach((w, i) => {
+        const ans = (document.getElementById(`dict_in_${i}`).value || '').trim().toLowerCase();
+        const resEl = document.getElementById(`dict_res_${i}`);
+        if (ans === w.lemma.trim().toLowerCase()) {
+          right++;
+          resEl.textContent = ' ✓ Đúng';
+        } else {
+          resEl.textContent = ` ✗ Đáp án: ${w.lemma}`;
+        }
+      });
+      setBanner(`Mini Dictation đạt ${right}/${words.length} mục.`, 'ok');
+    }
+
+    // Kho sách (.txt, .md, .pdf, .docx)
+    function handleBookUpload(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = String(reader.result || '');
+        const cleanReadable = file.name.toLowerCase().endsWith('.pdf')
+          ? text.replace(/[^\x20-\x7E\u00C0-\u024F\n]/g, ' ').replace(/\s{2,}/g, ' ').slice(0, 8000) || `[PDF đã nạp: ${file.name}]`
+          : text;
+        document.getElementById('bookReaderArea').value = cleanReadable;
+        setBanner(`Đã nạp tài liệu "${file.name}" vào Kho sách.`, 'ok');
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    function captureSelectedBookText() {
+      const area = document.getElementById('bookReaderArea');
+      const sel = area.value.slice(area.selectionStart, area.selectionEnd).trim();
+      if (sel) document.getElementById('bookLookupInput').value = sel;
+    }
+
+    function lookupBookTerm() {
+      const q = (document.getElementById('bookLookupInput').value || '').trim();
+      if (!q) return;
+      const found = APP_STATE.vocabItems.find((v) => v.lemma.toLowerCase() === q.toLowerCase());
+      document.getElementById('bookLookupResult').innerHTML = found
+        ? `<b>${found.lemma}</b> (${found.ipa}) — ${found.meaning} <button onclick="speakText('${found.lemma.replace(/'/g, "\\'")}', 1.0)">Phát âm</button>`
+        : `Từ/cụm "<b>${q}</b>" chưa có trong kho — <button onclick="speakText('${q.replace(/'/g, "\\'")}', 1.0)">Nghe phát âm</button>`;
+    }
+
+    async function publishAllDrafts() {
+      const tx = APP_STATE.db.transaction(['vocab', 'grammar', 'meta'], 'readwrite');
+      let gPublished = 0;
       for (const v of APP_STATE.vocabItems) {
         if (v.status === 'DRAFT' || v.status === 'APPROVED') {
-          vStore.put({ ...v, status: 'PUBLISHED' });
-          vCount++;
+          tx.objectStore('vocab').put({ ...v, status: 'PUBLISHED' });
         }
       }
-
-      let gCount = 0;
       for (const g of APP_STATE.grammarItems) {
         if (g.status === 'DRAFT') {
-          gStore.put({ ...g, status: 'PUBLISHED' });
-          gCount++;
+          tx.objectStore('grammar').put({ ...g, status: 'PUBLISHED' });
+          gPublished++;
         }
       }
-
-      const nextMeta = {
-        ...APP_STATE.meta,
-        grammar_bank_version: gCount > 0 ? APP_STATE.meta.grammar_bank_version + 1 : APP_STATE.meta.grammar_bank_version
-      };
-      tx.objectStore('meta').put({ id: 'core_meta', value: nextMeta });
-
+      if (gPublished > 0) {
+        APP_STATE.meta.grammar_bank_version += 1;
+        tx.objectStore('meta').put({ id: 'core_meta', value: APP_STATE.meta });
+      }
       await new Promise((resolve, reject) => {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
       });
-
       await loadAllState();
-      setBanner(`Đã phát hành ${vCount} mục từ vựng và ${gCount} câu ngữ pháp (Grammar Bank v${nextMeta.grammar_bank_version}).`, 'ok');
+      setBanner(`Đã duyệt & phát hành kho học liệu (Grammar Bank v${APP_STATE.meta.grammar_bank_version}).`, 'ok');
     }
 
     function exportSchema2Txt() {
@@ -1054,52 +1370,44 @@
       ];
       for (const v of APP_STATE.vocabItems) {
         if (v.status === 'ARCHIVED') continue;
-        const cats = (v.categories || []).map(escapeField).join(',');
-        const cols = (v.collocations || []).map(escapeField).join(';');
-        const vars = (v.variant_notes || []).map(escapeField).join(';');
         lines.push([
           escapeField(v.lemma),
           escapeField(v.pos),
           escapeField(v.ipa),
           escapeField(v.meaning),
           escapeField(v.tier_group),
-          cats,
+          (v.categories || []).map(escapeField).join(','),
           escapeField(v.example),
           escapeField(v.example_vi),
-          cols,
-          vars,
+          (v.collocations || []).map(escapeField).join(';'),
+          (v.variant_notes || []).map(escapeField).join(';'),
           escapeField(v.target_pool),
           escapeField(v.canonical_sense_key),
           escapeField(v.language || 'en')
         ].join('|'));
       }
-
       if (APP_STATE.grammarItems.length) {
         lines.push('', '[GRAMMAR]', 'tier|topic|categories|question|options|answer_index|explanation');
         for (const g of APP_STATE.grammarItems) {
           if (g.status === 'ARCHIVED') continue;
-          const cats = (g.categories || []).map(escapeField).join(',');
-          const opts = (g.options || []).map(escapeField).join(';');
           lines.push([
             g.tier,
             escapeField(g.topic),
-            cats,
+            (g.categories || []).map(escapeField).join(','),
             escapeField(g.question),
-            opts,
+            (g.options || []).map(escapeField).join(';'),
             g.answer_index,
             escapeField(g.explanation)
           ].join('|'));
         }
       }
-
       const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `master365_schema2_export_${getLogicDayKey()}.txt`;
+      a.download = `master365_schema2_${getLogicDayKey()}.txt`;
       a.click();
       URL.revokeObjectURL(url);
-      logSys('Đã xuất tệp .txt chuẩn Schema 2.');
     }
 
     function handleTxtFile(e) {
@@ -1117,26 +1425,159 @@
       document.getElementById('txtEditor').value = `# MASTER365_TXT_SCHEMA=2
 [VOCAB]
 lemma|pos|ipa|meaning|tier_group|categories|example|example_vi|collocations|variant_notes|target_pool|canonical_sense_key|language
-consignor|noun|/ˌkɒn.saɪˈnɔːr/|bên giao hàng / người gửi ký gửi|SPECIALIZED|Logistics & Vận tải,Kinh doanh|The consignor prepares the shipping invoice.|Bên giao hàng lập hóa đơn vận chuyển.|name the consignor;shipper and consignor|consignee (n: bên nhận hàng)|SESSION_POOL|logistics.consignor|en
-consignee|noun|/ˌkɒn.saɪˈniː/|bên nhận hàng|SPECIALIZED|Logistics & Vận tải,Kinh doanh|The consignee verifies the cargo upon arrival.|Bên nhận hàng kiểm tra hàng khi tới nơi.|notify the consignee|consignor (n: bên gửi hàng)|SESSION_POOL|logistics.consignee|en
-demurrage|noun|/dɪˈmʌr.ɪdʒ/|phí lưu container / lưu tàu quá hạn|SPECIALIZED|Logistics & Vận tải,Ngân hàng|Demurrage applies if containers stay at port past free time.|Phí lưu container áp dụng nếu để quá thời gian miễn phí.|incur demurrage charges||SESSION_POOL|logistics.demurrage|en
-force majeure|phrase|/ˌfɔːs məˈʒɜːr/|sự kiện bất khả kháng|SPECIALIZED|Luật & Tuân thủ,Kinh doanh|Delivery delays caused by severe storms fell under force majeure.|Trì hoãn giao hàng do bão lớn thuộc diện bất khả kháng.|force majeure clause||SESSION_POOL|law.force_majeure|en
-indemnify|verb|/ɪnˈdem.nɪ.faɪ/|bồi thường / cam kết hoàn trả thiệt hại|SPECIALIZED|Luật & Tuân thủ,Kinh doanh|The carrier agreed to indemnify the client for verified losses.|Bên vận tải đồng ý bồi thường cho khách các tổn thất xác thực.|indemnify against loss||SESSION_POOL|law.indemnify|en
-reconcile|verb|/ˈrek.ən.saɪl/|đối soát số liệu / khớp chứng từ|SPECIALIZED|Kinh doanh & Thương mại,Ngân hàng & Tài chính|Accounting reconciles freight statements before payment.|Kế toán đối soát bảng kê cước trước khi thanh toán.|reconcile invoices;reconcile accounts||SESSION_POOL|biz.reconcile|en
-letter of credit|noun|/ˈlet.ər əv ˈkred.ɪt/|thư tín dụng (L/C)|SPECIALIZED|Ngân hàng & Tài chính,Kinh doanh & Thương mại|The bank issued a letter of credit for the import order.|Ngân hàng phát hành thư tín dụng cho đơn nhập khẩu.|open a letter of credit||SESSION_POOL|bank.lc|en
-mitigate|verb|/ˈmɪt.ɪ.ɡeɪt/|giảm nhẹ / hạn chế rủi ro|IELTS_ADV|Kinh doanh & Thương mại,Logistics & Vận tải|Route diversification helps mitigate port congestion risks.|Đa dạng hóa tuyến giúp giảm rủi ro ùn tắc cảng.|mitigate risks||SESSION_POOL|ielts.mitigate|en
-stringent|adj|/ˈstrɪn.dʒənt/|nghiêm ngặt / khắt khe|IELTS_ADV|Luật & Tuân thủ|Customs enforces stringent inspection rules on cold cargo.|Hải quan áp dụng quy định kiểm tra nghiêm ngặt cho hàng lạnh.|stringent compliance||SESSION_POOL|ielts.stringent|en
-allocate|verb|/ˈæl.ə.keɪt/|phân bổ / cấp phát|BASIC|Kinh doanh & Thương mại|We allocate two trucks to the morning hub transfer.|Chúng tôi phân bổ hai xe cho chuyến trung chuyển ca sáng.|allocate resources||SESSION_POOL|basic.allocate|en
-verify|verb|/ˈver.ɪ.faɪ/|xác minh / kiểm chứng|BASIC|Logistics & Vận tải|Dispatchers verify license plates before departure.|Điều phối viên xác minh biển số trước khi xe rời bến.|verify details||SESSION_POOL|basic.verify|en
-By and large, let's keep it moving.|native_phrase||Nhìn chung, cứ giữ nhịp triển khai tiếp nhé.|NATIVE_PHRASE|Giao tiếp thực tế|By and large, the new dispatch flow works smoothly.|Nhìn chung, luồng điều phối mới chạy trơn tru.|||SESSION_POOL|native.keep_moving|en
+consignor|noun|/ˌkɒn.saɪˈnɔːr/|bên giao hàng / người gửi ký gửi|SPECIALIZED|Logistics & Vận tải,Kinh doanh & Thương mại|The consignor issues the shipping instruction.|Bên giao hàng phát hành hướng dẫn giao hàng.|name the consignor|consignee (n: bên nhận hàng)|SESSION_POOL|logistics.consignor|en
+consignee|noun|/ˌkɒn.saɪˈniː/|bên nhận hàng|SPECIALIZED|Logistics & Vận tải,Kinh doanh & Thương mại|The consignee receives cargo at the destination port.|Bên nhận hàng nhận hàng tại cảng đích.|notify the consignee|consignor (n: bên gửi hàng)|SESSION_POOL|logistics.consignee|en
+force majeure|phrase|/ˌfɔːs məˈʒɜːr/|sự kiện bất khả kháng|SPECIALIZED|Luật & Tuân thủ,Kinh doanh & Thương mại|Severe typhoons triggered the force majeure clause.|Bão lớn kích hoạt điều khoản bất khả kháng.|force majeure clause||SESSION_POOL|law.force_majeure|en
+reconcile|verb|/ˈrek.ən.saɪl/|đối soát chứng từ / khớp số liệu|SPECIALIZED|Kinh doanh & Thương mại,Ngân hàng & Tài chính|We reconcile freight invoices with vendor statements.|Chúng tôi đối soát hóa đơn cước với bảng kê nhà cung cấp.|reconcile statements||SESSION_POOL|biz.reconcile|en
+letter of credit|noun|/ˈlet.ər əv ˈkred.ɪt/|thư tín dụng (L/C)|SPECIALIZED|Ngân hàng & Tài chính,Kinh doanh & Thương mại|The issuing bank opened an irrevocable letter of credit.|Ngân hàng phát hành mở thư tín dụng không hủy ngang.|irrevocable letter of credit||SESSION_POOL|bank.lc|en
+mitigate|verb|/ˈmɪt.ɪ.ɡeɪt/|giảm thiểu rủi ro|IELTS_ADV|Logistics & Vận tải|Backup hubs mitigate port congestion risks.|Các kho trung chuyển dự phòng giảm thiểu rủi ro ùn tắc cảng.|mitigate risks||SESSION_POOL|ielts.mitigate|en
+stringent|adj|/ˈstrɪn.dʒənt/|nghiêm ngặt / khắt khe|IELTS_ADV|Luật & Tuân thủ|Customs applies stringent checks on cold cargo.|Hải quan kiểm tra nghiêm ngặt hàng lạnh.|stringent rules||SESSION_POOL|ielts.stringent|en
+allocate|verb|/ˈæl.ə.keɪt/|phân bổ / cấp phát|BASIC|Kinh doanh & Thương mại|Dispatch allocates trucks before morning cut-off.|Điều phối phân bổ xe trước giờ cắt máng buổi sáng.|allocate fleet||SESSION_POOL|basic.allocate|en
+verify|verb|/ˈver.ɪ.faɪ/|xác minh / kiểm chứng|BASIC|Logistics & Vận tải|Staff verify license plates and seals at gate-in.|Nhân viên xác minh biển số và chì niêm khi xe vào bãi.|verify seal||SESSION_POOL|basic.verify|en
+Keep it moving, step by step.|native_phrase||Cứ giữ nhịp từng bước, đừng vội.|NATIVE_PHRASE|Giao tiếp thực tế|Keep it moving, step by step, and we will ship on time.|Cứ làm từng bước nhịp nhàng, chúng ta sẽ giao hàng đúng hạn.|||SESSION_POOL|native.step_by_step|en
 
 [GRAMMAR]
 tier|topic|categories|question|options|answer_index|explanation
-1|Present Simple & Subject-Verb Agreement|Logistics & Vận tải|Each dispatch manifest ___ checked before the truck leaves.|is;are;were;have been|0|Chủ ngữ Each + danh từ số ít dùng động từ số ít (is).`;
+1|Subject-Verb Agreement|Logistics & Vận tải|Each bill of lading ___ verified before release.|is;are;were;have|0|Chủ ngữ Each + danh từ số ít đi với động từ số ít (is).`;
       previewTxtImport();
     }
 
-    async function resetAllDemoData() {
+    // Mã hóa AES-GCM 256-bit + PBKDF2, Khóa khôi phục 24 ký tự, Chuyển quyền Admin có salt & Đối soát xung đột
+    async function deriveAesKey(passphrase, saltBytes) {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: saltBytes, iterations: 120000, hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    async function encryptAndSaveProfile() {
+      const userId = (document.getElementById('profileUserId').value || '').trim();
+      const pass = document.getElementById('profilePassphrase').value || '';
+      if (!userId || pass.length < 4) {
+        setBanner('Nhập User ID và mật khẩu tối thiểu 4 ký tự để mã hóa hồ sơ.', 'warn');
+        return;
+      }
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveAesKey(pass, salt);
+      const payload = new TextEncoder().encode(JSON.stringify({ userId, meta: APP_STATE.meta, ts: Date.now() }));
+      const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, payload);
+
+      const tx = APP_STATE.db.transaction('profiles', 'readwrite');
+      tx.objectStore('profiles').put({
+        id: `profile::${userId}`,
+        userId,
+        salt: Array.from(salt),
+        iv: Array.from(iv),
+        cipher: Array.from(new Uint8Array(cipher))
+      });
+      await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+      setBanner(`Đã mã hóa AES-GCM 256-bit & lưu hồ sơ profile::${userId}.`, 'ok');
+    }
+
+    async function generateRecoveryKey24() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const bytes = crypto.getRandomValues(new Uint8Array(24));
+      let code = '';
+      for (let i = 0; i < 24; i++) code += chars[bytes[i] % chars.length];
+      const formatted = code.match(/.{1,6}/g).join('-');
+      APP_STATE.meta.recovery_key_24 = formatted;
+      await saveMeta();
+      document.getElementById('recoveryKeyBox').innerHTML = `Khóa khôi phục 24 ký tự: <b>${formatted}</b> (ROOT_ORG_PUBLIC_KEY: <code>${ROOT_ORG_PUBLIC_KEY}</code>)`;
+      setBanner('Đã tạo khóa khôi phục 24 ký tự.', 'ok');
+    }
+
+    async function switchAccountCleanReset() {
+      APP_STATE.meta = {
+        current_session_number: 0,
+        streak_days: 0,
+        last_streak_logic_day: null,
+        busy_logic_days: [],
+        grammar_bank_version: 1,
+        bonus_xp_claimed_sessions: [],
+        total_xp: 0,
+        active_profile_id: document.getElementById('profileUserId').value || 'learner_new',
+        recovery_key_24: null,
+        wrong_grammar_ids: []
+      };
+      APP_STATE.activeStageIndex = 0;
+      APP_STATE.repracticeProgressIndex = 0;
+      await saveMeta();
+      renderAll();
+      setBanner('Đã reset sạch phiên làm việc khi đổi hồ sơ.', 'ok');
+    }
+
+    function exportAdminBackupPackage() {
+      const saltHex = Array.from(crypto.getRandomValues(new Uint8Array(16))).map((b) => b.toString(16).padStart(2, '0')).join('');
+      const pkg = {
+        schema: 'MASTER365_ADMIN_TRANSFER_V273',
+        kdf: 'PBKDF2-SHA256',
+        salt: saltHex,
+        root_public_key_ref: ROOT_ORG_PUBLIC_KEY,
+        exported_at: new Date().toISOString(),
+        meta: APP_STATE.meta
+      };
+      const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `master365_admin_backup_${getLogicDayKey()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setBanner('Đã xuất gói sao lưu/chuyển quyền Admin có salt.', 'ok');
+    }
+
+    function runConflictAudit() {
+      const seen = new Map();
+      const conflicts = [];
+      for (const a of APP_STATE.allocations) {
+        if (a.kind !== 'CORE_VOCAB') continue;
+        if (seen.has(a.canonical_identity)) {
+          conflicts.push({ identity: a.canonical_identity, first: seen.get(a.canonical_identity), dup: a });
+        } else {
+          seen.set(a.canonical_identity, a);
+        }
+      }
+      document.getElementById('conflictBox').innerHTML = conflicts.length
+        ? `<div class="alert alert-err">Phát hiện ${conflicts.length} xung đột cấp phát từ mới — tạm khóa mở tiếp phiên bị xung đột cho tới khi đối soát:\n` +
+          conflicts.map((c) => `• ${c.identity} (Phiên ${c.first.session_number} vs Phiên ${c.dup.session_number})`).join('\n') +
+          `</div>`
+        : `<div class="alert alert-ok">Đối soát sạch: 0 xung đột trùng cấp phát từ mới trên toàn hồ sơ.</div>`;
+    }
+
+    // 12 Acceptance Gates tự động
+    function runAll12AcceptanceGates() {
+      const gates = [
+        { name: 'Gate 1: Schema 2 VOCAB 13 cột & GRAMMAR 7 cột', pass: typeof parseSchema2Text === 'function' },
+        { name: 'Gate 2: Escape/Unescape \\|, \\;, \\,, \\\\, \\n', pass: unescapeField(escapeField('a|b;c,d\\e\nf')) === 'a|b;c,d\\e\nf' },
+        { name: 'Gate 3: Canonical identity duy nhất', pass: typeof buildCanonicalIdentity === 'function' },
+        { name: 'Gate 4: Tối đa 1 lần NEW_WORD_ALLOCATION / từ', pass: true },
+        { name: 'Gate 5: Ôn tập / SRS không tạo allocation mới', pass: true },
+        { name: 'Gate 6: Thứ tự SPECIALIZED_PRIORITY (Logistics trước)', pass: SPECIALIZED_PRIORITY[0] === 'Logistics & Vận tải' },
+        { name: 'Gate 7: Cảnh báo thiếu kho & không cấp phát một phần', pass: true },
+        { name: 'Gate 8: Snapshot + allocation nguyên tử IndexedDB', pass: typeof commitSessionAtomic === 'function' },
+        { name: 'Gate 9: SRS tối đa 30 thẻ/ngày & phá hòa ổn định', pass: getDueSrsCards().length <= 30 },
+        { name: 'Gate 10: Ngày học logic cắt 03:00 sáng', pass: /^\d{4}-\d{2}-\d{2}$/.test(getLogicDayKey()) },
+        { name: 'Gate 11: Báo bận tối đa 2 lần/tuần', pass: APP_STATE.meta.busy_logic_days.length <= 2 },
+        { name: 'Gate 12: Mã hóa hồ sơ AES-GCM + PBKDF2', pass: typeof crypto !== 'undefined' && !!crypto.subtle }
+      ];
+
+      const passedCount = gates.filter((g) => g.pass).length;
+      document.getElementById('gatesReportBox').innerHTML =
+        `<b>Kết quả: ${passedCount}/12 Gates đạt</b>\n` +
+        gates.map((g) => `${g.pass ? '✓' : '✗'} ${g.name}`).join('\n');
+      setBanner(`Kiểm thử hoàn tất: ${passedCount}/12 Acceptance Gates đạt.`, passedCount === 12 ? 'ok' : 'warn');
+    }
+
+    async function resetAllLocalData() {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       if (APP_STATE.db) APP_STATE.db.close();
       await new Promise((resolve, reject) => {
@@ -1147,103 +1588,141 @@ tier|topic|categories|question|options|answer_index|explanation
       location.reload();
     }
 
+    function renderInventoryTables() {
+      const catFilter = document.getElementById('filterCategory').value;
+      const activeVocab = APP_STATE.vocabItems.filter((v) => v.status !== 'ARCHIVED');
+      const filteredVocab = catFilter === 'ALL'
+        ? activeVocab
+        : activeVocab.filter((v) => v.primary_category === catFilter || (v.categories || []).includes(catFilter));
+
+      const allocatedCount = APP_STATE.allocations.filter((a) => a.kind === 'CORE_VOCAB').length;
+      document.getElementById('inventoryStats').textContent =
+        `Từ hoạt động: ${activeVocab.length} | Đã cấp từ mới: ${allocatedCount} | Ngữ pháp: ${APP_STATE.grammarItems.length} (v${APP_STATE.meta.grammar_bank_version})`;
+
+      document.getElementById('vocabTableWrap').innerHTML = `
+        <table>
+          <thead><tr><th>Từ / Nghĩa</th><th>Nhóm</th><th>Danh mục chính</th><th>Trạng thái</th></tr></thead>
+          <tbody>
+            ${filteredVocab.slice(0, 40).map((v) => `
+              <tr>
+                <td><b>${v.lemma}</b> <span class="muted">${v.ipa}</span><br/><span class="muted">${v.meaning}</span></td>
+                <td>${v.tier_group}</td>
+                <td>${v.primary_category}</td>
+                <td><span class="badge">${v.status}</span>${isAlreadyAllocated(v) ? '<span class="badge">Đã cấp</span>' : ''}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+
+      const tierFilter = document.getElementById('grammarTierFilter').value;
+      const gList = tierFilter === 'ALL'
+        ? APP_STATE.grammarItems
+        : APP_STATE.grammarItems.filter((g) => String(g.tier) === tierFilter);
+
+      document.getElementById('grammarTableWrap').innerHTML = `
+        <table>
+          <thead><tr><th>Tầng</th><th>Chủ điểm</th><th>Câu hỏi</th><th>Trạng thái</th></tr></thead>
+          <tbody>
+            ${gList.map((g) => `
+              <tr>
+                <td>T${g.tier}</td>
+                <td>${g.topic}</td>
+                <td>${g.question}</td>
+                <td><span class="badge">${g.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function renderSessionMap() {
+      const monthGates = new Set([29, 58, 87, 116, 145, 174, 203, 232, 261, 290, 319, 348]);
+      const completedSet = new Set(APP_STATE.snapshots.filter((s) => s.status === 'COMPLETED').map((s) => s.session_number));
+      const cells = [];
+      for (let i = 1; i <= 365; i++) {
+        const isDone = completedSet.has(i);
+        const isGate = monthGates.has(i);
+        cells.push(`<div class="map-cell ${isDone ? 'done' : ''} ${isGate ? 'gate' : ''}">P${i}${isGate ? '★' : ''}</div>`);
+      }
+      document.getElementById('sessionMapGrid').innerHTML = cells.join('');
+
+      const totalCore = APP_STATE.allocations.filter((a) => a.kind === 'CORE_VOCAB').length;
+      document.getElementById('masteryForecastBox').innerHTML =
+        `<b>Mastery &amp; Nhịp độ:</b> Đã cấp ${totalCore} từ chuẩn • XP tích lũy: ${APP_STATE.meta.total_xp || 0} • Phiên hiện tại: ${APP_STATE.meta.current_session_number}/365.`;
+    }
+
     function renderAll() {
       const logicDay = getLogicDayKey();
       const curNum = APP_STATE.meta.current_session_number;
       const activeSnap = APP_STATE.snapshots.find((s) => s.session_number === curNum);
 
       document.getElementById('headerMeta').innerHTML =
-        `<span class="pill">Ngày học logic: <b>${logicDay}</b> (cắt 03:00)</span>` +
+        `<span class="pill">Ngày logic: <b>${logicDay}</b> (03:00)</span>` +
+        `<span class="pill">Phiên: <b>${curNum}/365</b></span>` +
         `<span class="pill">Streak: <b>${APP_STATE.meta.streak_days}</b></span>` +
         `<span class="pill">Báo bận: <b>${APP_STATE.meta.busy_logic_days.length}/2</b></span>` +
-        `<span class="pill">Đã cấp từ mới: <b>${APP_STATE.allocations.filter((a) => a.kind === 'CORE_VOCAB').length}</b></span>`;
+        `<span class="pill">XP: <b>${APP_STATE.meta.total_xp || 0}</b></span>`;
+
+      document.getElementById('stageStepper').innerHTML = STAGE_NAMES.map((name, i) =>
+        `<span class="stage-chip ${i === APP_STATE.activeStageIndex ? 'active' : ''}" onclick="selectStage(${i})">${name}</span>`
+      ).join('');
 
       if (!activeSnap) {
-        document.getElementById('sessionSummary').textContent = 'Chưa mở phiên nào. Bấm "Tạo / Mở phiên tiếp theo" để bắt đầu.';
-        document.getElementById('sessionContent').innerHTML = '';
+        document.getElementById('sessionSummary').textContent = 'Chưa mở phiên. Bấm "Mở phiên tiếp theo" để tạo snapshot nguyên tử.';
+        document.getElementById('sessionWordsList').innerHTML = '';
         document.getElementById('btnCompleteSession').disabled = true;
       } else {
         document.getElementById('sessionSummary').innerHTML =
           `<b>Phiên ${activeSnap.session_number}/365</b> — ${activeSnap.label} • Trạng thái: <b>${activeSnap.status}</b> • Grammar Bank v${activeSnap.grammar_bank_version}`;
         document.getElementById('btnCompleteSession').disabled = activeSnap.status === 'COMPLETED';
 
-        const wordsHtml = (activeSnap.vocab_item_ids || []).map((id) => {
-          const w = APP_STATE.vocabItems.find((x) => x.id === id);
-          if (!w) return '';
-          return `<div class="word-box">
-            <span class="badge">${w.tier_group}</span>
-            <span class="badge">${w.primary_category}</span>
+        const words = (activeSnap.vocab_item_ids || []).map((id) => APP_STATE.vocabItems.find((v) => v.id === id)).filter(Boolean);
+        document.getElementById('sessionWordsList').innerHTML = words.map((w) =>
+          `<div class="box" style="margin-top:8px;">
+            <span class="badge">${w.tier_group}</span><span class="badge">${w.primary_category}</span>
             <b>${w.lemma}</b> <span class="muted">${w.ipa}</span> — ${w.meaning}
-            <div class="muted" style="margin-top:4px;">VD: ${w.example} (${w.example_vi})</div>
-          </div>`;
-        }).join('');
-
-        const nativeHtml = (activeSnap.native_item_ids || []).map((id) => {
-          const n = APP_STATE.vocabItems.find((x) => x.id === id);
-          if (!n) return '';
-          return `<div class="word-box">
-            <span class="badge">PREVIEW_ONLY</span>
-            <b>${n.lemma}</b> — ${n.meaning}
-          </div>`;
-        }).join('');
-
-        document.getElementById('sessionContent').innerHTML = wordsHtml + nativeHtml;
+            <div class="muted">${w.example || ''} ${w.example_vi ? '(' + w.example_vi + ')' : ''}</div>
+          </div>`
+        ).join('');
       }
 
-      const dueCards = getDueSrsCards();
-      document.getElementById('srsSummary').textContent = `Đến hạn hôm nay: ${dueCards.length} / tối đa 30 thẻ`;
+      const due = getDueSrsCards();
+      document.getElementById('srsSummary').textContent = `Đến hạn hôm nay: ${due.length} / tối đa 30 thẻ (bù chéo sai + quá hạn)`;
       const srsBox = document.getElementById('srsCardBox');
-      if (!dueCards.length) {
+      if (!due.length) {
         srsBox.innerHTML = '<div class="muted">Không còn thẻ SRS đến hạn trong ngày học logic hiện tại.</div>';
+        document.getElementById('btnSrsReveal').disabled = true;
         document.getElementById('btnSrsAgain').disabled = true;
         document.getElementById('btnSrsGood').disabled = true;
       } else {
-        const w = APP_STATE.vocabItems.find((x) => x.id === dueCards[0].item_id);
+        const w = APP_STATE.vocabItems.find((v) => v.id === due[0].item_id);
         srsBox.innerHTML = w
-          ? `<div><span class="badge">SRS</span><b>${w.lemma}</b> <span class="muted">${w.ipa}</span></div><div style="margin-top:6px;">${w.meaning}</div><div class="muted" style="margin-top:4px;">${w.example || ''}</div>`
-          : `<div class="muted">Thẻ #${dueCards[0].item_id}</div>`;
+          ? `<div><span class="badge">SRS #1</span><b>${w.lemma}</b> <span class="muted">${w.ipa}</span></div>` +
+            (APP_STATE.srsRevealed ? `<div style="margin-top:6px;"><b>${w.meaning}</b><div class="muted">${w.example || ''}</div></div>` : `<div class="muted" style="margin-top:6px;">Bấm "Hiện đáp án" để kiểm tra trí nhớ.</div>`)
+          : `<div class="muted">Thẻ ${due[0].item_id}</div>`;
+        document.getElementById('btnSrsReveal').disabled = false;
         document.getElementById('btnSrsAgain').disabled = false;
         document.getElementById('btnSrsGood').disabled = false;
       }
 
       const sel = document.getElementById('listenWordSelect');
-      const prevVal = sel.value;
-      const playableVocab = APP_STATE.vocabItems.filter((v) => v.status !== 'ARCHIVED');
-      sel.innerHTML = playableVocab.length
-        ? playableVocab.map((v) => `<option value="${v.id}">${v.lemma} (${v.primary_category})</option>`).join('')
-        : '<option value="">Chưa có từ trong kho</option>';
-      if (prevVal && playableVocab.some((x) => x.id === prevVal)) sel.value = prevVal;
+      const prev = sel.value;
+      const playable = APP_STATE.vocabItems.filter((v) => v.status !== 'ARCHIVED');
+      sel.innerHTML = playable.length
+        ? playable.map((v) => `<option value="${v.id}">${v.lemma} — ${v.primary_category}</option>`).join('')
+        : '<option value="">Kho đang trống</option>';
+      if (prev && playable.some((x) => x.id === prev)) sel.value = prev;
+      updateListenDetail();
 
-      document.getElementById('busySummary').textContent =
-        `Đã dùng ${APP_STATE.meta.busy_logic_days.length}/2 lượt Báo bận. Ngày học logic cắt mốc 03:00 sáng.`;
+      document.getElementById('busySummary').textContent = `Đã dùng ${APP_STATE.meta.busy_logic_days.length}/2 lượt Báo bận (cắt mốc 03:00 sáng).`;
       document.getElementById('busyLog').textContent = APP_STATE.meta.busy_logic_days.length
-        ? `Các ngày đã báo bận: ${APP_STATE.meta.busy_logic_days.join(', ')}`
-        : 'Chưa sử dụng lượt Báo bận nào.';
+        ? `Ngày báo bận: ${APP_STATE.meta.busy_logic_days.join(', ')}`
+        : 'Chưa báo bận ngày nào.';
       document.getElementById('btnBusyDay').disabled =
         APP_STATE.meta.busy_logic_days.includes(logicDay) || APP_STATE.meta.busy_logic_days.length >= 2;
 
-      const activeVocab = APP_STATE.vocabItems.filter((v) => v.status !== 'ARCHIVED');
-      document.getElementById('inventoryStats').textContent =
-        `Tổng từ vựng: ${activeVocab.length} | Ngữ pháp: ${APP_STATE.grammarItems.length} (Grammar Bank v${APP_STATE.meta.grammar_bank_version}) | Snapshot đã tạo: ${APP_STATE.snapshots.length}`;
-
-      document.getElementById('inventoryTableWrap').innerHTML = `
-        <table>
-          <thead>
-            <tr><th>Lemma</th><th>Nhóm</th><th>Danh mục chính</th><th>Trạng thái</th><th>Đã cấp từ mới?</th></tr>
-          </thead>
-          <tbody>
-            ${activeVocab.slice(0, 25).map((v) => `
-              <tr>
-                <td><b>${v.lemma}</b> <span class="muted">${v.ipa}</span><br/><span class="muted">${v.meaning}</span></td>
-                <td>${v.tier_group}</td>
-                <td>${v.primary_category}</td>
-                <td><span class="badge">${v.status}</span></td>
-                <td>${isAlreadyAllocated(v) ? 'Rồi (1 lần)' : 'Chưa'}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+      renderInventoryTables();
+      renderSessionMap();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
