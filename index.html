@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#2563eb" />
+  <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>DailySpeak & Master 365 — V2.4</title>
+  <title>DailySpeak & Master 365 — V2.7.1</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%232563eb'/%3E%3Ctext x='64' y='78' font-family='system-ui,sans-serif' font-size='44' font-weight='800' fill='%23fff' text-anchor='middle'%3E365%3C/text%3E%3C/svg%3E" />
+  <!-- Thư viện đọc trực tiếp PDF & DOCX trên trình duyệt (tải nhẹ khi online, fallback an toàn khi offline) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
   <style>
     :root {
       --bg: #f1f5f9;
@@ -42,6 +45,53 @@
       padding-bottom: 84px;
     }
 
+    /* AUTH GATE OVERLAY */
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .auth-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+    }
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      background: var(--surface-alt);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+    .auth-tab {
+      border: none;
+      background: transparent;
+      padding: 7px 4px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .auth-tab.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* HEADER & STATS */
     .app-header {
       background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
       color: #fff;
@@ -59,17 +109,16 @@
       margin-bottom: 12px;
     }
     .brand-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
-      letter-spacing: -0.2px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .mode-pill {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 999px;
       background: rgba(255,255,255,0.16);
       color: #bfdbfe;
@@ -84,13 +133,13 @@
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 10px;
-      padding: 7px 6px;
+      padding: 7px 4px;
       text-align: center;
     }
-    .stat-val { font-size: 15px; font-weight: 800; display: block; }
-    .stat-lbl { font-size: 10px; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.3px; }
+    .stat-val { font-size: 14px; font-weight: 800; display: block; }
+    .stat-lbl { font-size: 9px; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.3px; }
 
-    .container { max-width: 780px; margin: 0 auto; padding: 14px; }
+    .container { max-width: 800px; margin: 0 auto; padding: 14px; }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -148,6 +197,7 @@
     .btn-block { width: 100%; }
     .action-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
+    /* MAP & STEPPER */
     .month-selector {
       display: flex;
       gap: 6px;
@@ -182,7 +232,6 @@
       font-size: 12px;
       font-weight: 800;
       cursor: pointer;
-      position: relative;
       background: #f8fafc;
       color: #94a3b8;
     }
@@ -239,10 +288,10 @@
 
     .input-field, .textarea-field, .select-field {
       width: 100%;
-      padding: 11px 12px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1.5px solid var(--border);
-      font-size: 14px;
+      font-size: 13px;
       font-family: inherit;
       background: #fff;
     }
@@ -290,10 +339,11 @@
       border-radius: 12px;
       padding: 14px;
       font-size: 15px;
-      line-height: 1.75;
-      max-height: 280px;
+      line-height: 1.8;
+      max-height: 290px;
       overflow-y: auto;
       user-select: text;
+      white-space: pre-wrap;
     }
 
     .bottom-nav {
@@ -304,8 +354,8 @@
       background: #ffffff;
       border-top: 1px solid var(--border);
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+      grid-template-columns: repeat(5, 1fr);
+      padding: 6px 2px calc(6px + env(safe-area-inset-bottom));
       z-index: 50;
       box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.06);
     }
@@ -315,36 +365,36 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
-      font-size: 11px;
+      gap: 2px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
-      padding: 4px;
+      padding: 4px 2px;
     }
     .nav-item.active { color: var(--primary); }
-    .nav-icon { font-size: 18px; }
+    .nav-icon { font-size: 17px; }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.65);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 16px;
-      z-index: 100;
+      z-index: 250;
     }
     .modal-backdrop.open { display: flex; }
     .modal-panel {
       background: #fff;
       border-radius: 16px;
       width: 100%;
-      max-width: 540px;
-      max-height: 86vh;
+      max-width: 560px;
+      max-height: 88vh;
       overflow-y: auto;
       padding: 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.28);
     }
     .toast {
       position: fixed;
@@ -357,8 +407,8 @@
       border-radius: 999px;
       font-size: 13px;
       font-weight: 700;
-      z-index: 120;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+      z-index: 300;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
       display: none;
     }
     .hidden { display: none !important; }
@@ -376,7 +426,7 @@
     }
     .timer-badge {
       font-variant-numeric: tabular-nums;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       padding: 4px 12px;
       border-radius: 999px;
@@ -395,267 +445,433 @@
       padding: 10px;
       background: var(--surface-alt);
     }
+    .study-expansion-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+      text-align: left;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
 
   <div id="toast" class="toast"></div>
 
-  <header class="app-header">
-    <div class="header-top">
-      <div class="brand-title">
-        <span>🎯 DailySpeak & Master 365</span>
+  <!-- ========================================================================
+       CỔNG XÁC THỰC & MÃ HÓA HỒ SƠ (AUTH GATE — ZERO CLIENT SECRETS V2.7.1)
+       ======================================================================== -->
+  <div id="authGateOverlay" class="auth-gate">
+    <div class="auth-card">
+      <div style="text-align:center; margin-bottom:14px;">
+        <span class="badge badge-blue">AES-GCM 256-BIT • ECDSA P-256</span>
+        <h1 style="font-size:19px; font-weight:800; margin:6px 0 2px;">🎯 DailySpeak & Master 365</h1>
+        <p style="font-size:12px; color:var(--text-muted); margin:0;">Cổng Xác Thực & Cô Lập Dữ Liệu Hồ Sơ (V2.7.1)</p>
       </div>
-      <span id="capabilityBadge" class="mode-pill" onclick="UI.openCapabilityModal()">LOCAL-FIRST V2.4</span>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-box">
-        <span id="statSession" class="stat-val">1 / 365</span>
-        <span class="stat-lbl">Phiên chính</span>
-      </div>
-      <div class="stat-box">
-        <span id="statPercent" class="stat-val">0.0%</span>
-        <span class="stat-lbl">Hoàn thành</span>
-      </div>
-      <div class="stat-box">
-        <span id="statGateCountdown" class="stat-val">28</span>
-        <span class="stat-lbl">Tới cổng tháng</span>
-      </div>
-      <div class="stat-box">
-        <span id="statStreak" class="stat-val">0 🔥</span>
-        <span class="stat-lbl">Streak ngày</span>
-      </div>
-    </div>
-  </header>
 
-  <main class="container">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="AuthController.switchAuthTab('login', this)">🔑 Đăng nhập</button>
+        <button class="auth-tab" onclick="AuthController.switchAuthTab('activate', this)">🎟️ Kích hoạt Mã mời</button>
+        <button class="auth-tab" onclick="AuthController.switchAuthTab('recover', this)">🛟 Khôi phục khóa</button>
+      </div>
 
-    <!-- TAB 1: LỘ TRÌNH 365 PHIÊN -->
-    <section id="view-core">
-      <div id="activeSessionCard" class="card">
-        <div class="card-header">
-          <div>
-            <span id="sessionModeBadge" class="badge badge-blue">NEW_LEARNING</span>
-            <h2 id="activeSessionTitle" class="card-title" style="margin-top:4px;">Phiên 1 — Tuần 1 (Tháng 1)</h2>
-          </div>
-          <span id="dailyScheduleBadge" class="badge badge-amber">HÔM NAY: CHỜ HỌC</span>
-        </div>
-        <p id="activeSessionDesc" style="font-size:13px; color:var(--text-muted); margin:0 0 12px;"></p>
-
-        <div class="action-row" style="margin-bottom:10px;">
-          <button id="btnStartSession" class="btn btn-primary" style="flex:2;" onclick="App.startCurrentSession()">▶ Vào Học Phiên Này</button>
-          <button id="btnMicroSession" class="btn btn-outline" style="flex:1;" onclick="App.startMicroSession()">⚡ Học nhanh 5p</button>
-        </div>
-        <div class="action-row">
-          <button id="btnBusyDefer" class="btn btn-outline btn-sm" onclick="App.triggerBusyDeferral()">🛡️ Báo bận hôm nay (<span id="busyQuotaText">2/2</span>)</button>
-          <button id="btnStartPlaylist" class="btn btn-outline btn-sm" onclick="App.openPlaylistModal()">🎧 Nghe thụ động tuần</button>
-          <button id="btnReminderStatus" class="btn btn-outline btn-sm" onclick="UI.openReminderModal()">⏰ Nhắc <span id="reminderTimeLabel">21:00</span></button>
+      <!-- TAB 1: ĐĂNG NHẬP -->
+      <div id="auth-pane-login">
+        <label style="font-size:12px; font-weight:700;">ID Thành viên / Quản trị viên:</label>
+        <input id="loginUserId" class="input-field" style="margin:4px 0 10px;" placeholder="Nhập ID tài khoản của bạn..." autocomplete="username" />
+        <label style="font-size:12px; font-weight:700;">Mật khẩu cá nhân (Mở khóa AES-GCM):</label>
+        <input id="loginPassword" type="password" class="input-field" style="margin:4px 0 12px;" placeholder="Nhập mật khẩu mở khóa hồ sơ..." autocomplete="current-password" />
+        <button class="btn btn-primary btn-block" onclick="AuthController.login()">🔓 Mở Khóa & Vào Học</button>
+        <div id="firstRunSetupBanner" class="hidden" style="margin-top:12px; background:var(--warning-soft); border:1px solid #fcd34d; padding:10px; border-radius:10px; font-size:12px;">
+          <strong>👋 Thiết bị mới chưa có Quản trị viên:</strong>
+          <p style="margin:4px 0 8px;">Khởi tạo tài khoản <b>Admin Chủ Sở Hữu</b> (tự sinh cặp khóa ký số ECDSA P-256 & Khóa khôi phục 24 ký tự):</p>
+          <button class="btn btn-warning btn-sm btn-block" onclick="AuthController.switchAuthTab('setupAdmin')">⚙️ Khởi Tạo Admin Chủ Sở Hữu</button>
         </div>
       </div>
 
-      <!-- Workspace -->
-      <div id="workspaceCard" class="card hidden">
-        <div class="card-header">
-          <div>
-            <span id="wsBadge" class="badge badge-purple">CHẶNG 0 — NẠP THẺ</span>
-            <h3 id="wsTitle" class="card-title" style="margin-top:3px;">Đang học...</h3>
-          </div>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span id="wsTimer" class="timer-badge hidden">120s</span>
-            <button class="btn btn-outline btn-sm" onclick="App.exitWorkspace()">✕ Tạm dừng</button>
-          </div>
+      <!-- TAB 1B: KHỞI TẠO ADMIN CHỦ SỞ HỮU LẦN ĐẦU -->
+      <div id="auth-pane-setupAdmin" class="hidden">
+        <div style="background:var(--primary-soft); padding:10px; border-radius:10px; font-size:12px; margin-bottom:10px;">
+          Hệ thống sẽ tạo cặp khóa bất đối xứng <b>ECDSA P-256</b> và mã hóa hồ sơ bằng <b>PBKDF2 + AES-GCM</b>. Không lưu mật khẩu dạng chữ rõ.
         </div>
-        <div id="wsStepper" class="stepper"></div>
-        <div id="wsBody"></div>
+        <input id="setupAdminId" class="input-field" style="margin-bottom:8px;" placeholder="Tên đăng nhập Admin (VD: admin_chung)" />
+        <input id="setupAdminPass" type="password" class="input-field" style="margin-bottom:8px;" placeholder="Mật khẩu Admin (tối thiểu 6 ký tự)" />
+        <button class="btn btn-primary btn-block" onclick="AuthController.setupOwnerAdmin()">🛡️ Tạo Tài Khoản Admin & Sinh Khóa</button>
       </div>
 
-      <!-- 365 Sessions Map -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">🗺️ Bản Đồ Lưới 365 Phiên</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Bấm phiên xanh để Ôn tập</span>
-        </div>
-        <div id="monthSelector" class="month-selector"></div>
-        <div id="sessionsGrid" class="sessions-grid"></div>
-      </div>
-    </section>
-
-    <!-- TAB 2: KHU MỞ RỘNG ĐỘC LẬP -->
-    <section id="view-extension" class="hidden">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <span class="badge badge-purple">ĐỘC LẬP 100% VỚI 365 PHIÊN</span>
-            <h2 class="card-title" style="margin-top:4px;">Khu Luyện Tập & Kho Học Liệu Mở Rộng</h2>
-          </div>
-        </div>
-        <div class="sub-tabs">
-          <button class="sub-tab active" data-ext="vocab" onclick="UI.switchExtTab('vocab', this)">📚 Từ vựng & Chuyên ngành</button>
-          <button class="sub-tab" data-ext="grammar" onclick="UI.switchExtTab('grammar', this)">✍️ Ngân hàng Ngữ pháp</button>
-          <button class="sub-tab" data-ext="books" onclick="UI.switchExtTab('books', this)">📖 Kho Sách (PDF/DOCX)</button>
-          <button class="sub-tab" data-ext="cefr" onclick="UI.switchExtTab('cefr', this)">🏆 Cấp độ CEFR & Gate</button>
-        </div>
-
-        <div id="ext-vocab">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
-            <input id="customDomainInput" class="input-field" placeholder="Lĩnh vực (VD: Logistics, Café...)" value="Logistics & Vận tải" />
-            <select id="customLevelSelect" class="select-field">
-              <option value="A1">CEFR A1 (Cơ bản)</option>
-              <option value="A2">CEFR A2 (Sơ trung cấp)</option>
-              <option value="B1" selected>CEFR B1 (Trung cấp)</option>
-              <option value="B2">CEFR B2 (Trung cao cấp)</option>
-              <option value="C1">CEFR C1 (Cao cấp)</option>
-              <option value="C2">CEFR C2 (Thành thạo)</option>
-            </select>
-          </div>
-          <textarea id="customVocabBulk" class="textarea-field" rows="3" placeholder="Nhập mỗi dòng: từ_tiếng_anh | từ_loại | nghĩa_tiếng_việt | ví_dụ"></textarea>
-          <div class="action-row" style="margin-top:8px;">
-            <button class="btn btn-primary btn-sm" onclick="App.previewCustomVocab()">🔍 Xem lại & Lọc trùng trước khi lưu</button>
-            <button class="btn btn-purple btn-sm" onclick="App.startCustomVocab5Stages()">▶ Luyện Thẻ & 5 Chặng Kho Tự Nhập</button>
-          </div>
-          <div id="customVocabPreview" style="margin-top:10px;"></div>
-          <div id="customVocabList" style="margin-top:12px;"></div>
-        </div>
-
-        <div id="ext-grammar" class="hidden">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0;">Định dạng: <code>Câu hỏi | Đáp án A;Đáp án B;Đáp án C | Chỉ số đúng (0-2) | Giải thích</code></p>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
-            <input id="customGrammarTopic" class="input-field" placeholder="Chủ điểm (VD: Đảo ngữ)" value="Đảo ngữ & Điều kiện" />
-            <select id="customGrammarTier" class="select-field">
-              <option value="1">Tầng 1 — Cơ bản</option>
-              <option value="2">Tầng 2 — Nâng cao</option>
-              <option value="3">Tầng 3 — Dạng bẫy</option>
-              <option value="4" selected>Tầng 4 — Bẫy IELTS</option>
-            </select>
-          </div>
-          <textarea id="customGrammarBulk" class="textarea-field" rows="3" placeholder="Hardly ___ arrived when the rain started. | had we;we had;have we | 0 | Cấu trúc Hardly + had + S + V3/ed + when..."></textarea>
-          <div class="action-row" style="margin-top:8px;">
-            <button class="btn btn-primary btn-sm" onclick="App.importCustomGrammar()">💾 Lưu vào Ngân hàng Ngữ pháp</button>
-            <button class="btn btn-success btn-sm" onclick="App.startCustomGrammarDrill()">▶ Luyện Ngữ pháp Mở rộng</button>
-          </div>
-          <div id="customGrammarStats" style="margin-top:10px; font-size:13px;"></div>
-        </div>
-
-        <div id="ext-books" class="hidden">
-          <div class="action-row" style="margin-bottom:8px;">
-            <input type="file" id="bookFileInput" accept=".txt,.md,.json,.docx,.pdf" class="input-field" style="padding:7px;" onchange="App.handleBookUpload(event)" />
-          </div>
-          <p style="font-size:12px; color:var(--text-muted); margin:0 0 8px;">Bôi đen từ/câu trong khung đọc bên dưới rồi bấm <b>"Đẩy đoạn bôi đen vào 5 Chặng"</b>.</p>
-          <select id="bookSelector" class="select-field" style="margin-bottom:8px;" onchange="App.renderSelectedBook()"></select>
-          <div id="bookReaderContainer" class="book-reader-body">Đang tải kho sách...</div>
-          <div class="action-row" style="margin-top:8px;">
-            <button class="btn btn-primary btn-sm" onclick="App.extractHighlightedText()">➕ Đẩy đoạn bôi đen vào 5 Chặng</button>
-            <button class="btn btn-outline btn-sm" onclick="App.askAiTutorOnSelection()">🤖 AI Giải thích đoạn bôi đen</button>
-          </div>
-          <div style="margin-top:10px;">
-            <input id="pasteBookTitle" class="input-field" style="margin-bottom:6px;" placeholder="Tiêu đề tài liệu / chương sách..." />
-            <textarea id="pasteBookContent" class="textarea-field" rows="2" placeholder="Hoặc dán nhanh đoạn văn bản tiếng Anh tham khảo tại đây..."></textarea>
-            <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="App.savePastedBook()">📥 Lưu vào Kho Sách IndexedDB</button>
-          </div>
-        </div>
-
-        <div id="ext-cefr" class="hidden">
-          <div id="cefrGatePanel"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: PHÂN TÍCH ĐIỂM YẾU & AI TUTOR -->
-    <section id="view-analytics" class="hidden">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">📊 Bản Đồ Điểm Yếu Sâu (Weakness Heatmap)</h2>
-          <span class="badge badge-red" id="totalErrorsBadge">0 lỗi</span>
-        </div>
-        <div id="heatmapGrid" class="heatmap-grid"></div>
-        <div class="action-row" style="margin-top:12px;">
-          <button class="btn btn-danger btn-sm" onclick="App.startWeaknessDrill()">🔥 Luyện bù nhóm yếu nhất</button>
-          <button class="btn btn-outline btn-sm" onclick="App.exportReport('xlsx')">📥 Xuất Excel (.csv)</button>
-          <button class="btn btn-outline btn-sm" onclick="App.exportReport('docx')">📄 Xuất Word (.doc)</button>
-          <button class="btn btn-outline btn-sm" onclick="App.exportReport('json')">💾 Sao lưu JSON</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <span class="badge badge-purple">ON-DEMAND AI TUTOR</span>
-            <h3 class="card-title" style="margin-top:4px;">🤖 Trợ Lý Hỏi Đáp Ngữ Pháp & Câu Bản Địa</h3>
-          </div>
-        </div>
-        <textarea id="aiTutorPrompt" class="textarea-field" rows="2" placeholder="Nhập câu tiếng Anh hoặc thắc mắc ngữ pháp cần giải thích cấu trúc..."></textarea>
-        <div class="action-row" style="margin-top:8px;">
-          <button class="btn btn-purple btn-sm" onclick="App.runAiTutorQuery()">✨ Phân tích & Giải thích</button>
-        </div>
-        <div id="aiTutorResponse" style="margin-top:10px; font-size:13px; background:var(--surface-alt); padding:10px; border-radius:10px; border:1px solid var(--border);">
-          Sẵn sàng phân tích cấu trúc câu, sắc thái câu bản địa và bẫy ngữ pháp.
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 4: HỆ THỐNG -->
-    <section id="view-system" class="hidden">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">🔄 Đồng Bộ Đa Thiết Bị & Lưu Trữ IndexedDB</h2>
-          <span id="storageQuotaBadge" class="badge badge-blue">Quota: Đang đo...</span>
-        </div>
+      <!-- TAB 2: KÍCH HOẠT TÀI KHOẢN THÀNH VIÊN BẰNG GÓI MÃ MỜI KÝ SỐ -->
+      <div id="auth-pane-activate" class="hidden">
         <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
-          Chế độ hiện tại: <strong id="syncModeText">LOCAL_FIRST (Offline-Safe Event Log)</strong>.
+          Mã mời chỉ dùng để <b>kích hoạt quyền thành viên</b>; bạn tự đặt mật khẩu cá nhân để mã hóa dữ liệu riêng trên máy này.
         </p>
-        <div class="action-row" style="margin-bottom:10px;">
-          <button class="btn btn-primary btn-sm" onclick="App.exportSyncPackage()">📤 Tạo Gói Đồng Bộ / Mã Chuyển Máy</button>
-          <button class="btn btn-outline btn-sm" onclick="App.importSyncPackage()">📥 Nhập Gói Đồng Bộ Từ Máy Khác</button>
-          <button class="btn btn-outline btn-sm" onclick="App.clearReloadableCache()">🧹 Dọn Cache Có Thể Tải Lại</button>
-        </div>
-        <div id="conflictAlertBox" class="hidden" style="background:var(--warning-soft); border:1px solid #fcd34d; padding:10px; border-radius:10px; font-size:12px;"></div>
+        <textarea id="activateTokenInput" class="textarea-field" rows="3" style="margin-bottom:8px;" placeholder="Dán Gói Mã Mời Ký Số (Signed Invitation Token) do Admin cấp..."></textarea>
+        <input id="activateUserId" class="input-field" style="margin-bottom:8px;" placeholder="Tạo ID Thành viên cá nhân (VD: hv_lan01)" />
+        <input id="activatePassword" type="password" class="input-field" style="margin-bottom:10px;" placeholder="Tạo Mật khẩu cá nhân mở khóa dữ liệu" />
+        <button class="btn btn-success btn-block" onclick="AuthController.activateMemberWithInvite()">✅ Xác Minh Chữ Ký & Tạo Hồ Sơ</button>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">🔐 Cấu Hình Backend & Quản Trị Nhóm</h3>
-          <span class="badge badge-gray">ZERO CLIENT SECRETS</span>
-        </div>
-        <input id="backendEndpointInput" class="input-field" style="margin-bottom:8px;" placeholder="https://your-backend-proxy.example.com/api" />
-        <div class="action-row">
-          <button class="btn btn-outline btn-sm" onclick="App.saveBackendEndpoint()">🔗 Lưu Endpoint & Kiểm Tra Kết Nối</button>
-        </div>
+      <!-- TAB 3: KHÔI PHỤC MẬT KHẨU BẰNG RECOVERY KEY -->
+      <div id="auth-pane-recover" class="hidden">
+        <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
+          Nếu quên mật khẩu cá nhân, nhập <b>Khóa Khôi Phục 24 ký tự</b> đã lưu lúc tạo tài khoản để đặt lại mật khẩu mà không mất tiến độ.
+        </p>
+        <input id="recoverUserId" class="input-field" style="margin-bottom:8px;" placeholder="ID Thành viên cần khôi phục" />
+        <input id="recoverKeyInput" class="input-field" style="margin-bottom:8px;" placeholder="Nhập Khóa Khôi Phục 24 ký tự..." />
+        <input id="recoverNewPass" type="password" class="input-field" style="margin-bottom:10px;" placeholder="Đặt mật khẩu cá nhân mới" />
+        <button class="btn btn-purple btn-block" onclick="AuthController.recoverWithKey()">🛟 Đặt Lại Mật Khẩu Mở Khóa</button>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <span class="badge badge-green">FROZEN CORE V2.4</span>
-            <h3 class="card-title" style="margin-top:4px;">🧪 Bộ Kiểm Thử Nghiệm Thu Tự Động (Acceptance Gates)</h3>
+      <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted);">
+        ℹ️ <b>Lưu ý bảo mật:</b> Ở chế độ <code>LOCAL_FIRST</code>, cổng này khóa giao diện & mã hóa dữ liệu cục bộ; thu hồi mã mời tức thì yêu cầu kết nối Backend.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       GIAO DIỆN CHÍNH (CHỈ HIỂN THỊ SAU KHI MỞ KHÓA HỒ SƠ)
+       ======================================================================== -->
+  <div id="mainAppShell" class="hidden">
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand-title">
+          <span>🎯 Master 365</span>
+          <span id="userRoleBadge" class="mode-pill" style="background:rgba(16,185,129,0.25); color:#a7f3d0;">MEMBER</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span id="capabilityBadge" class="mode-pill" onclick="UI.openCapabilityModal()">LOCAL-FIRST V2.7.1</span>
+          <span class="mode-pill" style="background:rgba(239,68,68,0.28); color:#fecaca;" onclick="AuthController.logout()">🔒 Khóa</span>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span id="statSession" class="stat-val">1 / 365</span>
+          <span class="stat-lbl">Phiên chính</span>
+        </div>
+        <div class="stat-box">
+          <span id="statPercent" class="stat-val">0.0%</span>
+          <span class="stat-lbl">Hoàn thành</span>
+        </div>
+        <div class="stat-box">
+          <span id="statPaceForecast" class="stat-val">--</span>
+          <span class="stat-lbl">Dự báo xong</span>
+        </div>
+        <div class="stat-box">
+          <span id="statStreak" class="stat-val">0 🔥</span>
+          <span class="stat-lbl">Streak ngày</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <!-- TAB 1: LỘ TRÌNH 365 PHIÊN, SRS & DAILY LISTENING BOARD -->
+      <section id="view-core">
+        <div id="activeSessionCard" class="card">
+          <div class="card-header">
+            <div>
+              <span id="sessionModeBadge" class="badge badge-blue">NEW_LEARNING</span>
+              <h2 id="activeSessionTitle" class="card-title" style="margin-top:4px;">Phiên 1 — Tuần 1 (Tháng 1)</h2>
+            </div>
+            <span id="dailyScheduleBadge" class="badge badge-amber">HÔM NAY: CHỜ HỌC</span>
           </div>
-          <button class="btn btn-success btn-sm" onclick="AcceptanceRunner.runAll()">▶ Chạy Kiểm Thử</button>
-        </div>
-        <div id="acceptanceResults" style="font-size:12px; color:var(--text-muted);">
-          Bấm "Chạy Kiểm Thử" để xác minh toàn bộ 10 điều kiện nghiệm thu của 6 Engine.
-        </div>
-      </div>
-    </section>
+          <p id="activeSessionDesc" style="font-size:13px; color:var(--text-muted); margin:0 0 12px;"></p>
 
-  </main>
+          <div class="action-row" style="margin-bottom:8px;">
+            <button id="btnStartSession" class="btn btn-primary" style="flex:2;" onclick="App.startCurrentSession()">▶ Vào Học Phiên Này</button>
+            <button id="btnSrsQueue" class="btn btn-success" style="flex:1;" onclick="App.startSrsReviewSession()">🔁 Ôn SRS (<span id="srsDueCount">0</span>/30)</button>
+          </div>
+          <div class="action-row">
+            <button id="btnMicroSession" class="btn btn-outline btn-sm" onclick="App.startMicroSession()">⚡ Học nhanh 5p</button>
+            <button id="btnBusyDefer" class="btn btn-outline btn-sm" onclick="App.triggerBusyDeferral()">🛡️ Báo bận (<span id="busyQuotaText">2/2</span>)</button>
+            <button id="btnReminderStatus" class="btn btn-outline btn-sm" onclick="UI.openReminderModal()">⏰ Nhắc <span id="reminderTimeLabel">21:00</span></button>
+          </div>
+        </div>
 
-  <nav class="bottom-nav">
-    <button class="nav-item active" onclick="UI.switchMainTab('core', this)">
-      <span class="nav-icon">🎯</span>
-      <span>365 Phiên</span>
-    </button>
-    <button class="nav-item" onclick="UI.switchMainTab('extension', this)">
-      <span class="nav-icon">📚</span>
-      <span>Mở Rộng</span>
-    </button>
-    <button class="nav-item" onclick="UI.switchMainTab('analytics', this)">
-      <span class="nav-icon">📊</span>
-      <span>Điểm Yếu & AI</span>
-    </button>
-    <button class="nav-item" onclick="UI.switchMainTab('system', this)">
-      <span class="nav-icon">⚙️</span>
-      <span>Hệ Thống</span>
-    </button>
-  </nav>
+        <!-- BẢNG NGHE CHỦ ĐỘNG & THỤ ĐỘNG MỖI NGÀY (DAILY LISTENING BOARD) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-purple">DAILY LISTENING BOARD</span>
+              <h3 class="card-title" style="margin-top:3px;">🎧 Bảng Nghe Mỗi Ngày (Chống Trùng Lặp)</h3>
+            </div>
+            <select id="listeningDurationSelect" class="select-field" style="width:auto; padding:5px 8px; font-size:12px;">
+              <option value="15">⏱️ 15 phút</option>
+              <option value="30" selected>⏱️ 30 phút</option>
+              <option value="45">⏱️ 45 phút</option>
+            </select>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px;">
+            Tự động lọc trùng theo <code>canonical_item_id</code> & ưu tiên: <b>Lỗi sai gần đây → Thẻ SRS đến hạn → Từ/câu phiên hiện tại</b>.
+          </p>
+          <div class="action-row">
+            <button class="btn btn-primary btn-sm" onclick="App.openDailyListeningBoard('PASSIVE')">▶ Nghe Thẩm Thấu (1.0x→0.65x)</button>
+            <button class="btn btn-outline btn-sm" onclick="App.openDailyListeningBoard('SHADOWING')">🗣️ Nhại Giọng (Nghỉ 3s)</button>
+            <button class="btn btn-purple btn-sm" onclick="App.startMiniDictation()">✍️ Mini Dictation (5 câu/2p)</button>
+          </div>
+        </div>
+
+        <!-- WORKSPACE HỌC TẬP -->
+        <div id="workspaceCard" class="card hidden">
+          <div class="card-header">
+            <div>
+              <span id="wsBadge" class="badge badge-purple">CHẶNG 0 — NẠP KIẾN THỨC</span>
+              <h3 id="wsTitle" class="card-title" style="margin-top:3px;">Đang học...</h3>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span id="wsTimer" class="timer-badge hidden">120s</span>
+              <button class="btn btn-outline btn-sm" onclick="App.exitWorkspace()">✕ Tạm dừng</button>
+            </div>
+          </div>
+          <div id="wsStepper" class="stepper"></div>
+          <div id="wsBody"></div>
+        </div>
+
+        <!-- BẢN ĐỒ LƯỚI 365 PHIÊN -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🗺️ Bản Đồ Lưới 365 Phiên</h3>
+            <span style="font-size:11px; color:var(--text-muted);">Cổng tháng: 29, 58... 348</span>
+          </div>
+          <div id="monthSelector" class="month-selector"></div>
+          <div id="sessionsGrid" class="sessions-grid"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2: KHU MỞ RỘNG, KHO SÁCH PDF/DOCX & MẪU CÂU CÔNG VIỆC -->
+      <section id="view-extension" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-purple">ĐỘC LẬP 100% VỚI 365 PHIÊN</span>
+              <h2 class="card-title" style="margin-top:4px;">Kho Học Liệu Mở Rộng & Sách Tham Khảo</h2>
+            </div>
+          </div>
+          <div class="sub-tabs">
+            <button class="sub-tab active" onclick="UI.switchExtTab('vocab', this)">📚 Từ vựng & Cụm từ</button>
+            <button class="sub-tab" onclick="UI.switchExtTab('workplace', this)">💼 Mẫu câu Công việc</button>
+            <button class="sub-tab" onclick="UI.switchExtTab('grammar', this)">✍️ Ngân hàng Ngữ pháp</button>
+            <button class="sub-tab" onclick="UI.switchExtTab('books', this)">📖 Kho Sách (PDF/DOCX)</button>
+            <button class="sub-tab" onclick="UI.switchExtTab('cefr', this)">🏆 4 Kỹ năng & Gate</button>
+          </div>
+
+          <div id="ext-vocab">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+              <input id="customDomainInput" class="input-field" placeholder="Lĩnh vực (VD: Logistics, Café...)" value="Logistics & Vận tải" />
+              <select id="customLevelSelect" class="select-field">
+                <option value="A1">CEFR A1</option>
+                <option value="A2">CEFR A2</option>
+                <option value="B1" selected>CEFR B1</option>
+                <option value="B2">CEFR B2</option>
+                <option value="C1">CEFR C1</option>
+                <option value="C2">CEFR C2</option>
+              </select>
+            </div>
+            <textarea id="customVocabBulk" class="textarea-field" rows="3" placeholder="Mỗi dòng: từ_chuẩn | từ_loại | nghĩa_việt | ví_dụ | cụm_từ_mở_rộng"></textarea>
+            <div class="action-row" style="margin-top:8px;">
+              <button class="btn btn-primary btn-sm" onclick="App.previewCustomVocab()">🔍 Xem lại & Lọc trùng</button>
+              <button class="btn btn-purple btn-sm" onclick="App.startCustomVocab5Stages()">▶ Luyện Chặng 0 + 5 Chặng</button>
+            </div>
+            <div id="customVocabPreview" style="margin-top:10px;"></div>
+            <div id="customVocabList" style="margin-top:12px;"></div>
+          </div>
+
+          <div id="ext-workplace" class="hidden">
+            <p style="font-size:12px; color:var(--text-muted); margin-top:0;">Kho mẫu câu phản xạ giao tiếp công việc (<code>PREVIEW_ONLY</code> & thực hành trong Chặng 5B):</p>
+            <div id="workplacePatternsList"></div>
+          </div>
+
+          <div id="ext-grammar" class="hidden">
+            <p style="font-size:12px; color:var(--text-muted); margin-top:0;">Định dạng: <code>Câu hỏi | Đáp án A;Đáp án B;Đáp án C | Chỉ số đúng (0-2) | Giải thích</code></p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+              <input id="customGrammarTopic" class="input-field" placeholder="Chủ điểm (VD: Đảo ngữ)" value="Bẫy Ngữ Pháp Tổng Hợp" />
+              <select id="customGrammarTier" class="select-field">
+                <option value="1">Tầng 1 — Cơ bản</option>
+                <option value="2">Tầng 2 — Nâng cao</option>
+                <option value="3">Tầng 3 — Dạng bẫy</option>
+                <option value="4" selected>Tầng 4 — Bẫy IELTS</option>
+              </select>
+            </div>
+            <textarea id="customGrammarBulk" class="textarea-field" rows="3" placeholder="Hardly ___ arrived when the rain started. | had we;we had;have we | 0 | Cấu trúc Hardly + had + S + V3/ed + when..."></textarea>
+            <div class="action-row" style="margin-top:8px;">
+              <button class="btn btn-primary btn-sm" onclick="App.importCustomGrammar()">💾 Lưu vào Ngân hàng Ngữ pháp</button>
+              <button class="btn btn-success btn-sm" onclick="App.startCustomGrammarDrill()">▶ Luyện Ngữ pháp Mở rộng</button>
+            </div>
+            <div id="customGrammarStats" style="margin-top:10px; font-size:13px;"></div>
+          </div>
+
+          <div id="ext-books" class="hidden">
+            <div class="action-row" style="margin-bottom:8px; align-items:center;">
+              <input type="file" id="bookFileInput" accept=".txt,.md,.json,.docx,.pdf" class="input-field" style="padding:7px; flex:2;" onchange="App.handleBookUpload(event)" />
+              <label style="font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px;">
+                <input type="checkbox" id="syncBookBinaryOptIn" onchange="App.toggleBookBinarySync(this.checked)" /> Đồng bộ file gốc (Opt-in)
+              </label>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin:0 0 8px;">
+              Bôi đen từ/câu bất kỳ bên dưới để đẩy vào luyện tập, hoặc chạm đúp vào từ để tra nhanh.
+            </p>
+            <select id="bookSelector" class="select-field" style="margin-bottom:8px;" onchange="App.renderSelectedBook()"></select>
+            <div id="bookReaderContainer" class="book-reader-body" ondblclick="App.quickLookupWord()">Đang tải kho sách...</div>
+            <div class="action-row" style="margin-top:8px;">
+              <button class="btn btn-primary btn-sm" onclick="App.extractHighlightedText()">➕ Đẩy đoạn bôi đen vào Chặng 0 + 5 Chặng</button>
+              <button class="btn btn-outline btn-sm" onclick="App.askAiTutorOnSelection()">🤖 AI Giải thích</button>
+            </div>
+          </div>
+
+          <div id="ext-cefr" class="hidden">
+            <div id="cefrGatePanel"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: PHÂN TÍCH ĐIỂM YẾU & AI TUTOR -->
+      <section id="view-analytics" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📊 Bản Đồ Điểm Yếu Sâu (Weakness Heatmap)</h2>
+            <span class="badge badge-red" id="totalErrorsBadge">0 lỗi</span>
+          </div>
+          <div id="heatmapGrid" class="heatmap-grid"></div>
+          <div class="action-row" style="margin-top:12px;">
+            <button class="btn btn-danger btn-sm" onclick="App.startWeaknessDrill()">🔥 Luyện bù nhóm yếu nhất</button>
+            <button class="btn btn-outline btn-sm" onclick="App.exportReport('xlsx')">📥 Xuất Excel (.csv)</button>
+            <button class="btn btn-outline btn-sm" onclick="App.exportReport('docx')">📄 Xuất Word (.doc)</button>
+            <button class="btn btn-outline btn-sm" onclick="App.exportReport('json')">💾 Sao lưu JSON</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-purple">ON-DEMAND AI TUTOR</span>
+              <h3 class="card-title" style="margin-top:4px;">🤖 Trợ Lý Hỏi Đáp Ngữ Pháp & Mẫu Câu</h3>
+            </div>
+          </div>
+          <textarea id="aiTutorPrompt" class="textarea-field" rows="2" placeholder="Nhập câu tiếng Anh hoặc thắc mắc ngữ pháp cần phân tích..."></textarea>
+          <div class="action-row" style="margin-top:8px;">
+            <button class="btn btn-purple btn-sm" onclick="App.runAiTutorQuery()">✨ Phân tích & Giải thích</button>
+          </div>
+          <div id="aiTutorResponse" style="margin-top:10px; font-size:13px; background:var(--surface-alt); padding:10px; border-radius:10px; border:1px solid var(--border);">
+            Sẵn sàng phân tích cấu trúc câu, sắc thái câu bản địa và bẫy ngữ pháp.
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: BẢNG XẾP HẠNG (LEADERBOARD) -->
+      <section id="view-leaderboard" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-amber">LEADERBOARD</span>
+              <h2 class="card-title" style="margin-top:4px;">🏆 Bảng Xếp Hạng Thành Viên</h2>
+            </div>
+            <span id="lbModeTag" class="badge badge-blue">Hồ sơ trên máy</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
+            Hiển thị thứ hạng các hồ sơ đã kích hoạt trên thiết bị này (và tự động đồng bộ thứ hạng toàn nhóm khi kết nối Backend).
+          </p>
+          <div id="leaderboardList"></div>
+        </div>
+      </section>
+
+      <!-- TAB 5: HỆ THỐNG & QUẢN TRỊ NHÓM (ADMIN PANEL) -->
+      <section id="view-system" class="hidden">
+        <!-- KHỐI DÀNH RIÊNG CHO ADMIN -->
+        <div id="adminOnlyCard" class="card hidden" style="border-color:#93c5fd; background:#f8faff;">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-blue">ADMIN PANEL • ECDSA P-256</span>
+              <h2 class="card-title" style="margin-top:4px;">🛡️ Quản Trị Thành Viên & Cấp Mã Mời Ký Số</h2>
+            </div>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
+            Tạo <b>Gói Mã Mời Ký Số</b> có thời hạn hiệu lực để thành viên kích hoạt tài khoản trên thiết bị khác hoàn toàn ngoại tuyến.
+          </p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+            <input id="inviteNoteInput" class="input-field" placeholder="Tên/Ghi chú thành viên (VD: NV Kho A)" />
+            <select id="inviteDaysSelect" class="select-field">
+              <option value="7">Hiệu lực: 7 ngày</option>
+              <option value="30" selected>Hiệu lực: 30 ngày</option>
+              <option value="365">Hiệu lực: 365 ngày</option>
+            </select>
+          </div>
+          <div class="action-row" style="margin-bottom:8px;">
+            <button class="btn btn-primary btn-sm" onclick="AuthController.generateSignedInvite()">🎟️ Sinh Gói Mã Mời Ký Số</button>
+            <button class="btn btn-outline btn-sm" onclick="AuthController.exportPublicKeyBundle()">🔑 Xuất Khóa Công Khai (Public Key)</button>
+          </div>
+          <div id="generatedInviteBox"></div>
+        </div>
+
+        <!-- ĐỒNG BỘ, MÃ QR & BẢO VỆ DỮ LIỆU -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🔄 Đồng Bộ Sự Kiện, Mã QR & Bảo Vệ Dữ Liệu</h2>
+            <span id="storageQuotaBadge" class="badge badge-blue">Quota: Đang đo...</span>
+          </div>
+          <div style="background:var(--warning-soft); border:1px solid #fcd34d; padding:9px 11px; border-radius:10px; font-size:12px; margin-bottom:10px;">
+            ⚠️ <b>Bảo vệ dữ liệu Local-First:</b> Dữ liệu học được mã hóa riêng theo hồ sơ trong IndexedDB. Hãy sao lưu định kỳ trước khi xóa lịch sử/cache trình duyệt.
+          </div>
+          <div class="action-row" style="margin-bottom:10px;">
+            <button class="btn btn-primary btn-sm" onclick="App.exportSyncPackage()">📤 Xuất Gói Đồng Bộ / Mã QR</button>
+            <button class="btn btn-outline btn-sm" onclick="App.importSyncPackage()">📥 Nhập Gói Đồng Bộ</button>
+            <button class="btn btn-outline btn-sm" onclick="App.clearReloadableCache()">🧹 Dọn Cache Tạm</button>
+          </div>
+          <div id="conflictAlertBox" class="hidden" style="background:var(--danger-soft); border:1px solid #fecaca; padding:10px; border-radius:10px; font-size:12px;"></div>
+        </div>
+
+        <!-- CẤU HÌNH BACKEND -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔗 Cấu Hình Backend & AI Proxy</h3>
+            <span class="badge badge-gray">ZERO CLIENT SECRETS</span>
+          </div>
+          <input id="backendEndpointInput" class="input-field" style="margin-bottom:8px;" placeholder="https://your-backend-proxy.example.com/api" />
+          <div class="action-row">
+            <button class="btn btn-outline btn-sm" onclick="App.saveBackendEndpoint()">💾 Lưu Endpoint Backend</button>
+          </div>
+        </div>
+
+        <!-- KIỂM THỬ NGHIỆM THU -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-green">FROZEN CORE V2.7.1</span>
+              <h3 class="card-title" style="margin-top:4px;">🧪 Bộ Kiểm Thử Nghiệm Thu Tự Động (12 Gates)</h3>
+            </div>
+            <button class="btn btn-success btn-sm" onclick="AcceptanceRunner.runAll()">▶ Chạy Kiểm Thử</button>
+          </div>
+          <div id="acceptanceResults" style="font-size:12px; color:var(--text-muted);">
+            Bấm "Chạy Kiểm Thử" để xác minh toàn bộ 12 điều kiện nghiệm thu của V2.7.1.
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="UI.switchMainTab('core', this)">
+        <span class="nav-icon">🎯</span>
+        <span>365 Phiên</span>
+      </button>
+      <button class="nav-item" onclick="UI.switchMainTab('extension', this)">
+        <span class="nav-icon">📚</span>
+        <span>Mở Rộng</span>
+      </button>
+      <button class="nav-item" onclick="UI.switchMainTab('analytics', this)">
+        <span class="nav-icon">📊</span>
+        <span>Điểm Yếu</span>
+      </button>
+      <button class="nav-item" onclick="UI.switchMainTab('leaderboard', this)">
+        <span class="nav-icon">🏆</span>
+        <span>Xếp Hạng</span>
+      </button>
+      <button class="nav-item" onclick="UI.switchMainTab('system', this)">
+        <span class="nav-icon">⚙️</span>
+        <span>Hệ Thống</span>
+      </button>
+    </nav>
+  </div>
 
   <div id="universalModal" class="modal-backdrop" onclick="if(event.target===this) UI.closeModal()">
     <div class="modal-panel">
@@ -668,20 +884,90 @@
   </div>
 
 <script>
+/* ============================================================================
+   LỚP 0: MÃ HÓA WEB CRYPTO (AES-GCM 256-BIT, PBKDF2, ECDSA P-256)
+   ============================================================================ */
+const CryptoVault = {
+  bufToBase64(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  },
+  base64ToBuf(b64) {
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr.buffer;
+  },
+  generateRandomCode(len = 24) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const rnd = crypto.getRandomValues(new Uint8Array(len));
+    return Array.from(rnd, b => chars[b % chars.length]).join('').match(/.{1,6}/g).join('-');
+  },
+  async deriveAesKey(secretText, saltB64) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(secretText), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: this.base64ToBuf(saltB64), iterations: 100000, hash: 'SHA-256' },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt', 'decrypt']
+    );
+  },
+  async encryptJson(obj, aesKey) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(JSON.stringify(obj));
+    const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, encoded);
+    return { iv: this.bufToBase64(iv), data: this.bufToBase64(cipher) };
+  },
+  async decryptJson(payload, aesKey) {
+    const dec = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: this.base64ToBuf(payload.iv) },
+      aesKey,
+      this.base64ToBuf(payload.data)
+    );
+    return JSON.parse(new TextDecoder().decode(dec));
+  },
+  async generateSigningKeyPair() {
+    const kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+    const pubJwk = await crypto.subtle.exportKey('jwk', kp.publicKey);
+    const privJwk = await crypto.subtle.exportKey('jwk', kp.privateKey);
+    return { pubJwk, privJwk };
+  },
+  async signPayload(payloadObj, privJwk) {
+    const privKey = await crypto.subtle.importKey('jwk', privJwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+    const data = new TextEncoder().encode(JSON.stringify(payloadObj));
+    const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privKey, data);
+    return this.bufToBase64(sig);
+  },
+  async verifyPayload(payloadObj, sigB64, pubJwk) {
+    try {
+      const pubKey = await crypto.subtle.importKey('jwk', pubJwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+      const data = new TextEncoder().encode(JSON.stringify(payloadObj));
+      return await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pubKey, this.base64ToBuf(sigB64), data);
+    } catch (_) {
+      return false;
+    }
+  }
+};
+
+/* ============================================================================
+   LỚP 1: FROZEN CORE V2.7.1 (6 ENGINE ĐỘC LẬP & HỢP ĐỒNG ĐÓNG BĂNG)
+   ============================================================================ */
 const FROZEN_CONFIG = Object.freeze({
-  VERSION: '2.4.0-clean-slate',
+  VERSION: '2.7.1-clean-slate',
   TOTAL_SESSIONS: 365,
   MONTHLY_CYCLES: 12,
   SESSIONS_PER_MONTH: 29,
   MONTHLY_GATE_SESSIONS: [29, 58, 87, 116, 145, 174, 203, 232, 261, 290, 319, 348],
-  FINAL_ACCELERATION_RANGE: [349, 362],
   FINAL_REVIEW_SESSIONS: [363, 364],
   GRADUATION_SESSION: 365,
   WEEKLY_VOCAB_TARGET: 26,
   WEEKLY_NATIVE_PHRASES: 2,
   LOGICAL_DAY_CUTOFF_HOUR: 3,
   MAX_BUSY_DEFERRALS_PER_WEEK: 2,
-  SRS_DAILY_BACKLOG_CAP: 30,
+  SRS_DAILY_CAPACITY: 30,
+  SRS_INTERVALS_DAYS: [1, 3, 7, 14, 30],
+  MINI_DICTATION_STREAK_THRESHOLD: 80,
   THRESHOLDS: {
     SPEED_COMBO_PASS: 80,
     GRAMMAR_PASS: 75,
@@ -691,9 +977,8 @@ const FROZEN_CONFIG = Object.freeze({
     GRADUATION_PASS: 85,
     MASTERY_GATE_PASS: 85
   },
-  SPEED_COMBO_BUDGETS: { '6_0': 120, '4_1': 105, '4_0': 90, '2_1': 75 },
+  SPEED_COMBO_BUDGETS: { 6: 120, 4: 90, 2: 75 },
   TASK_TIME_COST: { READ: 7, LISTEN: 12, WRITE: 14, SPEAK: 18, FALLBACK_IPA: 12 },
-  MAX_VERIFIED_PAUSE_SECONDS: 15,
   MAX_VERIFIED_PAUSES_PER_RUN: 3
 });
 
@@ -763,13 +1048,12 @@ const CurriculumEngine = {
       6: { vocabCount: 2, core: 0, spec: 2, native: 1, tier: 4, gMin: 35 }
     }[dayOfWeek];
 
-    const budgetKey = `${weeklySchema.vocabCount}_${weeklySchema.native}`;
     return {
       sessionNumber, mode: 'NEW_LEARNING', title: `Phiên ${sessionNumber} — Ngày ${dayOfWeek}/7 (Tháng ${monthIndex})`,
       monthIndex, weekIndex: (monthIndex - 1) * 4 + weekInMonth, dayOfWeek,
       vocabCount: weeklySchema.vocabCount, coreCount: weeklySchema.core, specializedCount: weeklySchema.spec,
       nativePhraseCount: weeklySchema.native, grammarTier: weeklySchema.tier, grammarMinQuestions: weeklySchema.gMin,
-      speedComboBudget: FROZEN_CONFIG.SPEED_COMBO_BUDGETS[budgetKey] || 90,
+      speedComboBudget: FROZEN_CONFIG.SPEED_COMBO_BUDGETS[weeklySchema.vocabCount] || 90,
       passThreshold: FROZEN_CONFIG.THRESHOLDS.SPEED_COMBO_PASS, requires5A: true
     };
   },
@@ -818,9 +1102,11 @@ const LearningEngine = {
 };
 
 const AssessmentEngine = {
-  buildAndValidateSpeedCombo(blueprint, items, accessibilityFallback = false) {
+  buildAndValidateSpeedCombo(blueprint, coreVocabItems, accessibilityFallback = false) {
+    // Khóa quy tắc V2.7.1: Tuyệt đối chỉ kiểm tra CORE_VOCAB (assessed = true), không bao giờ đưa NATIVE_PHRASE vào 5A
+    const testableItems = coreVocabItems.filter(it => it.contentType === 'CORE_VOCAB' && it.assessed === true);
     const budget = blueprint.speedComboBudget || 90;
-    if (items.length === 0) return { valid: false, reason: 'Không có học liệu cho bài kiểm tra 5A.' };
+    if (testableItems.length === 0) return { valid: false, reason: 'Không có CORE_VOCAB hợp lệ cho bài kiểm tra 5A.' };
 
     const skills = accessibilityFallback
       ? ['READ', 'LISTEN', 'WRITE', 'FALLBACK_IPA']
@@ -829,7 +1115,7 @@ const AssessmentEngine = {
     const tasks = [];
     let totalEstimatedTime = 0;
 
-    items.forEach((item, idx) => {
+    testableItems.forEach((item, idx) => {
       const skill = skills[idx % skills.length];
       const cost = FROZEN_CONFIG.TASK_TIME_COST[skill];
       totalEstimatedTime += cost;
@@ -837,7 +1123,7 @@ const AssessmentEngine = {
     });
 
     while (tasks.length < 4) {
-      const item = items[tasks.length % items.length];
+      const item = testableItems[tasks.length % testableItems.length];
       const skill = skills[tasks.length];
       const cost = FROZEN_CONFIG.TASK_TIME_COST[skill];
       totalEstimatedTime += cost;
@@ -868,7 +1154,7 @@ const AssessmentEngine = {
       return {
         passed: stages1to4Done && speedComboScore >= blueprint.passThreshold && grammarPassed,
         speaking_verified: results.speaking_verified !== false,
-        details: { stages1to4Done, speedComboScore, grammarRequired, grammarScore, grammarPassed }
+        details: { stage0: 'PREVIEW_ONLY', stages1to4Done, speedComboScore, grammarRequired, grammarScore, grammarPassed }
       };
     }
     const examScore = Number(results.examScore || 0);
@@ -879,6 +1165,21 @@ const AssessmentEngine = {
     };
   },
 
+  // Đóng băng phiên bản đề thi & tập từ khi bắt đầu đánh giá Mastery Gate (Frozen Snapshot)
+  createFrozenGateSnapshot(level, coreVocabList, itemMasteryMap, grammarPool) {
+    const levelVocab = coreVocabList.filter(v => v.level === level && v.contentType === 'CORE_VOCAB');
+    const masteredCount = levelVocab.filter(v => itemMasteryMap[v.canonicalKey]?.mastered).length;
+    return Object.freeze({
+      snapshotId: `snap_${level}_${Date.now()}`,
+      level,
+      createdAt: new Date().toISOString(),
+      totalTargetItems: levelVocab.length,
+      masteredAtStart: masteredCount,
+      allMasteredAtStart: levelVocab.length > 0 && masteredCount === levelVocab.length,
+      questions: Object.freeze(grammarPool.slice(0, 10))
+    });
+  },
+
   evaluateMasteryGate({ totalItems, masteredItems, finalExamScore, bossDefeated }) {
     const allMastered = totalItems > 0 && masteredItems === totalItems;
     const examOk = Number(finalExamScore || 0) >= FROZEN_CONFIG.THRESHOLDS.MASTERY_GATE_PASS;
@@ -887,7 +1188,7 @@ const AssessmentEngine = {
 };
 
 const ConversationEngine = {
-  evaluateRoleplayTurn(userText, targetVocabList) {
+  evaluateRoleplayTurn(userText, previewItems) {
     const clean = String(userText || '').trim();
     if (clean.length < 4) {
       return {
@@ -897,12 +1198,13 @@ const ConversationEngine = {
       };
     }
     const lower = clean.toLowerCase();
-    const usedTargets = targetVocabList.filter(v => lower.includes(v.lemma.toLowerCase()));
+    const usedTargets = previewItems.filter(v => lower.includes(v.lemma.toLowerCase()));
     const criticalErrors = [];
 
     if (!/^[A-Z]/.test(clean)) criticalErrors.push('Chữ cái đầu câu cần viết hoa.');
-    if (usedTargets.length === 0 && targetVocabList.length > 0) {
-      criticalErrors.push(`Hãy lồng ghép ít nhất 1 từ vừa học (ví dụ: "${targetVocabList[0].lemma}").`);
+    if (usedTargets.length === 0 && previewItems.length > 0) {
+      const sample = previewItems.map(p => p.lemma).slice(0, 3).join(', ');
+      criticalErrors.push(`Hãy lồng ghép ít nhất 1 từ chuẩn, cụm từ hoặc câu bản địa của tuần (VD: ${sample}).`);
     }
 
     return {
@@ -910,7 +1212,7 @@ const ConversationEngine = {
       usedTargets: usedTargets.map(u => u.lemma),
       criticalErrors,
       tutorReply: criticalErrors.length === 0
-        ? `Tuyệt vời! Bạn đã dùng tự nhiên từ "${usedTargets[0]?.lemma || ''}". Tiếp tục tình huống nhé: What happens next in that scenario?`
+        ? `Tuyệt vời! Bạn đã vận dụng tự nhiên "${usedTargets[0]?.lemma || ''}" vào hội thoại.`
         : `Chưa cấp Bonus XP — Hãy sửa lỗi trọng yếu sau trong ngữ cảnh: ${criticalErrors.join(' ')}`
     };
   }
@@ -941,7 +1243,7 @@ const ProgressEngine = {
     const dayLog = next.dailyLogs[logicalDay];
     dayLog.activities.push({ type: activityType, ts: Date.now() });
 
-    if (['SESSION_COMPLETE', 'MICRO_SESSION', 'REVIEW_MODE'].includes(activityType)) {
+    if (['SESSION_COMPLETE', 'MICRO_SESSION', 'REVIEW_MODE', 'MINI_DICTATION_PASS'].includes(activityType)) {
       if (!dayLog.streakCounted) {
         next.streak = (next.streak || 0) + 1;
         dayLog.streakCounted = true;
@@ -957,15 +1259,71 @@ const ProgressEngine = {
       next.weeklyBusyCount[weekKey] = used + 1;
       dayLog.frozen = true;
       dayLog.scheduleState = 'DEFERRED';
+      // Giữ nguyên 1 ngày hoạt động bảo vệ Streak (chống cộng trùng nếu sau đó làm thêm Micro-Session)
+      dayLog.streakCounted = true;
+    }
+    return next;
+  },
+
+  // SRS Fairness Policy: overdue_age + lapse_priority (Trần 30 thẻ/ngày, chống đói lịch, không mất thẻ)
+  getFairSrsDueQueue(srsCardsMap, logicalDayStr) {
+    const allCards = Object.values(srsCardsMap || {});
+    const dueCards = allCards.filter(c => c.dueDate <= logicalDayStr);
+    if (dueCards.length === 0) return [];
+
+    const todayMs = Date.parse(`${logicalDayStr}T00:00:00Z`);
+    const scored = dueCards.map(c => {
+      const dueMs = Date.parse(`${c.dueDate}T00:00:00Z`);
+      const overdueDays = Math.max(0, Math.floor((todayMs - dueMs) / 86400000));
+      const lapseCount = c.lapseCount || 0;
+      const priorityScore = (lapseCount * 2) + (overdueDays * 1.5);
+      return { ...c, overdueDays, priorityScore };
+    });
+
+    const lapsePool = scored.filter(c => (c.lapseCount || 0) > 0 && c.intervalDays <= 1).sort((a, b) => b.priorityScore - a.priorityScore);
+    const agedPool = scored.filter(c => !((c.lapseCount || 0) > 0 && c.intervalDays <= 1)).sort((a, b) => b.priorityScore - a.priorityScore);
+
+    // Phân bổ công bằng: tối đa 18 thẻ sai ưu tiên + tối thiểu 12 thẻ quá hạn lâu ngày (tổng trần 30 thẻ)
+    const maxLapseQuota = 18;
+    const selectedLapse = lapsePool.slice(0, maxLapseQuota);
+    const remainingCap = FROZEN_CONFIG.SRS_DAILY_CAPACITY - selectedLapse.length;
+    const selectedAged = agedPool.slice(0, remainingCap);
+
+    const combined = [...selectedLapse, ...selectedAged];
+    if (combined.length < FROZEN_CONFIG.SRS_DAILY_CAPACITY && lapsePool.length > selectedLapse.length) {
+      combined.push(...lapsePool.slice(selectedLapse.length, selectedLapse.length + (FROZEN_CONFIG.SRS_DAILY_CAPACITY - combined.length)));
+    }
+    return combined.slice(0, FROZEN_CONFIG.SRS_DAILY_CAPACITY);
+  },
+
+  updateSrsCardResult(card, isCorrect, logicalDayStr) {
+    const next = { ...card };
+    const [y, m, d] = logicalDayStr.split('-').map(Number);
+    const baseDt = new Date(Date.UTC(y, m - 1, d));
+
+    if (isCorrect) {
+      const ladder = FROZEN_CONFIG.SRS_INTERVALS_DAYS;
+      const idx = ladder.indexOf(next.intervalDays || 0);
+      const nextInterval = idx === -1 ? 1 : ladder[Math.min(ladder.length - 1, idx + 1)];
+      next.intervalDays = nextInterval;
+      baseDt.setUTCDate(baseDt.getUTCDate() + nextInterval);
+      next.dueDate = baseDt.toISOString().slice(0, 10);
+    } else {
+      // Giữ nguyên lịch sử sai (lapseCount++), đưa về lượt ôn ưu tiên (interval = 1 ngày)
+      next.lapseCount = (next.lapseCount || 0) + 1;
+      next.intervalDays = 1;
+      baseDt.setUTCDate(baseDt.getUTCDate() + 1);
+      next.dueDate = baseDt.toISOString().slice(0, 10);
     }
     return next;
   }
 };
 
 const SyncEngine = {
-  createEvent(deviceId, type, entityId, payload) {
+  createEvent(userId, deviceId, type, entityId, payload) {
     return {
       event_id: `evt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      user_id: userId,
       entity_id: entityId,
       device_id: deviceId,
       logical_clock: Date.now(),
@@ -983,7 +1341,10 @@ const SyncEngine = {
     const sorted = [...incomingEvents].sort((a, b) => a.logical_clock - b.logical_clock);
 
     for (const evt of sorted) {
+      // Cô lập tuyệt đối theo user_id: không bao giờ gộp chéo dữ liệu thành viên khác
+      if (evt.user_id && next.userId && evt.user_id !== next.userId) continue;
       if (processedSet.has(evt.event_id)) continue;
+
       if (evt.type === 'SESSION_COMPLETED') {
         const sNum = evt.payload.sessionNumber;
         if (sNum === next.currentQueueSession) {
@@ -1007,12 +1368,11 @@ const SyncEngine = {
     return next;
   }
 };
-/* ============================================================================
-   LỚP 2: LƯU TRỮ GIAO DỊCH INDEXEDDB (ACID), KHO HỌC LIỆU & ĐIỀU PHỐI ỨNG DỤNG
+  /* ============================================================================
+   LỚP 2: LƯU TRỮ GIAO DỊCH INDEXEDDB (ACID) & CÔ LẬP DỮ LIỆU THEO HỒ SƠ
    ============================================================================ */
-
 const StorageDB = {
-  DB_NAME: 'Master365_V2_4_DB',
+  DB_NAME: 'Master365_V2_7_1_DB',
   DB_VERSION: 1,
   db: null,
 
@@ -1021,8 +1381,10 @@ const StorageDB = {
       const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
-        if (!db.objectStoreNames.contains('state')) db.createObjectStore('state', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('accounts')) db.createObjectStore('accounts', { keyPath: 'userId' });
+        if (!db.objectStoreNames.contains('profiles')) db.createObjectStore('profiles', { keyPath: 'profileKey' });
         if (!db.objectStoreNames.contains('books')) db.createObjectStore('books', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta', { keyPath: 'key' });
         if (!db.objectStoreNames.contains('audioCache')) db.createObjectStore('audioCache', { keyPath: 'key' });
       };
       req.onsuccess = (e) => {
@@ -1045,7 +1407,7 @@ const StorageDB = {
   async put(storeName, value) {
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction(storeName, 'readwrite');
-      const req = tx.objectStore(storeName).put(value);
+      tx.objectStore(storeName).put(value);
       tx.oncomplete = () => resolve(true);
       tx.onerror = () => reject(tx.error);
     });
@@ -1081,36 +1443,433 @@ const StorageDB = {
 };
 
 /* ============================================================================
-   KHO HỌC LIỆU CHUẨN (SEED CURRICULUM BANK + GRAMMAR 4 TIERS)
+   LỚP 3: AUTH CONTROLLER (ECDSA P-256 INVITES, AES-GCM PROFILE VAULT, RECOVERY)
+   ============================================================================ */
+const AuthController = {
+  activeUser: null,
+  activeAesKey: null,
+  adminPrivJwk: null,
+
+  async bootstrap() {
+    await StorageDB.init();
+    const accounts = await StorageDB.getAll('accounts');
+    if (accounts.length === 0) {
+      document.getElementById('firstRunSetupBanner').classList.remove('hidden');
+    }
+  },
+
+  switchAuthTab(tab, btn) {
+    ['login', 'setupAdmin', 'activate', 'recover'].forEach(p => {
+      document.getElementById(`auth-pane-${p}`).classList.toggle('hidden', p !== tab);
+    });
+    if (btn) {
+      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  },
+
+  async setupOwnerAdmin() {
+    const userId = document.getElementById('setupAdminId').value.trim().toLowerCase();
+    const pass = document.getElementById('setupAdminPass').value;
+    if (!userId || pass.length < 6) {
+      UI.toast('⚠️ Nhập ID Admin và mật khẩu tối thiểu 6 ký tự!');
+      return;
+    }
+
+    const existing = await StorageDB.get('accounts', userId);
+    if (existing) {
+      UI.toast('⚠️ ID này đã tồn tại trên thiết bị!');
+      return;
+    }
+
+    // Sinh cặp khóa bất đối xứng ECDSA P-256 cho Admin ký mã mời thành viên
+    const { pubJwk, privJwk } = await CryptoVault.generateSigningKeyPair();
+    await StorageDB.put('meta', { key: 'org_public_key', pubJwk });
+
+    const salt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
+    const recoveryKey = CryptoVault.generateRandomCode(24);
+    const recoverySalt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
+
+    const passKey = await CryptoVault.deriveAesKey(pass, salt);
+    const recAesKey = await CryptoVault.deriveAesKey(recoveryKey, recoverySalt);
+
+    // Tạo Master Profile Encryption Key ngẫu nhiên và bọc bằng cả Mật khẩu cá nhân lẫn Recovery Key
+    const rawMasterKey = crypto.getRandomValues(new Uint8Array(32));
+    const masterKeyB64 = CryptoVault.bufToBase64(rawMasterKey);
+    const wrappedByPass = await CryptoVault.encryptJson({ masterKeyB64, privJwk }, passKey);
+    const wrappedByRecovery = await CryptoVault.encryptJson({ masterKeyB64, privJwk }, recAesKey);
+
+    await StorageDB.put('accounts', {
+      userId,
+      role: 'ADMIN',
+      salt,
+      recoverySalt,
+      wrappedByPass,
+      wrappedByRecovery,
+      publicStats: { userId, role: 'ADMIN', xp: 0, streak: 0, completedSessions: 0 }
+    });
+
+    const profileAesKey = await crypto.subtle.importKey('raw', rawMasterKey, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+    const initialState = App.getDefaultState(userId, 'ADMIN');
+    const encryptedProfile = await CryptoVault.encryptJson(initialState, profileAesKey);
+    await StorageDB.put('profiles', { profileKey: `profile::${userId}`, cipher: encryptedProfile });
+
+    this.activeUser = { userId, role: 'ADMIN' };
+    this.activeAesKey = profileAesKey;
+    this.adminPrivJwk = privJwk;
+
+    UI.openModal('🛡️ Khởi Tạo Admin Thành Công — Lưu Khóa Khôi Phục!', `
+      <div style="font-size:13px;">
+        <p style="margin-top:0;">Hồ sơ <b>${userId}</b> đã được mã hóa AES-GCM 256-bit. Hãy lưu lại <b>Khóa Khôi Phục 24 ký tự</b> bên dưới ở nơi an toàn (dùng để mở khóa dữ liệu nếu bạn quên mật khẩu):</p>
+        <div style="background:var(--warning-soft); border:1.5px dashed #f59e0b; padding:12px; border-radius:10px; font-family:monospace; font-size:15px; font-weight:800; text-align:center; margin-bottom:12px; user-select:all;">
+          ${recoveryKey}
+        </div>
+        <button class="btn btn-primary btn-block" onclick="UI.closeModal(); AuthController.enterApp();">✅ Đã Lưu Khóa — Vào Ứng Dụng</button>
+      </div>
+    `);
+  },
+
+  async login() {
+    const userId = document.getElementById('loginUserId').value.trim().toLowerCase();
+    const pass = document.getElementById('loginPassword').value;
+    if (!userId || !pass) {
+      UI.toast('⚠️ Nhập đầy đủ ID và Mật khẩu!');
+      return;
+    }
+
+    const acc = await StorageDB.get('accounts', userId);
+    if (!acc) {
+      UI.toast('❌ Không tìm thấy tài khoản trên thiết bị này. Nếu có Mã mời, hãy sang tab "Kích hoạt Mã mời".');
+      return;
+    }
+
+    try {
+      const passKey = await CryptoVault.deriveAesKey(pass, acc.salt);
+      const unwrapped = await CryptoVault.decryptJson(acc.wrappedByPass, passKey);
+      const rawMasterKey = CryptoVault.base64ToBuf(unwrapped.masterKeyB64);
+      const profileAesKey = await crypto.subtle.importKey('raw', rawMasterKey, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+
+      this.activeUser = { userId: acc.userId, role: acc.role };
+      this.activeAesKey = profileAesKey;
+      this.adminPrivJwk = unwrapped.privJwk || null;
+      await this.enterApp();
+    } catch (_) {
+      UI.toast('❌ Mật khẩu không chính xác — Không thể giải mã hồ sơ!');
+    }
+  },
+
+  async generateSignedInvite() {
+    if (!this.adminPrivJwk) {
+      UI.toast('⚠️ Không tìm thấy khóa ký số Admin.');
+      return;
+    }
+    const note = document.getElementById('inviteNoteInput').value.trim() || 'Thành viên';
+    const days = Number(document.getElementById('inviteDaysSelect').value || 30);
+    const metaPub = await StorageDB.get('meta', 'org_public_key');
+
+    const payload = {
+      invitation_id: `inv_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      note,
+      role: 'MEMBER',
+      issued_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + days * 86400 * 1000).toISOString()
+    };
+    const signature = await CryptoVault.signPayload(payload, this.adminPrivJwk);
+    const inviteBundle = JSON.stringify({
+      type: 'MASTER365_SIGNED_INVITE',
+      payload,
+      signature,
+      pubJwk: metaPub.pubJwk
+    });
+
+    document.getElementById('generatedInviteBox').innerHTML = `
+      <div style="background:#fff; border:1px solid var(--border); padding:10px; border-radius:10px; font-size:12px;">
+        <strong>🎟️ Gói Mã Mời Ký Số (${note} — Hạn ${days} ngày):</strong>
+        <p style="color:var(--text-muted); margin:4px 0;">Gửi chuỗi này cho thành viên để kích hoạt tài khoản trên máy của họ:</p>
+        <textarea class="textarea-field" rows="3" readonly style="font-size:11px;">${inviteBundle}</textarea>
+      </div>
+    `;
+  },
+
+  exportPublicKeyBundle() {
+    StorageDB.get('meta', 'org_public_key').then(meta => {
+      if (!meta) return;
+      UI.openModal('🔑 Khóa Công Khai Xác Minh (Public Key)', `
+        <p style="font-size:12px; margin-top:0;">Khóa công khai ECDSA P-256 dùng để xác minh chữ ký mã mời ngoại tuyến (an toàn để chia sẻ):</p>
+        <textarea class="textarea-field" rows="5" readonly>${JSON.stringify(meta.pubJwk)}</textarea>
+      `);
+    });
+  },
+
+  async activateMemberWithInvite() {
+    const rawToken = document.getElementById('activateTokenInput').value.trim();
+    const userId = document.getElementById('activateUserId').value.trim().toLowerCase();
+    const pass = document.getElementById('activatePassword').value;
+
+    if (!rawToken || !userId || pass.length < 6) {
+      UI.toast('⚠️ Nhập đủ Gói mã mời, ID thành viên mới và mật khẩu >= 6 ký tự!');
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(rawToken);
+      if (parsed.type !== 'MASTER365_SIGNED_INVITE' || !parsed.payload || !parsed.signature || !parsed.pubJwk) {
+        throw new Error('Định dạng mã mời không hợp lệ.');
+      }
+      if (new Date(parsed.payload.expires_at).getTime() < Date.now()) {
+        throw new Error('Gói mã mời đã hết thời hạn hiệu lực!');
+      }
+      const validSig = await CryptoVault.verifyPayload(parsed.payload, parsed.signature, parsed.pubJwk);
+      if (!validSig) {
+        throw new Error('Chữ ký số ECDSA P-256 không hợp lệ hoặc mã mời đã bị chỉnh sửa!');
+      }
+
+      const existing = await StorageDB.get('accounts', userId);
+      if (existing) throw new Error('ID thành viên này đã tồn tại trên thiết bị.');
+
+      await StorageDB.put('meta', { key: 'org_public_key', pubJwk: parsed.pubJwk });
+
+      const salt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
+      const recoveryKey = CryptoVault.generateRandomCode(24);
+      const recoverySalt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
+
+      const passKey = await CryptoVault.deriveAesKey(pass, salt);
+      const recAesKey = await CryptoVault.deriveAesKey(recoveryKey, recoverySalt);
+
+      const rawMasterKey = crypto.getRandomValues(new Uint8Array(32));
+      const masterKeyB64 = CryptoVault.bufToBase64(rawMasterKey);
+      const wrappedByPass = await CryptoVault.encryptJson({ masterKeyB64 }, passKey);
+      const wrappedByRecovery = await CryptoVault.encryptJson({ masterKeyB64 }, recAesKey);
+
+      await StorageDB.put('accounts', {
+        userId,
+        role: 'MEMBER',
+        invitationId: parsed.payload.invitation_id,
+        salt,
+        recoverySalt,
+        wrappedByPass,
+        wrappedByRecovery,
+        publicStats: { userId, role: 'MEMBER', xp: 0, streak: 0, completedSessions: 0 }
+      });
+
+      const profileAesKey = await crypto.subtle.importKey('raw', rawMasterKey, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+      const initialState = App.getDefaultState(userId, 'MEMBER');
+      const encryptedProfile = await CryptoVault.encryptJson(initialState, profileAesKey);
+      await StorageDB.put('profiles', { profileKey: `profile::${userId}`, cipher: encryptedProfile });
+
+      this.activeUser = { userId, role: 'MEMBER' };
+      this.activeAesKey = profileAesKey;
+
+      UI.openModal('✅ Kích Hoạt Hồ Sơ Thành Công — Lưu Khóa Khôi Phục!', `
+        <div style="font-size:13px;">
+          <p style="margin-top:0;">Chữ ký mã mời hợp lệ! Hồ sơ <b>${userId}</b> đã được tạo và mã hóa riêng biệt. Hãy lưu lại <b>Khóa Khôi Phục 24 ký tự</b> này:</p>
+          <div style="background:var(--warning-soft); border:1.5px dashed #f59e0b; padding:12px; border-radius:10px; font-family:monospace; font-size:15px; font-weight:800; text-align:center; margin-bottom:12px; user-select:all;">
+            ${recoveryKey}
+          </div>
+          <button class="btn btn-primary btn-block" onclick="UI.closeModal(); AuthController.enterApp();">🚀 Bắt Đầu Học Ngay</button>
+        </div>
+      `);
+    } catch (err) {
+      UI.toast(`❌ ${err.message}`);
+    }
+  },
+
+  async recoverWithKey() {
+    const userId = document.getElementById('recoverUserId').value.trim().toLowerCase();
+    const recKey = document.getElementById('recoverKeyInput').value.trim().toUpperCase();
+    const newPass = document.getElementById('recoverNewPass').value;
+
+    if (!userId || !recKey || newPass.length < 6) {
+      UI.toast('⚠️ Nhập đủ ID, Khóa khôi phục 24 ký tự và mật khẩu mới >= 6 ký tự!');
+      return;
+    }
+
+    const acc = await StorageDB.get('accounts', userId);
+    if (!acc) {
+      UI.toast('❌ Không tìm thấy ID tài khoản này.');
+      return;
+    }
+
+    try {
+      const recAesKey = await CryptoVault.deriveAesKey(recKey, acc.recoverySalt);
+      const unwrapped = await CryptoVault.decryptJson(acc.wrappedByRecovery, recAesKey);
+
+      const newSalt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
+      const newPassKey = await CryptoVault.deriveAesKey(newPass, newSalt);
+      acc.salt = newSalt;
+      acc.wrappedByPass = await CryptoVault.encryptJson(unwrapped, newPassKey);
+      await StorageDB.put('accounts', acc);
+
+      UI.toast('✅ Đã đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.');
+      this.switchAuthTab('login');
+    } catch (_) {
+      UI.toast('❌ Khóa khôi phục không chính xác!');
+    }
+  },
+
+  async enterApp() {
+    document.getElementById('authGateOverlay').classList.add('hidden');
+    document.getElementById('mainAppShell').classList.remove('hidden');
+    document.getElementById('userRoleBadge').textContent = `${this.activeUser.userId} (${this.activeUser.role})`;
+    document.getElementById('adminOnlyCard').classList.toggle('hidden', this.activeUser.role !== 'ADMIN');
+    await App.loadEncryptedProfile(this.activeUser.userId, this.activeAesKey);
+  },
+
+  logout() {
+    this.activeUser = null;
+    this.activeAesKey = null;
+    this.adminPrivJwk = null;
+    App.state = null;
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('mainAppShell').classList.add('hidden');
+    document.getElementById('authGateOverlay').classList.remove('hidden');
+    UI.toast('🔒 Đã khóa hồ sơ an toàn.');
+  }
+};
+
+/* ============================================================================
+   KHO HỌC LIỆU CHUẨN V2.7.1 (PHÂN LOẠI RÕ CORE_VOCAB vs NATIVE_PHRASE vs COLLOCATION)
    ============================================================================ */
 const CurriculumBank = {
   CORE_WORDS: [
-    { lemma: 'consignment', pos: 'noun', ipa: '/kənˈsaɪnmənt/', meaning: 'lô hàng ký gửi', example: 'The morning consignment arrived at the hub on time.', category: 'specialized' },
-    { lemma: 'dispatch', pos: 'verb', ipa: '/dɪˈspætʃ/', meaning: 'điều phối, gửi hàng đi', example: 'We dispatch all linehaul trucks before midnight.', category: 'specialized' },
-    { lemma: 'reconcile', pos: 'verb', ipa: '/ˈrekənsaɪl/', meaning: 'đối soát (số liệu, hóa đơn)', example: 'Accounting must reconcile vendor invoices every Friday.', category: 'specialized' },
-    { lemma: 'bottleneck', pos: 'noun', ipa: '/ˈbɒtlnek/', meaning: 'điểm nghẽn vận hành', example: 'Sorting capacity became our biggest bottleneck.', category: 'specialized' },
-    { lemma: 'threshold', pos: 'noun', ipa: '/ˈθreʃhəʊld/', meaning: 'ngưỡng giới hạn', example: 'You must pass the 80% threshold to unlock.', category: 'core' },
-    { lemma: 'pragmatic', pos: 'adj', ipa: '/præɡˈmætɪk/', meaning: 'thực tế, thực dụng', example: 'She took a pragmatic approach to solving the delay.', category: 'core' },
-    { lemma: 'mitigate', pos: 'verb', ipa: '/ˈmɪtɪɡeɪt/', meaning: 'giảm thiểu (rủi ro)', example: 'Backup drivers help mitigate peak-season delays.', category: 'specialized' },
-    { lemma: 'seamless', pos: 'adj', ipa: '/ˈsiːmləs/', meaning: 'liền mạch, trơn tru', example: 'Offline sync provides a seamless experience.', category: 'core' },
-    { lemma: 'allocate', pos: 'verb', ipa: '/ˈæləkeɪt/', meaning: 'phân bổ nguồn lực', example: 'Managers allocate vehicles based on daily volume.', category: 'specialized' },
-    { lemma: 'scrutinize', pos: 'verb', ipa: '/ˈskruːtənaɪz/', meaning: 'xem xét kỹ lưỡng', example: 'Auditors scrutinize every surcharge on the bill.', category: 'core' },
-    { lemma: 'redundancy', pos: 'noun', ipa: '/rɪˈdʌndənsi/', meaning: 'sự dự phòng / dư thừa', example: 'System redundancy prevents data loss.', category: 'core' },
-    { lemma: 'throughput', pos: 'noun', ipa: '/ˈθruːpʊt/', meaning: 'sản lượng thông qua', example: 'Hub throughput increased by twenty percent.', category: 'specialized' }
+    {
+      lemma: 'apply', pos: 'verb', ipa: '/əˈplaɪ/', meaning: 'áp dụng, nộp đơn ứng tuyển',
+      example: 'I want to apply for this logistics coordinator position.',
+      exampleVi: 'Tôi muốn ứng tuyển vào vị trí điều phối viên logistics này.',
+      variants: ['applies', 'applied', 'applying'],
+      collocations: ['apply for a job', 'apply a rule', 'apply pressure'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'consignment', pos: 'noun', ipa: '/kənˈsaɪnmənt/', meaning: 'lô hàng ký gửi',
+      example: 'The morning consignment arrived at the regional hub on time.',
+      exampleVi: 'Lô hàng ký gửi buổi sáng đã đến trung tâm trung chuyển đúng giờ.',
+      variants: ['consignments', 'consign', 'consigned'],
+      collocations: ['urgent consignment', 'track a consignment', 'consignment note'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'dispatch', pos: 'verb', ipa: '/dɪˈspætʃ/', meaning: 'điều phối, gửi hàng đi',
+      example: 'We dispatch all linehaul trucks before midnight.',
+      exampleVi: 'Chúng tôi điều phối toàn bộ xe tải đường dài xuất bến trước nửa đêm.',
+      variants: ['dispatches', 'dispatched', 'dispatching'],
+      collocations: ['dispatch schedule', 'prompt dispatch', 'dispatch center'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'reconcile', pos: 'verb', ipa: '/ˈrekənsaɪl/', meaning: 'đối soát (số liệu, hóa đơn)',
+      example: 'Accounting must reconcile vendor invoices every Friday.',
+      exampleVi: 'Bộ phận kế toán phải đối soát hóa đơn nhà cung cấp vào mỗi thứ Sáu.',
+      variants: ['reconciles', 'reconciled', 'reconciling', 'reconciliation'],
+      collocations: ['reconcile accounts', 'reconcile discrepancies', 'reconcile statements'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'bottleneck', pos: 'noun', ipa: '/ˈbɒtlnek/', meaning: 'điểm nghẽn vận hành',
+      example: 'Sorting capacity became our biggest bottleneck during peak season.',
+      exampleVi: 'Năng lực phân loại trở thành điểm nghẽn lớn nhất của chúng tôi trong mùa cao điểm.',
+      variants: ['bottlenecks'],
+      collocations: ['eliminate a bottleneck', 'operational bottleneck', 'traffic bottleneck'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'mitigate', pos: 'verb', ipa: '/ˈmɪtɪɡeɪt/', meaning: 'giảm thiểu (rủi ro, thiệt hại)',
+      example: 'Backup drivers help mitigate peak-season delivery delays.',
+      exampleVi: 'Tài xế dự phòng giúp giảm thiểu sự chậm trễ giao hàng mùa cao điểm.',
+      variants: ['mitigates', 'mitigated', 'mitigating', 'mitigation'],
+      collocations: ['mitigate risks', 'mitigate the impact', 'mitigate delays'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'threshold', pos: 'noun', ipa: '/ˈθreʃhəʊld/', meaning: 'ngưỡng giới hạn',
+      example: 'You must pass the eighty percent threshold to unlock the next stage.',
+      exampleVi: 'Bạn phải vượt qua ngưỡng 80% để mở khóa chặng tiếp theo.',
+      variants: ['thresholds'],
+      collocations: ['minimum threshold', 'cross the threshold', 'pain threshold'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'pragmatic', pos: 'adj', ipa: '/præɡˈmætɪk/', meaning: 'thực tế, thực dụng',
+      example: 'She took a pragmatic approach to solving the hub delay.',
+      exampleVi: 'Cô ấy áp dụng cách tiếp cận thực tế để giải quyết sự cố trễ tại kho.',
+      variants: ['pragmatically', 'pragmatism'],
+      collocations: ['pragmatic approach', 'pragmatic solution', 'pragmatic decision'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'allocate', pos: 'verb', ipa: '/ˈæləkeɪt/', meaning: 'phân bổ (nguồn lực, ngân sách)',
+      example: 'Managers allocate vehicles based on daily parcel volume.',
+      exampleVi: 'Quản lý phân bổ phương tiện dựa trên sản lượng bưu kiện hằng ngày.',
+      variants: ['allocates', 'allocated', 'allocating', 'allocation'],
+      collocations: ['allocate resources', 'allocate funds', 'allocate time'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'scrutinize', pos: 'verb', ipa: '/ˈskruːtənaɪz/', meaning: 'xem xét kỹ lưỡng, soi xét',
+      example: 'Auditors scrutinize every surcharge on the freight bill.',
+      exampleVi: 'Kiểm toán viên xem xét kỹ lưỡng từng khoản phụ phí trên hóa đơn vận chuyển.',
+      variants: ['scrutinizes', 'scrutinized', 'scrutinizing', 'scrutiny'],
+      collocations: ['scrutinize details', 'closely scrutinize', 'under scrutiny'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'seamless', pos: 'adj', ipa: '/ˈsiːmləs/', meaning: 'liền mạch, trơn tru',
+      example: 'Offline synchronization provides a seamless learning experience.',
+      exampleVi: 'Đồng bộ ngoại tuyến mang lại trải nghiệm học tập liền mạch.',
+      variants: ['seamlessly', 'seamlessness'],
+      collocations: ['seamless integration', 'seamless transition', 'seamless workflow'],
+      contentType: 'CORE_VOCAB', assessed: true
+    },
+    {
+      lemma: 'throughput', pos: 'noun', ipa: '/ˈθruːpʊt/', meaning: 'sản lượng thông qua, công suất xử lý',
+      example: 'Warehouse throughput increased by twenty percent after automation.',
+      exampleVi: 'Sản lượng thông qua của kho tăng 20% sau khi tự động hóa.',
+      variants: ['throughputs'],
+      collocations: ['high throughput', 'data throughput', 'increase throughput'],
+      contentType: 'CORE_VOCAB', assessed: true
+    }
   ],
 
+  // Câu bản địa (NATIVE_PHRASE): assessed = false, preview_only = true, roleplay_eligible = true
   NATIVE_PHRASES: [
-    { lemma: 'call it a day', pos: 'phrase', ipa: '/kɔːl ɪt ə deɪ/', meaning: 'kết thúc công việc trong ngày', example: 'We have cleared all shipments, so let us call it a day.', isNativePhrase: true },
-    { lemma: 'cut corners', pos: 'phrase', ipa: '/kʌt ˈkɔːnəz/', meaning: 'làm tắt, làm ẩu để tiết kiệm chi phí', example: 'Never cut corners when checking safety seals.', isNativePhrase: true },
-    { lemma: 'on the same page', pos: 'phrase', ipa: '/ɒn ðə seɪm peɪdʒ/', meaning: 'đồng thuận, hiểu thống nhất với nhau', example: 'Let us review the schedule so everyone is on the same page.', isNativePhrase: true },
-    { lemma: 'back to square one', pos: 'phrase', ipa: '/bæk tə skweə wʌn/', meaning: 'quay lại vạch xuất phát từ đầu', example: 'If the file corrupts, we are back to square one.', isNativePhrase: true }
+    {
+      lemma: 'That makes sense.', pos: 'native_phrase', ipa: '/ðæt meɪks sens/', meaning: 'Điều đó hợp lý đấy / Tôi hiểu ý bạn rồi.',
+      example: 'If traffic is heavy at 5 PM, leaving earlier makes sense.',
+      exampleVi: 'Nếu 5 giờ chiều kẹt xe thì xuất phát sớm hơn là hợp lý.',
+      contentType: 'NATIVE_PHRASE', assessed: false, preview_only: true, roleplay_eligible: true
+    },
+    {
+      lemma: 'Let us call it a day.', pos: 'native_phrase', ipa: '/let ʌs kɔːl ɪt ə deɪ/', meaning: 'Hôm nay làm tới đây thôi / Kết thúc công việc trong ngày nhé.',
+      example: 'We have cleared all shipments, so let us call it a day.',
+      exampleVi: 'Chúng ta đã giải phóng hết hàng rồi, hôm nay nghỉ tại đây thôi.',
+      contentType: 'NATIVE_PHRASE', assessed: false, preview_only: true, roleplay_eligible: true
+    },
+    {
+      lemma: 'We are on the same page.', pos: 'native_phrase', ipa: '/wi ɑːr ɒn ðə seɪm peɪdʒ/', meaning: 'Chúng ta đã thống nhất quan điểm với nhau.',
+      example: 'Let us review the KPI table so everyone is on the same page.',
+      exampleVi: 'Hãy rà soát lại bảng KPI để mọi người đều nắm thống nhất.',
+      contentType: 'NATIVE_PHRASE', assessed: false, preview_only: true, roleplay_eligible: true
+    },
+    {
+      lemma: 'Do not cut corners.', pos: 'native_phrase', ipa: '/duː nɒt kʌt ˈkɔːnəz/', meaning: 'Đừng làm tắt / làm ẩu để tiết kiệm chi phí.',
+      example: 'Never cut corners when verifying vehicle safety seals.',
+      exampleVi: 'Đừng bao giờ làm ẩu khi kiểm tra niêm phong an toàn của xe.',
+      contentType: 'NATIVE_PHRASE', assessed: false, preview_only: true, roleplay_eligible: true
+    }
+  ],
+
+  WORKPLACE_PATTERNS: [
+    { category: 'Báo cáo tiến độ', en: 'We are currently on track to meet the deadline.', vi: 'Hiện tại chúng tôi đang đúng tiến độ để kịp thời hạn.' },
+    { category: 'Xử lý sự cố vận hành', en: 'There is a slight delay due to an unexpected bottleneck at the hub.', vi: 'Có một chút chậm trễ do điểm nghẽn đột xuất tại kho trung chuyển.' },
+    { category: 'Đối soát & Đàm phán', en: 'Could you clarify the surcharge breakdown on this invoice?', vi: 'Bạn có thể làm rõ chi tiết khoản phụ phí trên hóa đơn này không?' },
+    { category: 'Chốt cuộc họp', en: 'Just to recap, we will finalize the schedule by tomorrow morning.', vi: 'Tóm lại, chúng ta sẽ chốt lịch trình trước sáng mai.' }
   ],
 
   GRAMMAR_BANK: [
     { id: 'g1_1', tier: 1, topic: 'Hiện tại hoàn thành', q: 'The night shift team ___ all parcels before 3 AM.', opts: ['has sorted', 'have sort', 'sorting'], ans: 0, exp: 'Chủ ngữ tập thể "team" chia số ít với has + V3/ed.' },
     { id: 'g1_2', tier: 1, topic: 'Câu điều kiện loại 1', q: 'If the truck ___ late, the hub will reschedule unloading.', opts: ['arrives', 'will arrive', 'arrived'], ans: 0, exp: 'Mệnh đề If loại 1 dùng hiện tại đơn (arrives).' },
     { id: 'g1_3', tier: 1, topic: 'Bị động cơ bản', q: 'Every invoice ___ verified before payment.', opts: ['is', 'are', 'be'], ans: 0, exp: 'Every + danh từ số ít đi với động từ to-be số ít "is".' },
-    { id: 'g1_4', tier: 1, topic: 'Giới từ thời gian', q: 'Our cutoff time is ___ 3:00 AM every day.', opts: ['at', 'on', 'in'], ans: 0, exp: 'Dùng giới từ "at" trước mốc giờ cụ thể.' },
+    { id: 'g1_4', tier: 1, topic: 'Giới từ thời gian', q: 'Our logical day cutoff is ___ 3:00 AM every day.', opts: ['at', 'on', 'in'], ans: 0, exp: 'Dùng giới từ "at" trước mốc giờ cụ thể.' },
     { id: 'g1_5', tier: 1, topic: 'Mệnh đề quan hệ', q: 'The driver ___ license plate is 51H03587 just checked in.', opts: ['whose', 'who', 'which'], ans: 0, exp: 'Whose chỉ sự sở hữu đứng trước danh từ "license plate".' },
     { id: 'g2_1', tier: 2, topic: 'Phân từ rút gọn', q: '___ the manifest carefully, the clerk spotted a duplicate code.', opts: ['Checking', 'Checked', 'To check'], ans: 0, exp: 'Rút gọn mệnh đề cùng chủ ngữ mang nghĩa chủ động dùng V-ing.' },
     { id: 'g2_2', tier: 2, topic: 'Quá khứ hoàn thành', q: 'By the time the auditor arrived, we ___ the reconciliation.', opts: ['had finished', 'finished', 'have finished'], ans: 0, exp: 'Hành động xảy ra trước một mốc quá khứ dùng Quá khứ hoàn thành.' },
@@ -1129,49 +1888,67 @@ const CurriculumBank = {
     { id: 'g4_5', tier: 4, topic: 'IELTS Nuance Trap', q: 'Scarcely had the backup server booted ___ power was restored.', opts: ['when', 'than', 'then'], ans: 0, exp: 'Scarcely / Hardly đi với "when", còn No sooner đi với "than".' }
   ],
 
-  getSessionItems(blueprint) {
-    if (blueprint.mode !== 'NEW_LEARNING') return [];
-    const items = [];
+  getSessionPackage(blueprint) {
+    if (blueprint.mode !== 'NEW_LEARNING') return { previewCards: [], coreVocabItems: [] };
+    const coreVocabItems = [];
     const seedOffset = (blueprint.sessionNumber * 3) % this.CORE_WORDS.length;
 
     for (let i = 0; i < blueprint.vocabCount; i++) {
       const base = this.CORE_WORDS[(seedOffset + i) % this.CORE_WORDS.length];
-      items.push({
+      coreVocabItems.push({
         ...base,
-        isNativePhrase: false,
+        contentType: 'CORE_VOCAB',
+        assessed: true,
         canonicalKey: CurriculumEngine.buildCanonicalKey(base.lemma, 'en', base.pos, base.meaning)
       });
     }
 
+    const previewCards = [...coreVocabItems];
     if (blueprint.nativePhraseCount > 0) {
       const pBase = this.NATIVE_PHRASES[blueprint.sessionNumber % this.NATIVE_PHRASES.length];
-      items.push({
+      previewCards.push({
         ...pBase,
-        isNativePhrase: true,
-        canonicalKey: CurriculumEngine.buildCanonicalKey(pBase.lemma, 'en', 'phrase', pBase.meaning)
+        contentType: 'NATIVE_PHRASE',
+        assessed: false,
+        preview_only: true,
+        roleplay_eligible: true,
+        canonicalKey: CurriculumEngine.buildCanonicalKey(pBase.lemma, 'en', 'native_phrase', pBase.meaning)
       });
     }
 
-    return items;
+    return { previewCards, coreVocabItems };
   },
 
-  getGrammarQuestionsForSession(blueprint) {
-    if (blueprint.mode === 'NEW_LEARNING' && blueprint.grammarTier === 0) return [];
-    const targetCount = blueprint.grammarMinQuestions || 20;
-    const pool = blueprint.mode === 'NEW_LEARNING'
-      ? this.GRAMMAR_BANK.filter(g => g.tier <= blueprint.grammarTier)
-      : this.GRAMMAR_BANK;
+  // Trích xuất đúng tập kiến thức đã học cho Phiên Ôn tập Tuần (7) / Tháng (29) / Cuối khóa (363-365)
+  getReviewPoolForSession(blueprint, learnedCanonicalKeys) {
+    const targetCount = blueprint.grammarMinQuestions || 40;
+    const grammarPool = this.GRAMMAR_BANK;
+    const learnedWords = this.CORE_WORDS.filter(w =>
+      learnedCanonicalKeys.includes(CurriculumEngine.buildCanonicalKey(w.lemma, 'en', w.pos, w.meaning))
+    );
+    const vocabSource = learnedWords.length > 0 ? learnedWords : this.CORE_WORDS.slice(0, 6);
 
-    const result = [];
+    const questions = [];
     for (let i = 0; i < targetCount; i++) {
-      const template = pool[i % pool.length];
-      result.push({
-        ...template,
-        instanceId: `q_${blueprint.sessionNumber}_${i}_${template.id}`,
-        questionNumber: i + 1
-      });
+      if (i % 3 === 0) {
+        const w = vocabSource[i % vocabSource.length];
+        const distractors = this.CORE_WORDS.filter(x => x.lemma !== w.lemma).slice(0, 2).map(d => d.meaning);
+        const opts = [w.meaning, ...distractors].sort(() => Math.random() - 0.5);
+        questions.push({
+          id: `rev_v_${i}_${w.lemma}`,
+          tier: 4,
+          topic: 'Từ vựng chuẩn đã học',
+          q: `Chọn nghĩa đúng của từ đã học "${w.lemma}" (${w.ipa}):`,
+          opts,
+          ans: opts.indexOf(w.meaning),
+          exp: `Ví dụ: "${w.example}" (${w.exampleVi})`
+        });
+      } else {
+        const g = grammarPool[i % grammarPool.length];
+        questions.push({ ...g, id: `rev_g_${i}_${g.id}` });
+      }
     }
-    return result;
+    return questions;
   }
 };
 
@@ -1209,10 +1986,7 @@ const AudioHelper = {
 
       if (onStatusChange) onStatusChange('MIC_PERMISSION_PROMPT');
       rec.onstart = () => { if (onStatusChange) onStatusChange('LISTENING'); };
-      rec.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
-        resolve({ supported: true, transcript });
-      };
+      rec.onresult = (e) => resolve({ supported: true, transcript: e.results[0][0].transcript });
       rec.onerror = () => resolve({ supported: true, error: true, transcript: '' });
       rec.onend = () => { if (onStatusChange) onStatusChange('ENDED'); };
       rec.start();
@@ -1231,7 +2005,7 @@ const UI = {
     el.textContent = msg;
     el.style.display = 'block';
     clearTimeout(this._t);
-    this._t = setTimeout(() => { el.style.display = 'none'; }, 3000);
+    this._t = setTimeout(() => { el.style.display = 'none'; }, 3200);
   },
 
   openModal(title, html) {
@@ -1241,11 +2015,12 @@ const UI = {
   },
 
   closeModal() {
+    App.stopHandsFreePlaylist(true);
     document.getElementById('universalModal').classList.remove('open');
   },
 
   switchMainTab(tabName, btn) {
-    ['core', 'extension', 'analytics', 'system'].forEach(t => {
+    ['core', 'extension', 'analytics', 'leaderboard', 'system'].forEach(t => {
       document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tabName);
     });
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1253,11 +2028,12 @@ const UI = {
 
     if (tabName === 'extension') App.renderExtensionViews();
     if (tabName === 'analytics') App.renderAnalyticsView();
+    if (tabName === 'leaderboard') App.renderLeaderboardView();
     if (tabName === 'system') App.renderSystemView();
   },
 
   switchExtTab(subName, btn) {
-    ['vocab', 'grammar', 'books', 'cefr'].forEach(s => {
+    ['vocab', 'workplace', 'grammar', 'books', 'cefr'].forEach(s => {
       document.getElementById(`ext-${s}`).classList.toggle('hidden', s !== subName);
     });
     document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
@@ -1266,24 +2042,23 @@ const UI = {
 
   openCapabilityModal() {
     const isCloud = Boolean(App.state.backendEndpoint);
-    this.openModal('Bảng Trạng Thái Năng Lực Hệ Thống (V2.4)', `
+    this.openModal('Kiến Trúc & Phạm Vi Bảo Mật (V2.7.1)', `
       <div style="font-size:13px;">
-        <p style="margin-top:0;">Chế độ hiện tại: <strong>${isCloud ? 'CLOUD_CONNECTED' : 'LOCAL_FIRST (IndexedDB ACID)'}</strong></p>
+        <p style="margin-top:0;">Chế độ hiện tại: <strong>${isCloud ? 'CLOUD_CONNECTED' : 'LOCAL_FIRST (AES-GCM Profile Vault)'}</strong></p>
         <div style="background:var(--success-soft); padding:10px; border-radius:10px; margin-bottom:10px;">
-          <strong>✅ Đang hoạt động đầy đủ (Local-First):</strong>
+          <strong>✅ Đang hoạt động đầy đủ:</strong>
           <ul style="margin:6px 0 0; padding-left:18px;">
-            <li>Lộ trình 365 phiên, Chặng 0 Nạp Thẻ + 5 Chặng vượt ải & Ngữ pháp 4 tầng</li>
-            <li>Kho từ vựng mở rộng, Kho sách đọc & bôi đen đẩy vào 5 chặng</li>
-            <li>Playlist nghe thụ động, Heatmap 4 nhóm lỗi, Micro-Session & Báo bận</li>
-            <li>Xuất file Excel (.csv), Word (.doc), JSON & Đồng bộ gói sự kiện</li>
+            <li>Lộ trình 365 phiên, Chặng 0 Nạp Thẻ (<code>PREVIEW_ONLY</code>) + Chặng 1–5A kiểm tra <code>CORE_VOCAB</code></li>
+            <li>Câu bản địa & Collocations làm quen ở Chặng 0 và thực hành tự chọn ở Chặng 5B</li>
+            <li>Hàng đợi SRS công bằng (<code>30 thẻ/ngày</code>, chống đói lịch), Báo bận (<code>2 lần/tuần</code>)</li>
+            <li>Bảng Nghe Mỗi Ngày (15/30/45p, chống trùng lặp), Mini Dictation & Kho Sách PDF/DOCX</li>
           </ul>
         </div>
         <div style="background:var(--warning-soft); padding:10px; border-radius:10px;">
-          <strong>${isCloud ? '✅ Đã kết nối Backend:' : '⚠️ Cần kết nối Backend (CLOUD_CONNECTED):'}</strong>
+          <strong>⚠️ Giới hạn Local-First & Tính năng Backend:</strong>
           <ul style="margin:6px 0 0; padding-left:18px;">
-            <li>Đồng bộ đám mây tự động thời gian thực đa thiết bị</li>
-            <li>Phân quyền Admin/Member phía máy chủ (Argon2id)</li>
-            <li>Web Push định kỳ khi đóng hẳn app & AI Roleplay trực tuyến</li>
+            <li>Cổng đăng nhập cục bộ mã hóa hồ sơ trên máy này; thu hồi mã mời tức thì & bảo vệ mã nguồn tĩnh cần kết nối Backend.</li>
+            <li>Đồng bộ file nhị phân PDF/DOCX lớn mặc định tắt (<code>opt_in</code>).</li>
           </ul>
         </div>
       </div>
@@ -1294,36 +2069,37 @@ const UI = {
     this.openModal('Cấu Hình Nhắc Học Trước 22:00', `
       <div style="font-size:13px;">
         <p style="margin-top:0;">Hệ thống tự động hủy chuông nhắc ngay khi bạn hoàn thành phiên hôm nay hoặc bấm <b>Báo bận</b>.</p>
-        <label style="font-weight:700; display:block; margin-bottom:6px;">Giờ nhắc trong ứng dụng (In-App Alarm):</label>
         <input type="time" id="reminderTimeInput" class="input-field" value="${App.state.reminderTime || '21:00'}" max="22:00" />
-        <div class="action-row" style="margin-top:12px;">
-          <button class="btn btn-primary btn-block" onclick="App.saveReminderSettings()">💾 Lưu Lịch Nhắc</button>
-        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="App.saveReminderSettings()">💾 Lưu Lịch Nhắc</button>
       </div>
     `);
   }
 };
 
 /* ============================================================================
-   MAIN APPLICATION CONTROLLER (STATE, WORKSPACE RUNNER, EXPORT, BOOK READER)
+   LỚP 4: MAIN APPLICATION CONTROLLER
    ============================================================================ */
 const App = {
   state: null,
   activeRun: null,
   timerInterval: null,
 
-  getDefaultState() {
+  getDefaultState(userId = 'local_user', role = 'MEMBER') {
     const sessionStatuses = { 1: 'UNLOCKED' };
     for (let i = 2; i <= FROZEN_CONFIG.TOTAL_SESSIONS; i++) sessionStatuses[i] = 'LOCKED';
 
     return {
-      id: 'primary_profile',
+      userId,
+      role,
       deviceId: `dev_${Math.random().toString(36).slice(2, 10)}`,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
+      startedAtMs: Date.now(),
       currentQueueSession: 1,
       sessionStatuses,
       sessionRecords: {},
       itemMastery: {},
+      srsCards: {},
+      bonusClaimedSessions: [],
       streak: 0,
       xp: 0,
       dailyLogs: {},
@@ -1336,6 +2112,7 @@ const App = {
         MEANING_READ: 0,
         GRAMMAR_TRAP: 0
       },
+      recentErrorItems: [],
       wrongGrammarPool: [],
       cefrProgress: {
         A1: { examScore: 0, bossDefeated: false },
@@ -1345,6 +2122,7 @@ const App = {
         C1: { examScore: 0, bossDefeated: false },
         C2: { examScore: 0, bossDefeated: false }
       },
+      syncBookBinaryOptIn: false,
       reminderTime: '21:00',
       backendEndpoint: '',
       processedEventIds: [],
@@ -1354,10 +2132,14 @@ const App = {
     };
   },
 
-  async init() {
-    await StorageDB.init();
-    const saved = await StorageDB.get('state', 'primary_profile');
-    this.state = saved ? { ...this.getDefaultState(), ...saved } : this.getDefaultState();
+  async loadEncryptedProfile(userId, aesKey) {
+    const rec = await StorageDB.get('profiles', `profile::${userId}`);
+    if (rec && rec.cipher) {
+      const decrypted = await CryptoVault.decryptJson(rec.cipher, aesKey);
+      this.state = { ...this.getDefaultState(userId), ...decrypted };
+    } else {
+      this.state = this.getDefaultState(userId);
+    }
     await this.persist();
 
     const books = await StorageDB.getAll('books');
@@ -1375,38 +2157,55 @@ const App = {
     this.renderDashboard();
     this.renderMap();
     this.startInAppReminderWatcher();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
   },
 
   async persist() {
-    await StorageDB.put('state', this.state);
+    if (!this.state || !AuthController.activeAesKey) return;
+    const cipher = await CryptoVault.encryptJson(this.state, AuthController.activeAesKey);
+    await StorageDB.put('profiles', { profileKey: `profile::${this.state.userId}`, cipher });
+
+    // Cập nhật chỉ số công khai tối thiểu cho Bảng Xếp Hạng nội bộ trên máy
+    const acc = await StorageDB.get('accounts', this.state.userId);
+    if (acc) {
+      const completedSessions = Object.values(this.state.sessionStatuses).filter(s => s === 'COMPLETED').length;
+      acc.publicStats = {
+        userId: this.state.userId,
+        role: this.state.role,
+        xp: this.state.xp,
+        streak: this.state.streak,
+        completedSessions
+      };
+      await StorageDB.put('accounts', acc);
+    }
   },
 
   recordEvent(type, entityId, payload) {
-    const evt = SyncEngine.createEvent(this.state.deviceId, type, entityId, payload);
+    const evt = SyncEngine.createEvent(this.state.userId, this.state.deviceId, type, entityId, payload);
     this.state.eventLog.push(evt);
     this.state.processedEventIds.push(evt.event_id);
     return evt;
   },
 
-  /* ---------------- DASHBOARD & 365 MAP ---------------- */
+  /* ---------------- DASHBOARD, SRS QUEUE & PACE FORECAST ---------------- */
   renderDashboard() {
     const completedCount = Object.values(this.state.sessionStatuses).filter(s => s === 'COMPLETED').length;
     const pct = ((completedCount / FROZEN_CONFIG.TOTAL_SESSIONS) * 100).toFixed(1);
     const cur = this.state.currentQueueSession;
-    const nextGate = FROZEN_CONFIG.MONTHLY_GATE_SESSIONS.find(g => g >= cur) || 365;
-    const gateDist = Math.max(0, nextGate - cur);
+
+    // Dự báo ngày tốt nghiệp (Pace Forecaster)
+    const daysElapsed = Math.max(1, (Date.now() - (this.state.startedAtMs || Date.now())) / 86400000);
+    const pacePerDay = completedCount > 0 ? (completedCount / daysElapsed) : (6 / 7);
+    const remainingSessions = Math.max(0, FROZEN_CONFIG.TOTAL_SESSIONS - completedCount);
+    const estDaysLeft = Math.ceil(remainingSessions / Math.max(0.2, pacePerDay));
+    const estDate = new Date(Date.now() + estDaysLeft * 86400000);
 
     document.getElementById('statSession').textContent = `${cur} / 365`;
     document.getElementById('statPercent').textContent = `${pct}%`;
-    document.getElementById('statGateCountdown').textContent = gateDist === 0 ? 'NGAY HÔM NAY' : `${gateDist} phiên`;
+    document.getElementById('statPaceForecast').textContent = remainingSessions === 0 ? 'XONG 365' : `${estDate.getMonth() + 1}/${estDate.getFullYear()}`;
     document.getElementById('statStreak').textContent = `${this.state.streak} 🔥`;
 
     const isCloud = Boolean(this.state.backendEndpoint);
-    document.getElementById('capabilityBadge').textContent = isCloud ? 'CLOUD_CONNECTED' : 'LOCAL-FIRST V2.4';
+    document.getElementById('capabilityBadge').textContent = isCloud ? 'CLOUD_CONNECTED' : 'LOCAL-FIRST V2.7.1';
 
     const bp = CurriculumEngine.getSessionBlueprint(cur);
     document.getElementById('sessionModeBadge').textContent = bp.mode;
@@ -1414,13 +2213,16 @@ const App = {
 
     if (bp.mode === 'NEW_LEARNING') {
       document.getElementById('activeSessionDesc').textContent =
-        `Mục tiêu: ${bp.vocabCount} từ vựng${bp.nativePhraseCount ? ` + ${bp.nativePhraseCount} câu bản địa` : ''} (Nạp thẻ Chặng 0 → Vượt ải 5 Chặng, 5A ${bp.speedComboBudget}s ≥80%)${bp.grammarTier ? ` + Ngữ pháp Tầng ${bp.grammarTier} (${bp.grammarMinQuestions} câu ≥75%)` : ''}.`;
+        `Lõi kiểm tra: ${bp.vocabCount} từ chuẩn (Chặng 0 Preview → Chặng 1–4 100% → 5A ${bp.speedComboBudget}s ≥80%)${bp.grammarTier ? ` + Ngữ pháp T${bp.grammarTier} (${bp.grammarMinQuestions} câu ≥75%)` : ''}${bp.nativePhraseCount ? ' + 1 Câu bản địa làm quen' : ''}.`;
     } else {
       document.getElementById('activeSessionDesc').textContent =
-        `Bài kiểm tra tổng hợp (${bp.grammarMinQuestions} câu) — Ngưỡng đạt bắt buộc: ≥${bp.passThreshold}%.`;
+        `Đánh giá tổng hợp tập kiến thức đã học (${bp.grammarMinQuestions} câu) — Ngưỡng đạt: ≥${bp.passThreshold}%.`;
     }
 
     const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
+    const dueSrs = ProgressEngine.getFairSrsDueQueue(this.state.srsCards, logicalDay);
+    document.getElementById('srsDueCount').textContent = dueSrs.length;
+
     const dayLog = this.state.dailyLogs[logicalDay];
     const schedBadge = document.getElementById('dailyScheduleBadge');
     if (dayLog && dayLog.scheduleState === 'COMPLETED') {
@@ -1428,13 +2230,13 @@ const App = {
       schedBadge.textContent = 'HÔM NAY: ĐÃ XONG PHIÊN';
     } else if (dayLog && dayLog.scheduleState === 'DEFERRED') {
       schedBadge.className = 'badge badge-purple';
-      schedBadge.textContent = 'HÔM NAY: ĐÃ BÁO BẬN (FREEZE)';
+      schedBadge.textContent = 'HÔM NAY: ĐÃ BÁO BẬN';
     } else if (dayLog && dayLog.streakCounted) {
       schedBadge.className = 'badge badge-blue';
-      schedBadge.textContent = 'STREAK ĐÃ GIỮ — PHIÊN CHÍNH CHỜ';
+      schedBadge.textContent = 'STREAK ĐÃ GIỮ';
     } else {
       schedBadge.className = 'badge badge-amber';
-      schedBadge.textContent = `NGÀY HỌC: ${logicalDay}`;
+      schedBadge.textContent = `NGÀY: ${logicalDay}`;
     }
 
     const weekKey = ProgressEngine.getLogicalWeekKey(logicalDay);
@@ -1481,12 +2283,248 @@ const App = {
       UI.openModal(`Phiên ${sessionNumber} — Đã Hoàn Thành`, `
         <p style="font-size:13px; margin-top:0;">Hoàn thành lúc: <strong>${rec.completedAt || 'Đã lưu'}</strong></p>
         <p style="font-size:13px;">Xác minh giọng nói: <strong>${rec.speaking_verified === false ? '⚠️ Chế độ Fallback (Chưa xác minh mic)' : '✅ Đã xác minh'}</strong></p>
-        <p style="font-size:12px; color:var(--text-muted);">Chế độ Ôn tập lại (Review Mode) giúp củng cố trí nhớ và giữ Streak ngày mà không ghi đè tiến độ gốc.</p>
         <button class="btn btn-primary btn-block" onclick="UI.closeModal(); App.launchSession(${sessionNumber}, true);">🔄 Vào Ôn Tập Lại Phiên ${sessionNumber}</button>
       `);
       return;
     }
     this.launchSession(sessionNumber, false);
+  },
+
+  /* ---------------- SRS DAILY QUEUE RUNNER (FAIRNESS POLICY) ---------------- */
+  startSrsReviewSession() {
+    const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
+    const dueCards = ProgressEngine.getFairSrsDueQueue(this.state.srsCards, logicalDay);
+    if (dueCards.length === 0) {
+      UI.toast('🎉 Hôm nay không còn thẻ SRS nào đến hạn!');
+      return;
+    }
+
+    this.activeRun = {
+      type: 'SRS_DAILY',
+      cards: dueCards,
+      idx: 0,
+      correct: 0
+    };
+    document.getElementById('workspaceCard').classList.remove('hidden');
+    document.getElementById('wsTimer').classList.add('hidden');
+    document.getElementById('wsBadge').textContent = `HÀNG ĐỢI SRS CÔNG BẰNG (TRẦN 30 THẺ/NGÀY)`;
+    document.getElementById('wsTitle').textContent = `Ôn Tập Giãn Cách (${dueCards.length} thẻ đến hạn)`;
+    document.getElementById('wsStepper').innerHTML = '';
+    this.renderSrsCardQuestion();
+  },
+
+  renderSrsCardQuestion() {
+    const r = this.activeRun;
+    if (r.idx >= r.cards.length) {
+      document.getElementById('wsBody').innerHTML = `
+        <div class="prompt-box">
+          <div class="word-main">🔁 Hoàn Thành Phiên Ôn SRS Hôm Nay!</div>
+          <p>Đã ôn <strong>${r.cards.length} thẻ</strong> (Đúng: ${r.correct}/${r.cards.length}). Các thẻ sai đã được đưa về đầu hàng đợi ưu tiên.</p>
+          <button class="btn btn-primary" onclick="App.exitWorkspace()">Hoàn tất</button>
+        </div>
+      `;
+      this.renderDashboard();
+      return;
+    }
+
+    const card = r.cards[r.idx];
+    const pool = CurriculumBank.CORE_WORDS;
+    const distractors = pool.filter(p => p.lemma !== card.lemma).slice(0, 2).map(d => d.meaning);
+    const opts = [card.meaning, ...distractors].sort(() => Math.random() - 0.5);
+
+    document.getElementById('wsBody').innerHTML = `
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">
+        Thẻ ${r.idx + 1}/${r.cards.length} • Mốc hiện tại: <b>${card.intervalDays || 1} ngày</b> • Số lần sai: <b>${card.lapseCount || 0}</b>
+      </div>
+      <div class="prompt-box">
+        <div class="word-main">${card.lemma}</div>
+        <div class="word-ipa">${card.ipa}</div>
+      </div>
+      <div class="option-grid">
+        ${opts.map(o => `<button class="opt-btn" onclick="App.answerSrsCard(${o === card.meaning})">${o}</button>`).join('')}
+      </div>
+    `;
+  },
+
+  async answerSrsCard(isCorrect) {
+    const r = this.activeRun;
+    const card = r.cards[r.idx];
+    const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
+    this.state.srsCards[card.canonicalKey] = ProgressEngine.updateSrsCardResult(card, isCorrect, logicalDay);
+    if (isCorrect) {
+      r.correct++;
+      UI.toast('✅ Đúng! Đã nâng bậc khoảng cách ôn tập.');
+    } else {
+      UI.toast('❌ Sai! Đã giữ lịch sử sai và xếp lại lượt ôn ưu tiên.');
+    }
+    await this.persist();
+    r.idx++;
+    this.renderSrsCardQuestion();
+  },
+
+  /* ---------------- DAILY LISTENING BOARD & MINI DICTATION ---------------- */
+  buildDailyListeningQueue(durationMinutes = 30) {
+    // Ưu tiên: recent_errors -> due_srs -> current_session; chống trùng theo canonical_item_id
+    const seen = new Set();
+    const queue = [];
+    const pushUnique = (item, sourceTag) => {
+      const id = item.canonicalKey || CurriculumEngine.buildCanonicalKey(item.lemma, 'en', item.pos || 'noun', item.meaning);
+      if (seen.has(id)) return;
+      seen.add(id);
+      queue.push({ ...item, canonicalKey: id, sourceTag });
+    };
+
+    (this.state.recentErrorItems || []).forEach(it => pushUnique(it, 'Lỗi gần đây'));
+    const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
+    ProgressEngine.getFairSrsDueQueue(this.state.srsCards, logicalDay).forEach(it => pushUnique(it, 'SRS đến hạn'));
+
+    const bp = CurriculumEngine.getSessionBlueprint(this.state.currentQueueSession);
+    if (bp.mode === 'NEW_LEARNING') {
+      CurriculumBank.getSessionPackage(bp).previewCards.forEach(it => pushUnique(it, 'Phiên hiện tại'));
+    } else {
+      CurriculumBank.CORE_WORDS.slice(0, 6).forEach(it => pushUnique(it, 'Ôn tập cốt lõi'));
+    }
+
+    // Mỗi mục mất ~25 giây trong vòng lặp nghe; cắt danh sách vừa khớp thời lượng 15/30/45 phút
+    const maxItems = Math.max(4, Math.floor((durationMinutes * 60) / 25));
+    return queue.slice(0, maxItems);
+  },
+
+  openDailyListeningBoard(mode = 'PASSIVE') {
+    const mins = Number(document.getElementById('listeningDurationSelect').value || 30);
+    const items = this.buildDailyListeningQueue(mins);
+    this._playlistItems = items;
+    this._playlistMode = mode;
+
+    UI.openModal(`🎧 Bảng Nghe Mỗi Ngày (${mins} Phút — ${items.length} Mục)`, `
+      <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
+        Chế độ: <strong>${mode === 'SHADOWING' ? 'Nhại giọng Shadowing (Chừa khoảng lặng 3 giây)' : 'Nghe Thẩm Thấu (1.0x → 0.65x → Nghĩa Việt → Ví dụ)'}</strong>.
+      </p>
+      <div id="playlistNowPlaying" class="prompt-box"><strong>Sẵn sàng phát ${items.length} mục đã lọc trùng...</strong></div>
+      <div class="action-row" style="margin-bottom:10px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="App.startHandsFreePlaylist(${mins})">▶ Bắt Đầu Phát</button>
+        <button class="btn btn-danger" style="flex:1;" onclick="App.stopHandsFreePlaylist()">⏹ Dừng</button>
+      </div>
+      <div style="max-height:150px; overflow-y:auto; font-size:12px; border-top:1px solid var(--border); padding-top:8px;">
+        ${items.map((it, idx) => `<div style="padding:3px 0;">${idx + 1}. <b>${it.lemma}</b> <span class="badge badge-gray">${it.sourceTag}</span></div>`).join('')}
+      </div>
+    `);
+  },
+
+  async startHandsFreePlaylist(durationMinutes = 30) {
+    this._playlistRunning = true;
+    const endAt = Date.now() + durationMinutes * 60 * 1000;
+    const items = this._playlistItems || [];
+    let idx = 0;
+
+    while (this._playlistRunning && Date.now() < endAt && items.length > 0) {
+      const it = items[idx % items.length];
+      const box = document.getElementById('playlistNowPlaying');
+      if (box) {
+        box.innerHTML = `<span class="badge badge-purple">${it.sourceTag}</span><div class="word-main">${it.lemma}</div><div class="word-ipa">${it.ipa || ''}</div><div>${it.meaning}</div>`;
+      }
+      await AudioHelper.speak(it.lemma, 1.0, 'en-US');
+      if (!this._playlistRunning) break;
+
+      if (this._playlistMode === 'SHADOWING') {
+        await new Promise(r => setTimeout(r, 3000));
+      } else {
+        await AudioHelper.speak(it.lemma, 0.65, 'en-US');
+        if (!this._playlistRunning) break;
+        await AudioHelper.speak(it.meaning, 1.0, 'vi-VN');
+        if (!this._playlistRunning) break;
+        if (it.example) await AudioHelper.speak(it.example, 0.95, 'en-US');
+      }
+      idx++;
+    }
+  },
+
+  stopHandsFreePlaylist(silent = false) {
+    this._playlistRunning = false;
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (!silent) UI.toast('⏹ Đã dừng phát âm thanh.');
+  },
+
+  startMiniDictation() {
+    const queue = this.buildDailyListeningQueue(15).filter(it => it.contentType !== 'NATIVE_PHRASE').slice(0, 5);
+    this.activeRun = {
+      type: 'MINI_DICTATION',
+      items: queue,
+      idx: 0,
+      correct: 0
+    };
+    document.getElementById('workspaceCard').classList.remove('hidden');
+    document.getElementById('wsTimer').classList.add('hidden');
+    document.getElementById('wsBadge').textContent = 'MINI DICTATION (5 MỤC / 2 PHÚT)';
+    document.getElementById('wsTitle').textContent = 'Nghe Chép Nhanh (Cập Nhật SRS & Streak ≥80%)';
+    document.getElementById('wsStepper').innerHTML = '';
+    this.renderMiniDictationTask();
+  },
+
+  renderMiniDictationTask() {
+    const r = this.activeRun;
+    if (r.idx >= r.items.length) {
+      const score = Math.round((r.correct / r.items.length) * 100);
+      const streakEligible = score >= FROZEN_CONFIG.MINI_DICTATION_STREAK_THRESHOLD;
+      if (streakEligible) {
+        const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
+        this.state = ProgressEngine.applyDailyActivity(this.state, 'MINI_DICTATION_PASS', logicalDay);
+        this.persist();
+        this.renderDashboard();
+      }
+      document.getElementById('wsBody').innerHTML = `
+        <div class="prompt-box">
+          <div class="word-main">${streakEligible ? '🎉 Đạt Mini Dictation!' : 'Hoàn Thành Lượt Nghe Chép'}</div>
+          <p>Điểm số: <strong>${r.correct}/${r.items.length} (${score}%)</strong></p>
+          <p style="font-size:12px; color:var(--text-muted);">
+            ${streakEligible ? 'Đã tính giữ/tăng Streak hôm nay (tối đa +1/ngày) và cập nhật từng thẻ vào SRS.' : `Cần đạt ≥${FROZEN_CONFIG.MINI_DICTATION_STREAK_THRESHOLD}% để tính giữ Streak. Các thẻ đã được cập nhật riêng lẻ vào SRS.`}
+          </p>
+          <button class="btn btn-primary" onclick="App.exitWorkspace()">Hoàn tất</button>
+        </div>
+      `;
+      return;
+    }
+
+    const item = r.items[r.idx];
+    document.getElementById('wsBody').innerHTML = `
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Mục nghe ${r.idx + 1} / ${r.items.length}</div>
+      <div class="prompt-box">
+        <button class="btn btn-primary" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 1.0)">🔊 Nghe chuẩn (1.0x)</button>
+        <button class="btn btn-outline" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 0.65)">🐢 Nghe chậm (0.65x)</button>
+      </div>
+      <input id="miniDictInput" class="input-field" placeholder="Gõ từ bạn nghe được..." autocomplete="off" />
+      <button class="btn btn-success btn-block" style="margin-top:8px;" onclick="App.submitMiniDictation()">Kiểm tra</button>
+    `;
+    AudioHelper.speak(item.lemma, 1.0);
+  },
+
+  async submitMiniDictation() {
+    const r = this.activeRun;
+    const item = r.items[r.idx];
+    const val = document.getElementById('miniDictInput').value.trim().toLowerCase();
+    const isOk = val === item.lemma.toLowerCase();
+    const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
+
+    if (isOk) {
+      r.correct++;
+      UI.toast('✅ Chính xác!');
+    } else {
+      this.state.weaknessCounts.SPELLING_LISTEN++;
+      this.trackRecentError(item);
+      UI.toast(`❌ Đáp án đúng: ${item.lemma}`);
+    }
+
+    if (this.state.srsCards[item.canonicalKey]) {
+      this.state.srsCards[item.canonicalKey] = ProgressEngine.updateSrsCardResult(this.state.srsCards[item.canonicalKey], isOk, logicalDay);
+    }
+    await this.persist();
+    r.idx++;
+    this.renderMiniDictationTask();
+  },
+
+  trackRecentError(item) {
+    if (!this.state.recentErrorItems) this.state.recentErrorItems = [];
+    this.state.recentErrorItems = [item, ...this.state.recentErrorItems.filter(x => x.canonicalKey !== item.canonicalKey)].slice(0, 15);
   },
 
   /* ---------------- BUSY DEFERRAL & MICRO-SESSION ---------------- */
@@ -1497,32 +2535,23 @@ const App = {
       this.recordEvent('BUSY_DEFERRAL', logicalDay, { session: this.state.currentQueueSession });
       await this.persist();
       this.renderDashboard();
-      UI.toast('🛡️ Đã bật Báo bận: Giữ nguyên Streak, dời lịch phiên chính khóa +1 ngày!');
+      UI.toast('🛡️ Đã bật Báo bận: Bảo vệ Streak, giữ nguyên hàng đợi phiên chính & tắt nhắc hôm nay!');
     } catch (err) {
       UI.toast(`⚠️ ${err.message}`);
     }
   },
 
   startMicroSession() {
-    const pool = [...CurriculumBank.CORE_WORDS, ...CurriculumBank.NATIVE_PHRASES];
+    const pool = CurriculumBank.CORE_WORDS;
     const questions = [];
     for (let i = 0; i < 10; i++) {
       const item = pool[i % pool.length];
       const distractors = pool.filter(p => p.lemma !== item.lemma).slice(0, 2).map(d => d.meaning);
       const opts = [item.meaning, ...distractors].sort(() => Math.random() - 0.5);
-      questions.push({
-        prompt: `Nghĩa của "${item.lemma}" (${item.ipa}) là gì?`,
-        opts,
-        ans: opts.indexOf(item.meaning)
-      });
+      questions.push({ prompt: `Nghĩa của từ chuẩn "${item.lemma}" (${item.ipa}) là gì?`, opts, ans: opts.indexOf(item.meaning) });
     }
 
-    this.activeRun = {
-      type: 'MICRO_SESSION',
-      questions,
-      idx: 0,
-      correct: 0
-    };
+    this.activeRun = { type: 'MICRO_SESSION', questions, idx: 0, correct: 0 };
     document.getElementById('workspaceCard').classList.remove('hidden');
     document.getElementById('wsTimer').classList.add('hidden');
     document.getElementById('wsBadge').textContent = 'HỌC NHANH 5 PHÚT';
@@ -1547,7 +2576,7 @@ const App = {
           <div class="word-main">${passed ? '🎉 Đạt Micro-Session!' : 'Chưa đạt ngưỡng 70%'}</div>
           <p>Kết quả: <strong>${r.correct}/10 (${score}%)</strong></p>
           <p style="font-size:12px; color:var(--text-muted);">
-            ${passed ? 'Đã giữ/tăng Streak hôm nay! (Lưu ý: Phiên chính khóa vẫn giữ nguyên để bạn học đầy đủ sau).' : 'Hãy thử lại để giữ Streak hôm nay.'}
+            ${passed ? 'Đã ghi nhận hoạt động hôm nay (chỉ tính tối đa +1 Streak/ngày, không cộng trùng nếu đã Báo bận).' : 'Hãy thử lại để giữ Streak hôm nay.'}
           </p>
           <button class="btn btn-primary" onclick="App.exitWorkspace()">Hoàn tất</button>
         </div>
@@ -1559,9 +2588,7 @@ const App = {
     document.getElementById('wsBody').innerHTML = `
       <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Câu ${r.idx + 1} / 10</div>
       <div class="prompt-box"><strong>${q.prompt}</strong></div>
-      <div class="option-grid">
-        ${q.opts.map((o, i) => `<button class="opt-btn" onclick="App.answerMicro(${i})">${o}</button>`).join('')}
-      </div>
+      <div class="option-grid">${q.opts.map((o, i) => `<button class="opt-btn" onclick="App.answerMicro(${i})">${o}</button>`).join('')}</div>
     `;
   },
 
@@ -1572,7 +2599,7 @@ const App = {
     this.renderMicroQuestion();
   },
 
-  /* ---------------- CORE SESSION LAUNCHER & 5 STAGES ---------------- */
+  /* ---------------- CORE SESSION LAUNCHER & STAGES 0 -> 5B ---------------- */
   startCurrentSession() {
     this.launchSession(this.state.currentQueueSession, false);
   },
@@ -1582,7 +2609,7 @@ const App = {
       ? {
           sessionNumber: 0,
           mode: 'NEW_LEARNING',
-          title: 'Luyện Kho Tự Nhập — Nạp Thẻ & 5 Chặng',
+          title: 'Luyện Kho Tự Nhập — Chặng 0 & 5 Chặng',
           vocabCount: customItemsOverride.length,
           nativePhraseCount: 0,
           grammarTier: 0,
@@ -1593,8 +2620,25 @@ const App = {
         }
       : CurriculumEngine.getSessionBlueprint(sessionNumber);
 
-    const items = customItemsOverride || CurriculumBank.getSessionItems(bp);
-    const grammarQuestions = customItemsOverride ? [] : CurriculumBank.getGrammarQuestionsForSession(bp);
+    const pkg = customItemsOverride
+      ? { previewCards: customItemsOverride, coreVocabItems: customItemsOverride }
+      : CurriculumBank.getSessionPackage(bp);
+
+    const learnedKeys = Object.keys(this.state.itemMastery || {});
+    const grammarQuestions = customItemsOverride
+      ? []
+      : (bp.mode === 'NEW_LEARNING'
+          ? (bp.grammarTier > 0 ? CurriculumBank.GRAMMAR_BANK.filter(g => g.tier <= bp.grammarTier).slice(0, bp.grammarMinQuestions) : [])
+          : CurriculumBank.getReviewPoolForSession(bp, learnedKeys));
+
+    // Đảm bảo đủ số câu ngữ pháp theo định mức phiên NEW_LEARNING (20/25/30/35)
+    if (bp.mode === 'NEW_LEARNING' && bp.grammarTier > 0) {
+      const pool = CurriculumBank.GRAMMAR_BANK.filter(g => g.tier <= bp.grammarTier);
+      while (grammarQuestions.length < bp.grammarMinQuestions) {
+        const g = pool[grammarQuestions.length % pool.length];
+        grammarQuestions.push({ ...g, instanceId: `q_${sessionNumber}_${grammarQuestions.length}` });
+      }
+    }
 
     const savedProgress = (!isReviewMode && !customItemsOverride && this.state.inProgressSession && this.state.inProgressSession.sessionNumber === sessionNumber)
       ? this.state.inProgressSession
@@ -1605,10 +2649,11 @@ const App = {
       isReviewMode,
       isCustomPool: Boolean(customItemsOverride),
       blueprint: bp,
-      items,
-      stage: bp.mode === 'NEW_LEARNING' ? 0 : 6, // Stage 0: Nạp thẻ, 1..4: Vocab, 5: 5A Speed Combo, 6: Grammar/Exam, 7: 5B Roleplay
+      previewCards: pkg.previewCards,
+      items: pkg.coreVocabItems, // Chỉ CORE_VOCAB được kiểm tra ở Chặng 1-5A
+      stage: bp.mode === 'NEW_LEARNING' ? 0 : 6,
       studyIdx: 0,
-      queue: items.map((_, i) => i),
+      queue: pkg.coreVocabItems.map((_, i) => i),
       stage1Direction: 0,
       accessibilityFallback: false,
       stages1to4Done: bp.mode !== 'NEW_LEARNING',
@@ -1656,7 +2701,7 @@ const App = {
         `<div class="step-pill ${r.stage === s.id ? 'active' : (r.stage > s.id ? 'done' : '')}">${s.label}</div>`
       ).join('');
     } else {
-      stepper.innerHTML = `<div class="step-pill active">Bài Đánh Giá Tổng Hợp (${r.grammarQuestions.length} câu — Ngưỡng ≥${bp.passThreshold}%)</div>`;
+      stepper.innerHTML = `<div class="step-pill active">Đánh Giá Tổng Hợp Kiến Thức Đã Học (${r.grammarQuestions.length} câu — Ngưỡng ≥${bp.passThreshold}%)</div>`;
     }
 
     if (r.stage === 0) this.renderStage0Study();
@@ -1669,24 +2714,34 @@ const App = {
     else if (r.stage === 7) this.renderStage5BRoleplay();
   },
 
-  /* STAGE 0: Study Cards (Nạp kiến thức trước khi luyện tập) */
+  /* STAGE 0: PREVIEW_ONLY (Không chấm điểm, phân tách từ chuẩn vs biến thể & câu bản địa) */
   renderStage0Study() {
     const r = this.activeRun;
+    const cards = r.previewCards;
     if (typeof r.studyIdx !== 'number') r.studyIdx = 0;
-    const item = r.items[r.studyIdx];
+    const item = cards[r.studyIdx];
+    const isNative = item.contentType === 'NATIVE_PHRASE';
 
-    document.getElementById('wsBadge').textContent = `CHẶNG 0 — NẠP THẺ KIẾN THỨC (${r.studyIdx + 1}/${r.items.length})`;
+    document.getElementById('wsBadge').textContent = `CHẶNG 0 — PREVIEW_ONLY (${r.studyIdx + 1}/${cards.length})`;
     document.getElementById('wsBody').innerHTML = `
       <div class="prompt-box">
-        <span class="badge badge-blue">${item.isNativePhrase ? 'CÂU BẢN ĐỊA' : item.pos.toUpperCase()}</span>
+        <div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">
+          <span class="badge ${isNative ? 'badge-purple' : 'badge-blue'}">
+            ${isNative ? 'CÂU BẢN ĐỊA (LÀM QUEN — KHÔNG THI)' : `${item.pos.toUpperCase()} • TỪ CHUẨN KIỂM TRA`}
+          </span>
+        </div>
         <div class="word-main" style="margin-top:8px;">${item.lemma}</div>
         <div class="word-ipa">${item.ipa}</div>
-        <div style="font-size:17px; font-weight:800; color:#047857; margin:10px 0 6px;">${item.meaning}</div>
-        <div style="font-size:13px; color:var(--text-muted); background:#fff; padding:8px 10px; border-radius:8px; border:1px solid var(--border);">
-          💬 <i>"${item.example}"</i>
+        <div style="font-size:16px; font-weight:800; color:#047857; margin:8px 0 4px;">${item.meaning}</div>
+
+        <div class="study-expansion-box">
+          ${item.variants && item.variants.length ? `<div style="margin-bottom:5px;"><b>Biến thể để nhận biết (Không thi):</b> <span style="color:var(--text-muted);">${item.variants.join(', ')}</span></div>` : ''}
+          ${item.collocations && item.collocations.length ? `<div style="margin-bottom:5px;"><b>Cụm từ thường gặp (Collocations):</b> <span style="color:var(--primary);">${item.collocations.join(' • ')}</span></div>` : ''}
+          <div><b>Ví dụ:</b> <i>"${item.example}"</i>${item.exampleVi ? `<br/><span style="color:var(--text-muted);">→ ${item.exampleVi}</span>` : ''}</div>
         </div>
+
         <div class="action-row" style="justify-content:center; margin-top:12px;">
-          <button class="btn btn-outline btn-sm" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 1.0)">🔊 Nghe từ (1.0x)</button>
+          <button class="btn btn-outline btn-sm" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 1.0)">🔊 Nghe chuẩn (1.0x)</button>
           <button class="btn btn-outline btn-sm" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 0.65)">🐢 Nghe chậm (0.65x)</button>
           <button class="btn btn-outline btn-sm" onclick="AudioHelper.speak('${item.example.replace(/'/g, "\\'")}', 0.95)">🗣️ Nghe ví dụ</button>
         </div>
@@ -1694,7 +2749,7 @@ const App = {
       <div class="action-row">
         ${r.studyIdx > 0 ? `<button class="btn btn-outline" style="flex:1;" onclick="App.activeRun.studyIdx--; App.renderWorkspace();">← Thẻ trước</button>` : ''}
         <button class="btn btn-primary" style="flex:2;" onclick="App.nextStudyCard()">
-          ${r.studyIdx + 1 < r.items.length ? 'Đã nhớ — Thẻ tiếp theo →' : '🚀 Đã nạp xong — Vào Chặng 1 Phản Xạ'}
+          ${r.studyIdx + 1 < cards.length ? 'Thẻ tiếp theo →' : '🚀 Vào Chặng 1 (Kiểm Tra Từ Chuẩn)'}
         </button>
       </div>
     `;
@@ -1703,7 +2758,7 @@ const App = {
 
   nextStudyCard() {
     const r = this.activeRun;
-    if (r.studyIdx + 1 < r.items.length) {
+    if (r.studyIdx + 1 < r.previewCards.length) {
       r.studyIdx++;
     } else {
       r.stage = 1;
@@ -1725,6 +2780,7 @@ const App = {
     }
 
     if (!isCorrect) {
+      this.trackRecentError(item);
       r.queue.push(currentIdx);
       this.persist();
       return false;
@@ -1736,8 +2792,20 @@ const App = {
         r.queue = r.items.map((_, i) => i);
       } else if (r.stage === 4) {
         r.stages1to4Done = true;
+        const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
         r.items.forEach(it => {
           this.state.itemMastery[it.canonicalKey].mastered = true;
+          // Nạp từ chuẩn đã học vào hàng đợi SRS ngày kế tiếp
+          if (!this.state.srsCards[it.canonicalKey]) {
+            this.state.srsCards[it.canonicalKey] = ProgressEngine.updateSrsCardResult({
+              canonicalKey: it.canonicalKey,
+              lemma: it.lemma,
+              ipa: it.ipa,
+              meaning: it.meaning,
+              intervalDays: 0,
+              lapseCount: 0
+            }, true, logicalDay);
+          }
         });
         r.stage = 5;
       }
@@ -1746,22 +2814,21 @@ const App = {
     return true;
   },
 
-  /* STAGE 1: 2-Way Speed Match */
+  /* STAGE 1..4 (Chỉ kiểm tra CORE_VOCAB của phiên) */
   renderStage1() {
     const r = this.activeRun;
     const item = r.items[r.queue[0]];
     const dir = (r.stage1Direction++) % 2;
-    const pool = [...CurriculumBank.CORE_WORDS, ...CurriculumBank.NATIVE_PHRASES];
-    const distractors = pool.filter(p => p.lemma !== item.lemma).slice(0, 2);
+    const distractors = CurriculumBank.CORE_WORDS.filter(p => p.lemma !== item.lemma).slice(0, 2);
 
     const promptText = dir === 0 ? item.lemma : item.meaning;
     const correctText = dir === 0 ? item.meaning : item.lemma;
     const options = [correctText, ...distractors.map(d => dir === 0 ? d.meaning : d.lemma)].sort(() => Math.random() - 0.5);
 
-    document.getElementById('wsBadge').textContent = `CHẶNG 1/5 — PHẢN XẠ 2 CHIỀU (Còn ${r.queue.length} mục)`;
+    document.getElementById('wsBadge').textContent = `CHẶNG 1/5 — PHẢN XẠ 2 CHIỀU (Còn ${r.queue.length} từ)`;
     document.getElementById('wsBody').innerHTML = `
       <div class="prompt-box">
-        <span class="badge badge-blue">${item.isNativePhrase ? 'CÂU BẢN ĐỊA' : item.pos.toUpperCase()}</span>
+        <span class="badge badge-blue">${item.pos.toUpperCase()}</span>
         <div class="word-main">${promptText}</div>
         ${dir === 0 ? `<div class="word-ipa">${item.ipa}</div>` : ''}
       </div>
@@ -1782,30 +2849,27 @@ const App = {
       this.advanceStageQueue(false);
       document.getElementById('stageFeedback').innerHTML = `
         <div class="correction-box">
-          <strong>❌ Nhầm nghĩa!</strong> Đáp án đúng là: <b>${correct}</b>. Mục này đã được đẩy về cuối hàng đợi để bạn làm lại.
+          <strong>❌ Nhầm nghĩa!</strong> Đáp án đúng là: <b>${correct}</b>. Từ này đã được đẩy về cuối hàng đợi để làm lại.
           <div style="margin-top:8px;"><button class="btn btn-danger btn-sm" onclick="App.renderWorkspace()">Tiếp tục</button></div>
         </div>
       `;
     }
   },
 
-  /* STAGE 2: Audio Dictation */
   renderStage2() {
     const r = this.activeRun;
     const item = r.items[r.queue[0]];
-    document.getElementById('wsBadge').textContent = `CHẶNG 2/5 — TAI NGHE CHÍNH TẢ (Còn ${r.queue.length} mục)`;
+    document.getElementById('wsBadge').textContent = `CHẶNG 2/5 — TAI NGHE CHÍNH TẢ (Còn ${r.queue.length} từ)`;
     document.getElementById('wsBody').innerHTML = `
       <div class="prompt-box">
-        <p style="font-size:12px; color:var(--text-muted); margin-top:0;">Nghe âm thanh (đã ẩn chữ) và gõ lại chính xác từ/câu:</p>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:0;">Nghe âm thanh (đã ẩn chữ) và gõ lại chính xác từ chuẩn:</p>
         <div class="action-row" style="justify-content:center;">
           <button class="btn btn-primary" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 1.0)">🔊 Nghe chuẩn (1.0x)</button>
           <button class="btn btn-outline" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 0.65)">🐢 Nghe chậm (0.65x)</button>
         </div>
       </div>
-      <input id="dictationInput" class="input-field" placeholder="Gõ lại từ hoặc câu bạn nghe được..." autocomplete="off" />
-      <div class="action-row" style="margin-top:10px;">
-        <button class="btn btn-success btn-block" onclick="App.checkStage2()">Kiểm tra chính tả</button>
-      </div>
+      <input id="dictationInput" class="input-field" placeholder="Gõ lại từ bạn nghe được..." autocomplete="off" />
+      <button class="btn btn-success btn-block" style="margin-top:10px;" onclick="App.checkStage2()">Kiểm tra chính tả</button>
       <div id="stageFeedback"></div>
     `;
     AudioHelper.speak(item.lemma, 1.0);
@@ -1839,11 +2903,10 @@ const App = {
     }
   },
 
-  /* STAGE 3: Speak to Unlock + Mic Fallback */
   renderStage3() {
     const r = this.activeRun;
     const item = r.items[r.queue[0]];
-    document.getElementById('wsBadge').textContent = `CHẶNG 3/5 — KHẨU HÌNH & PHÁT ÂM (Còn ${r.queue.length} mục)`;
+    document.getElementById('wsBadge').textContent = `CHẶNG 3/5 — KHẨU HÌNH & PHÁT ÂM (Còn ${r.queue.length} từ)`;
     document.getElementById('wsBody').innerHTML = `
       <div class="prompt-box">
         <div class="word-main">${item.lemma}</div>
@@ -1877,19 +2940,14 @@ const App = {
       document.getElementById('stageFeedback').innerHTML = `
         <div class="correction-box">
           <strong>⚠️ Không nhận diện được giọng nói từ Micro.</strong>
-          <p style="font-size:12px; margin:6px 0;">Nếu thiết bị chặn mic hoặc môi trường đang ồn, bạn có thể dùng bài thay thế (ghi nhận trạng thái <code>SPEAKING_FALLBACK</code>, không cấp điểm phát âm giả).</p>
+          <p style="font-size:12px; margin:6px 0;">Bạn có thể dùng bài thay thế (ghi nhận trạng thái <code>SPEAKING_FALLBACK</code>, không cấp điểm phát âm giả).</p>
           <button class="btn btn-warning btn-sm" onclick="App.openStage3Fallback()">Chuyển sang Bài Thay Thế Fallback</button>
         </div>
       `;
       return;
     }
 
-    const evalRes = LearningEngine.evaluateSpeakingAttempt({
-      expectedText: item.lemma,
-      recognizedText: res.transcript,
-      fallbackUsed: false
-    });
-
+    const evalRes = LearningEngine.evaluateSpeakingAttempt({ expectedText: item.lemma, recognizedText: res.transcript, fallbackUsed: false });
     if (evalRes.passed) {
       this.state.itemMastery[item.canonicalKey].speakingStatus = 'SPEAKING_VERIFIED';
       UI.toast(`✅ Khớp ASR: "${res.transcript}" (SPEAKING_VERIFIED)`);
@@ -1915,7 +2973,7 @@ const App = {
     document.getElementById('stageFeedback').innerHTML = `
       <div style="background:var(--warning-soft); border:1px solid #fcd34d; border-radius:12px; padding:12px; margin-top:10px;">
         <strong>🔇 Chế Độ Thay Thế (ACCESSIBILITY_FALLBACK)</strong>
-        <p style="font-size:12px; margin:4px 0 8px;">Nghe kỹ phiên âm <b>${item.ipa}</b> và gõ lại từ để xác nhận nhận diện âm vị (Hệ thống sẽ ghi nhãn <code>speaking_verified = false</code>):</p>
+        <p style="font-size:12px; margin:4px 0 8px;">Nghe kỹ phiên âm <b>${item.ipa}</b> và gõ lại từ để xác nhận nhận diện âm vị (<code>speaking_verified = false</code>):</p>
         <input id="fallbackInput" class="input-field" placeholder="Gõ lại từ tương ứng với IPA ${item.ipa}..." />
         <button class="btn btn-warning btn-sm" style="margin-top:8px;" onclick="App.submitStage3Fallback()">Xác nhận bài thay thế</button>
       </div>
@@ -1938,21 +2996,20 @@ const App = {
     }
   },
 
-  /* STAGE 4: Context Cloze */
   renderStage4() {
     const r = this.activeRun;
     const item = r.items[r.queue[0]];
     const regex = new RegExp(item.lemma, 'i');
     const maskedSentence = item.example.replace(regex, '________');
 
-    document.getElementById('wsBadge').textContent = `CHẶNG 4/5 — GHÉP MẢNH NGỮ CẢNH (Còn ${r.queue.length} mục)`;
+    document.getElementById('wsBadge').textContent = `CHẶNG 4/5 — GHÉP MẢNH NGỮ CẢNH (Còn ${r.queue.length} từ)`;
     document.getElementById('wsBody').innerHTML = `
       <div class="prompt-box">
         <button class="btn btn-outline btn-sm" onclick="AudioHelper.speak('${item.example.replace(/'/g, "\\'")}', 1.0)">🔊 Nghe cả câu ngữ cảnh</button>
         <p style="font-size:16px; font-weight:700; margin:12px 0 4px;">"${maskedSentence}"</p>
         <span style="font-size:12px; color:var(--text-muted);">Gợi ý nghĩa: ${item.meaning}</span>
       </div>
-      <input id="clozeInput" class="input-field" placeholder="Điền từ/cụm từ còn thiếu vào chỗ trống..." autocomplete="off" />
+      <input id="clozeInput" class="input-field" placeholder="Điền từ chuẩn còn thiếu vào chỗ trống..." autocomplete="off" />
       <button class="btn btn-success btn-block" style="margin-top:10px;" onclick="App.checkStage4()">Xác nhận ngữ cảnh</button>
       <div id="stageFeedback"></div>
     `;
@@ -1971,7 +3028,7 @@ const App = {
       this.advanceStageQueue(false);
       document.getElementById('stageFeedback').innerHTML = `
         <div class="correction-box">
-          ❌ Chưa khớp ngữ cảnh! Từ đúng là <b>${item.lemma}</b>. Mục này đã đẩy về cuối hàng đợi Chặng 4.
+          ❌ Chưa khớp ngữ cảnh! Từ đúng là <b>${item.lemma}</b>. Từ này đã đẩy về cuối hàng đợi Chặng 4.
           <div style="margin-top:8px;"><button class="btn btn-danger btn-sm" onclick="App.renderWorkspace()">Tiếp tục</button></div>
         </div>
       `;
@@ -1984,12 +3041,7 @@ const App = {
     const plan = AssessmentEngine.buildAndValidateSpeedCombo(r.blueprint, r.items, r.accessibilityFallback);
 
     if (!plan.valid) {
-      document.getElementById('wsBody').innerHTML = `
-        <div class="correction-box">
-          <strong>⚠️ Lỗi Kiểm Định Đề 5A (Pre-Flight Validator):</strong>
-          <p>${plan.reason}</p>
-        </div>
-      `;
+      document.getElementById('wsBody').innerHTML = `<div class="correction-box"><strong>⚠️ Lỗi Kiểm Định Đề 5A:</strong><p>${plan.reason}</p></div>`;
       return;
     }
 
@@ -2000,11 +3052,9 @@ const App = {
         <span class="badge ${plan.mode === 'NORMAL_MODE' ? 'badge-green' : 'badge-amber'}">${plan.mode}</span>
         <div class="word-main">Thử Thách Tốc Độ ${plan.budget} Giây</div>
         <p style="font-size:13px; color:var(--text-muted);">
-          Bao phủ <b>100% từ & câu bản địa</b> qua <b>${plan.tasks.length} nhiệm vụ</b> (Thời gian ước tính hợp lệ: ${plan.totalEstimatedTime}s/${plan.budget}s). Ngưỡng đạt: <b>≥80%</b>.
+          Bao phủ <b>100% từ chuẩn</b> qua <b>${plan.tasks.length} nhiệm vụ</b> (Thời gian ước tính: ${plan.totalEstimatedTime}s/${plan.budget}s). Ngưỡng đạt: <b>≥80%</b>.
         </p>
-        <p style="font-size:12px; color:var(--primary);">
-          ⏱️ Đồng hồ tự động đóng băng khi đang tải âm thanh hoặc chờ quyền Micro.
-        </p>
+        <p style="font-size:12px; color:var(--primary);">⏱️ Đồng hồ tự động đóng băng khi đang tải âm thanh hoặc chờ quyền Micro.</p>
         <button class="btn btn-primary btn-block" onclick="App.startSpeedComboRun()">🚀 Bắt Đầu Tính Giờ</button>
       </div>
     `;
@@ -2065,8 +3115,7 @@ const App = {
     const header = `<div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Nhiệm vụ ${r.speedIdx + 1}/${r.speedPlan.tasks.length} • Kỹ năng: <b>${task.skill}</b></div>`;
 
     if (task.skill === 'READ') {
-      const pool = [...CurriculumBank.CORE_WORDS, ...CurriculumBank.NATIVE_PHRASES];
-      const opts = [item.meaning, ...pool.filter(p => p.lemma !== item.lemma).slice(0, 2).map(d => d.meaning)].sort(() => Math.random() - 0.5);
+      const opts = [item.meaning, ...CurriculumBank.CORE_WORDS.filter(p => p.lemma !== item.lemma).slice(0, 2).map(d => d.meaning)].sort(() => Math.random() - 0.5);
       document.getElementById('wsBody').innerHTML = `${header}
         <div class="prompt-box"><div class="word-main">${item.lemma}</div><div class="word-ipa">${item.ipa}</div></div>
         <div class="option-grid">${opts.map(o => `<button class="opt-btn" onclick="App.submitSpeedTask(${o === item.meaning})">${o}</button>`).join('')}</div>
@@ -2077,7 +3126,7 @@ const App = {
       document.getElementById('wsBody').innerHTML = `${header}
         <div class="prompt-box">
           <button class="btn btn-outline btn-sm" onclick="AudioHelper.speak('${item.lemma.replace(/'/g, "\\'")}', 1.0)">🔊 Nghe lại</button>
-          <p style="font-size:13px; margin-top:8px;">Gõ lại từ/câu vừa nghe:</p>
+          <p style="font-size:13px; margin-top:8px;">Gõ lại từ vừa nghe:</p>
         </div>
         <input id="speedInput" class="input-field" autocomplete="off" />
         <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="App.submitSpeedTask(document.getElementById('speedInput').value.trim().toLowerCase() === '${item.lemma.toLowerCase().replace(/'/g, "\\'")}')">Gửi</button>
@@ -2134,8 +3183,7 @@ const App = {
       document.getElementById('wsBody').innerHTML = `
         <div class="correction-box">
           <strong>⚠️ Chưa đạt ngưỡng 80% của Chặng 5A (Kết quả: ${score}%).</strong>
-          <p style="font-size:12px;">Hãy thi lại Chặng 5A để đủ điều kiện hoàn thành phiên.</p>
-          <button class="btn btn-primary btn-sm" onclick="App.renderStage5AIntro()">🔄 Thi Lại Chặng 5A</button>
+          <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="App.renderStage5AIntro()">🔄 Thi Lại Chặng 5A</button>
         </div>
       `;
     }
@@ -2177,9 +3225,9 @@ const App = {
     const chunkNum = Math.floor(r.grammarIdx / 5) + 1;
     const totalChunks = Math.ceil(total / 5);
 
-    document.getElementById('wsBadge').textContent = `CHẶNG NGỮ PHÁP ${chunkNum}/${totalChunks} — CÂU ${r.grammarIdx + 1}/${total}`;
+    document.getElementById('wsBadge').textContent = `CHẶNG ĐÁNH GIÁ ${chunkNum}/${totalChunks} — CÂU ${r.grammarIdx + 1}/${total}`;
     document.getElementById('wsBody').innerHTML = `
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${((r.grammarIdx) / total) * 100}%"></div></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${(r.grammarIdx / total) * 100}%"></div></div>
       <div class="prompt-box" style="text-align:left;">
         <span class="badge badge-purple">Tầng ${q.tier} • ${q.topic}</span>
         <p style="font-size:15px; font-weight:700; margin:10px 0 0;">${q.q}</p>
@@ -2246,8 +3294,8 @@ const App = {
     if (r.isCustomPool) {
       document.getElementById('wsBody').innerHTML = `
         <div class="prompt-box">
-          <div class="word-main">🏆 Hoàn Thành Nạp Thẻ & 5 Chặng Kho Tự Nhập!</div>
-          <p>Toàn bộ từ vựng tự nhập đã chuyển sang trạng thái <b>mastered</b>.</p>
+          <div class="word-main">🏆 Hoàn Thành Chặng 0 & 5 Chặng Kho Tự Nhập!</div>
+          <p>Toàn bộ từ chuẩn tự nhập đã chuyển sang trạng thái <b>mastered</b> và nạp vào SRS.</p>
           <button class="btn btn-primary" onclick="App.exitWorkspace()">Quay lại</button>
         </div>
       `;
@@ -2276,7 +3324,7 @@ const App = {
       document.getElementById('wsBody').innerHTML = `
         <div class="prompt-box">
           <div class="word-main">🔄 Hoàn Thành Ôn Tập Phiên ${r.sessionNumber}!</div>
-          <p style="font-size:13px;">Đã tính hoạt động giữ Streak hôm nay. Tiến độ gốc của Phiên ${r.sessionNumber} được giữ nguyên.</p>
+          <p style="font-size:13px;">Đã tính hoạt động giữ Streak hôm nay. Tiến độ gốc và Bonus XP của Phiên ${r.sessionNumber} không cấp trùng.</p>
           <button class="btn btn-primary" onclick="App.exitWorkspace()">Hoàn tất</button>
         </div>
       `;
@@ -2319,20 +3367,24 @@ const App = {
     }
   },
 
-  /* STAGE 5B: Non-Blocking AI Roleplay */
+  /* STAGE 5B: Non-Blocking AI Roleplay (Dùng cả Từ chuẩn, Collocations & Câu bản địa; Bonus XP 1 lần/phiên) */
   renderStage5BRoleplay() {
     const r = this.activeRun;
-    const targets = r.items.map(i => i.lemma).join(', ');
-    document.getElementById('wsBadge').textContent = 'CHẶNG 5B — HỘI THOẠI THỰC CHIẾN (KHÔNG CHẶN TIẾN ĐỘ)';
+    const alreadyClaimed = (this.state.bonusClaimedSessions || []).includes(r.sessionNumber);
+    const suggestionItems = r.previewCards || r.items;
+    const targets = suggestionItems.map(i => i.lemma).join(' • ');
+
+    document.getElementById('wsBadge').textContent = 'CHẶNG 5B — AI ROLEPLAY (TỰ CHỌN)';
     document.getElementById('wsBody').innerHTML = `
       <div style="background:var(--success-soft); border:1px solid #a7f3d0; padding:10px; border-radius:10px; font-size:12px; margin-bottom:10px;">
-        ✅ <strong>Phiên ${r.sessionNumber} đã chính thức hoàn thành!</strong> Phiên ${this.state.currentQueueSession} đã mở khóa. Chặng 5B là luyện thực chiến tự chọn để nhận <b>+50 Bonus XP</b>.
+        ✅ <strong>Phiên ${r.sessionNumber} đã hoàn thành!</strong> Phiên ${this.state.currentQueueSession} đã mở khóa.
+        ${alreadyClaimed ? '<i>(Bạn đã nhận +50 Bonus XP cho phiên này trước đó).</i>' : 'Luyện thực chiến bên dưới để nhận <b>+50 Bonus XP (1 lần duy nhất)</b>.'}
       </div>
       <div class="prompt-box" style="text-align:left;">
-        <span class="badge badge-purple">AI ROLEPLAY — SESSION MEMORY</span>
-        <p style="font-size:13px; margin:8px 0 4px;"><strong>Tình huống:</strong> Hãy viết hoặc nói một câu thực tế sử dụng ít nhất 1 mục vừa học: <b>${targets}</b>.</p>
+        <span class="badge badge-purple">GỢI Ý TỪ CHUẨN, COLLOCATION & CÂU BẢN ĐỊA</span>
+        <p style="font-size:13px; margin:8px 0 4px;">Hãy viết một câu giao tiếp tự nhiên có sử dụng ít nhất 1 mục sau: <b>${targets}</b></p>
       </div>
-      <textarea id="roleplayInput" class="textarea-field" rows="2" placeholder="Nhập câu tiếng Anh của bạn..."></textarea>
+      <textarea id="roleplayInput" class="textarea-field" rows="2" placeholder="Nhập câu tiếng Anh thực chiến của bạn..."></textarea>
       <div class="action-row" style="margin-top:8px;">
         <button class="btn btn-purple" style="flex:2;" onclick="App.submitRoleplayTurn()">💬 Gửi & Kiểm Tra Lỗi Trọng Yếu</button>
         <button class="btn btn-outline" style="flex:1;" onclick="App.exitWorkspace()">Xong phiên hôm nay</button>
@@ -2344,15 +3396,23 @@ const App = {
   async submitRoleplayTurn() {
     const r = this.activeRun;
     const text = document.getElementById('roleplayInput').value;
-    const res = ConversationEngine.evaluateRoleplayTurn(text, r.items);
+    const res = ConversationEngine.evaluateRoleplayTurn(text, r.previewCards || r.items);
     const fb = document.getElementById('roleplayFeedback');
 
     if (res.accepted) {
-      this.state.xp += 50;
-      await this.persist();
-      fb.innerHTML = `<div style="background:var(--success-soft); padding:10px; border-radius:10px; font-size:13px;">
-        <strong>🎉 +50 Bonus XP!</strong> ${res.tutorReply}
-      </div>`;
+      const alreadyClaimed = (this.state.bonusClaimedSessions || []).includes(r.sessionNumber);
+      if (!alreadyClaimed && !r.isReviewMode && r.sessionNumber > 0) {
+        this.state.bonusClaimedSessions.push(r.sessionNumber);
+        this.state.xp += 50;
+        await this.persist();
+        fb.innerHTML = `<div style="background:var(--success-soft); padding:10px; border-radius:10px; font-size:13px;">
+          <strong>🎉 +50 Bonus XP (Đã cấp 1 lần duy nhất cho Phiên ${r.sessionNumber})!</strong> ${res.tutorReply}
+        </div>`;
+      } else {
+        fb.innerHTML = `<div style="background:var(--primary-soft); padding:10px; border-radius:10px; font-size:13px;">
+          <strong>✅ Rất tự nhiên!</strong> ${res.tutorReply} <i>(Bonus XP phiên này đã nhận trước đó).</i>
+        </div>`;
+      }
     } else {
       fb.innerHTML = `<div class="correction-box" style="font-size:13px;">
         <strong>⚠️ Sửa lỗi trọng yếu trước khi nhận Bonus XP:</strong>
@@ -2361,12 +3421,25 @@ const App = {
     }
   },
 
-  /* ---------------- EXTENSION HUB ---------------- */
+  /* ---------------- EXTENSION HUB, PDF/DOCX READER & MASTERY GATE ---------------- */
   renderExtensionViews() {
     this.renderCustomVocabList();
+    this.renderWorkplacePatterns();
     this.renderCustomGrammarStats();
     this.renderBookSelector();
     this.renderCefrGatePanel();
+    document.getElementById('syncBookBinaryOptIn').checked = Boolean(this.state.syncBookBinaryOptIn);
+  },
+
+  renderWorkplacePatterns() {
+    document.getElementById('workplacePatternsList').innerHTML = CurriculumBank.WORKPLACE_PATTERNS.map(p => `
+      <div style="border-bottom:1px solid var(--border); padding:8px 0; font-size:13px;">
+        <span class="badge badge-blue">${p.category}</span>
+        <div style="font-weight:700; margin-top:4px;">${p.en}</div>
+        <div style="color:var(--text-muted); font-size:12px;">${p.vi}</div>
+        <button class="btn btn-outline btn-sm" style="margin-top:4px;" onclick="AudioHelper.speak('${p.en.replace(/'/g, "\\'")}', 0.95)">🔊 Nghe mẫu</button>
+      </div>
+    `).join('');
   },
 
   previewCustomVocab() {
@@ -2383,21 +3456,25 @@ const App = {
     const existingKeys = new Set(this.state.customVocab.map(v => v.canonicalKey));
 
     lines.forEach(line => {
-      const [lemma, pos = 'noun', meaning = 'Nghĩa tự nhập', example = `Example using ${lemma}.`] = line.split('|').map(s => s.trim());
+      const [lemma, pos = 'noun', meaning = 'Nghĩa tự nhập', example = `Example using ${lemma}.`, colloc = ''] = line.split('|').map(s => s.trim());
       if (!lemma) return;
       const canonicalKey = CurriculumEngine.buildCanonicalKey(lemma, 'en', pos, meaning);
       const isDuplicate = existingKeys.has(canonicalKey);
-      parsed.push({ lemma, pos, meaning, example, ipa: '/custom/', domain, level, canonicalKey, isDuplicate });
+      parsed.push({
+        lemma, pos, meaning, example, ipa: '/custom/', domain, level, canonicalKey, isDuplicate,
+        collocations: colloc ? [colloc] : [],
+        contentType: 'CORE_VOCAB', assessed: true
+      });
     });
 
     this._pendingCustomVocab = parsed;
     document.getElementById('customVocabPreview').innerHTML = `
       <div style="background:var(--surface-alt); border:1px solid var(--border); padding:10px; border-radius:10px; font-size:12px;">
-        <strong>Màn hình Kiểm duyệt & Lọc trùng (${parsed.length} mục):</strong>
+        <strong>Kiểm duyệt & Lọc trùng (${parsed.length} mục):</strong>
         <ul style="margin:6px 0; padding-left:18px;">
-          ${parsed.map(p => `<li><b>${p.lemma}</b> (${p.pos}) — ${p.meaning} ${p.isDuplicate ? '<span class="badge badge-amber">Trùng nghĩa (Liên kết)</span>' : '<span class="badge badge-green">Mới</span>'}</li>`).join('')}
+          ${parsed.map(p => `<li><b>${p.lemma}</b> (${p.pos}) — ${p.meaning} ${p.isDuplicate ? '<span class="badge badge-amber">Trùng nghĩa</span>' : '<span class="badge badge-green">Mới</span>'}</li>`).join('')}
         </ul>
-        <button class="btn btn-success btn-sm" onclick="App.commitCustomVocab()">✅ Xác Nhận Lưu Vào Khu Mở Rộng</button>
+        <button class="btn btn-success btn-sm" onclick="App.commitCustomVocab()">✅ Xác Nhận Lưu</button>
       </div>
     `;
   },
@@ -2415,7 +3492,7 @@ const App = {
     document.getElementById('customVocabBulk').value = '';
     await this.persist();
     this.renderCustomVocabList();
-    UI.toast(`Đã lưu ${added} mục từ mới vào Khu Mở Rộng!`);
+    UI.toast(`Đã lưu ${added} mục từ mới!`);
   },
 
   renderCustomVocabList() {
@@ -2482,34 +3559,48 @@ const App = {
     this.renderGrammarStage();
   },
 
-  /* BOOK READER */
+  /* BOOK READER (Đọc trực tiếp PDF, DOCX, TXT, MD + Click-to-Lookup) */
+  async toggleBookBinarySync(checked) {
+    this.state.syncBookBinaryOptIn = Boolean(checked);
+    await this.persist();
+    UI.toast(checked ? '☁️ Đã bật đồng bộ file gốc PDF/DOCX (khi nối Backend).' : '📄 Chỉ đồng bộ metadata & vị trí đọc sách.');
+  },
+
   async handleBookUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
     const ext = file.name.split('.').pop().toLowerCase();
 
-    if (ext === 'txt' || ext === 'md' || ext === 'json') {
-      const text = await file.text();
-      await StorageDB.put('books', { id: `book_${Date.now()}`, title: file.name, content: text });
-      this.renderBookSelector();
-      UI.toast(`📖 Đã nạp sách "${file.name}" vào IndexedDB!`);
-    } else {
-      UI.openModal('Trích Xuất PDF / DOCX', `
-        <p style="font-size:13px; margin-top:0;">Tệp <b>${file.name}</b> (.${ext}) là định dạng nhị phân nén. Hãy copy nội dung chương sách từ file PDF/Word và dán vào khung <b>"Lưu vào Kho Sách IndexedDB"</b> ngay bên dưới!</p>
-        <button class="btn btn-primary btn-block" onclick="UI.closeModal()">Đã hiểu</button>
-      `);
-    }
-  },
+    try {
+      let extractedText = '';
+      if (ext === 'txt' || ext === 'md' || ext === 'json') {
+        extractedText = await file.text();
+      } else if (ext === 'docx' && window.mammoth) {
+        const arrayBuffer = await file.arrayBuffer();
+        const res = await window.mammoth.extractRawText({ arrayBuffer });
+        extractedText = res.value;
+      } else if (ext === 'pdf' && window.pdfjsLib) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const pages = [];
+        for (let p = 1; p <= Math.min(pdf.numPages, 30); p++) {
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          pages.push(content.items.map(i => i.str).join(' '));
+        }
+        extractedText = pages.join('\n\n');
+      } else {
+        throw new Error('Trình duyệt đang ngoại tuyến nên chưa tải bộ giải mã PDF/DOCX. Hãy dùng file .txt/.md hoặc dán văn bản.');
+      }
 
-  async savePastedBook() {
-    const title = document.getElementById('pasteBookTitle').value.trim() || `Tài liệu ${new Date().toLocaleDateString('vi-VN')}`;
-    const content = document.getElementById('pasteBookContent').value.trim();
-    if (!content) return;
-    await StorageDB.put('books', { id: `book_${Date.now()}`, title, content });
-    document.getElementById('pasteBookTitle').value = '';
-    document.getElementById('pasteBookContent').value = '';
-    this.renderBookSelector();
-    UI.toast('📖 Đã lưu tài liệu vào Kho Sách IndexedDB!');
+      if (!extractedText.trim()) throw new Error('Không trích xuất được nội dung văn bản từ tệp.');
+      await StorageDB.put('books', { id: `book_${Date.now()}`, title: file.name, content: extractedText.trim() });
+      this.renderBookSelector();
+      UI.toast(`📖 Đã trích xuất và nạp "${file.name}" vào Kho Sách!`);
+    } catch (err) {
+      UI.toast(`⚠️ ${err.message}`);
+    }
   },
 
   async renderBookSelector() {
@@ -2523,15 +3614,20 @@ const App = {
     const id = document.getElementById('bookSelector').value;
     if (!id) return;
     const book = await StorageDB.get('books', id);
-    if (book) {
-      document.getElementById('bookReaderContainer').textContent = book.content;
-    }
+    if (book) document.getElementById('bookReaderContainer').textContent = book.content;
+  },
+
+  quickLookupWord() {
+    const selText = window.getSelection().toString().trim().replace(/[.,!?;:"]/g, '');
+    if (!selText || selText.split(/\s+/).length > 2) return;
+    AudioHelper.speak(selText, 0.95);
+    UI.toast(`🔊 Phát âm nhanh: "${selText}" — Bấm "Đẩy đoạn bôi đen" để thêm vào kho luyện tập!`);
   },
 
   async extractHighlightedText() {
     const selText = window.getSelection().toString().trim();
     if (!selText) {
-      UI.toast('⚠️ Hãy bôi đen một từ hoặc cụm câu trong khung đọc sách trước!');
+      UI.toast('⚠️ Hãy bôi đen từ hoặc cụm câu trong khung đọc sách trước!');
       return;
     }
     const isPhrase = selText.split(/\s+/).length > 1;
@@ -2544,7 +3640,8 @@ const App = {
         ipa: '/book-extract/',
         meaning: 'Trích xuất từ sách tham khảo',
         example: selText,
-        isNativePhrase: isPhrase,
+        contentType: 'CORE_VOCAB',
+        assessed: true,
         domain: 'Sách tham khảo',
         level: 'B2',
         canonicalKey,
@@ -2553,7 +3650,7 @@ const App = {
       await this.persist();
       this.renderCustomVocabList();
     }
-    UI.toast(`✅ Đã đẩy "${selText}" vào hàng đợi luyện Thẻ & 5 Chặng!`);
+    UI.toast(`✅ Đã đẩy "${selText}" vào hàng đợi luyện Chặng 0 + 5 Chặng!`);
   },
 
   askAiTutorOnSelection() {
@@ -2567,21 +3664,20 @@ const App = {
     this.runAiTutorQuery();
   },
 
-  /* CEFR & MASTERY GATE */
+  /* MASTERY GATE WITH FROZEN SNAPSHOT */
   renderCefrGatePanel() {
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-    const totalCustom = this.state.customVocab.length;
-    const masteredCustom = this.state.customVocab.filter(v => this.state.itemMastery[v.canonicalKey]?.mastered).length;
-
     document.getElementById('cefrGatePanel').innerHTML = `
       <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
-        Điều kiện mở khóa <b>Mastery Gate</b>: 100% mục học đạt <code>mastered</code> (${masteredCustom}/${totalCustom}) + Bài đánh giá cuối cấp ≥ 85% + Vượt qua Level Boss.
+        Khi bấm thi <b>Mastery Gate</b>, hệ thống tự động <b>đóng băng phiên bản bộ từ & đề thi (Frozen Snapshot)</b> để điều kiện không thay đổi giữa lúc thi (100% mastered + Điểm cuối cấp ≥85% + Hạ Level Boss).
       </p>
       ${levels.map(lvl => {
+        const levelItems = this.state.customVocab.filter(v => v.level === lvl && v.contentType === 'CORE_VOCAB');
+        const masteredCount = levelItems.filter(v => this.state.itemMastery[v.canonicalKey]?.mastered).length;
         const info = this.state.cefrProgress[lvl] || { examScore: 0, bossDefeated: false };
         const gate = AssessmentEngine.evaluateMasteryGate({
-          totalItems: Math.max(1, totalCustom),
-          masteredItems: masteredCustom,
+          totalItems: levelItems.length,
+          masteredItems: masteredCount,
           finalExamScore: info.examScore,
           bossDefeated: info.bossDefeated
         });
@@ -2590,63 +3686,46 @@ const App = {
             <div>
               <strong>Cấp độ ${lvl}</strong>
               <span class="badge ${gate.unlocked ? 'badge-green' : 'badge-gray'}" style="margin-left:6px;">${gate.unlocked ? 'ĐÃ MỞ KHÓA' : 'ĐANG KHÓA'}</span>
-              <div style="font-size:11px; color:var(--text-muted);">Điểm cuối cấp: ${info.examScore}% • Level Boss: ${info.bossDefeated ? 'Đã hạ' : 'Chưa'}</div>
+              <div style="font-size:11px; color:var(--text-muted);">Từ mastered: ${masteredCount}/${levelItems.length} • Điểm Gate: ${info.examScore}% • Boss: ${info.bossDefeated ? 'Đã hạ' : 'Chưa'}</div>
             </div>
-            <button class="btn btn-outline btn-sm" onclick="App.runCefrGateExam('${lvl}')">Thi Gate ${lvl}</button>
+            <button class="btn btn-outline btn-sm" onclick="App.startFrozenMasteryGate('${lvl}')">🔒 Thi Gate ${lvl}</button>
           </div>
         `;
       }).join('')}
     `;
   },
 
-  async runCefrGateExam(level) {
-    this.state.cefrProgress[level] = { examScore: 88, bossDefeated: true };
-    await this.persist();
-    this.renderCefrGatePanel();
-    UI.toast(`🏆 Đã ghi nhận vượt qua bài đánh giá & Level Boss cấp ${level} (88%)!`);
-  },
+  startFrozenMasteryGate(level) {
+    const snap = AssessmentEngine.createFrozenGateSnapshot(level, this.state.customVocab, this.state.itemMastery, CurriculumBank.GRAMMAR_BANK);
+    if (snap.totalTargetItems === 0 || !snap.allMasteredAtStart) {
+      UI.toast(`⚠️ Cấp ${level} cần có từ chuẩn đạt trạng thái mastered (${snap.masteredAtStart}/${snap.totalTargetItems}) trước khi thi Gate!`);
+      return;
+    }
 
-  /* ---------------- PLAYLIST, HEATMAP, AI TUTOR, EXPORT ---------------- */
-  openPlaylistModal() {
-    const bp = CurriculumEngine.getSessionBlueprint(this.state.currentQueueSession);
-    const items = bp.mode === 'NEW_LEARNING' ? CurriculumBank.getSessionItems(bp) : CurriculumBank.CORE_WORDS.slice(0, 6);
-    UI.openModal('🎧 Chế Độ Nghe Thụ Động Rảnh Tay (Hands-Free)', `
-      <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
-        Tự động phát tuần tự: <b>Tiếng Anh (1.0x) → Đọc chậm (0.65x) → Nghĩa tiếng Việt → Câu ví dụ</b>.
-      </p>
-      <div id="playlistNowPlaying" class="prompt-box"><strong>Sẵn sàng phát ${items.length} mục...</strong></div>
-      <div class="action-row">
-        <button class="btn btn-primary" style="flex:1;" onclick="App.startHandsFreePlaylist()">▶ Phát Liên Tục</button>
-        <button class="btn btn-danger" style="flex:1;" onclick="App.stopHandsFreePlaylist()">⏹ Dừng</button>
+    UI.openModal(`🔒 Mastery Gate ${level} (Frozen Snapshot: ${snap.snapshotId})`, `
+      <div style="font-size:13px;">
+        <p style="margin-top:0;">Đã đóng băng <b>${snap.totalTargetItems} từ chuẩn</b> và <b>${snap.questions.length} câu hỏi Level Boss</b>. Việc thêm từ mới lúc này sẽ không ảnh hưởng lượt thi.</p>
+        <p><strong>Câu hỏi quyết định Level Boss:</strong> ${snap.questions[0].q}</p>
+        <div class="option-grid">
+          ${snap.questions[0].opts.map((o, idx) => `<button class="opt-btn" onclick="App.finishFrozenGate('${level}', ${idx === snap.questions[0].ans})">${o}</button>`).join('')}
+        </div>
       </div>
     `);
-    this._playlistItems = items;
   },
 
-  async startHandsFreePlaylist() {
-    this._playlistRunning = true;
-    const items = this._playlistItems || [];
-    for (let i = 0; i < items.length; i++) {
-      if (!this._playlistRunning) break;
-      const it = items[i];
-      const box = document.getElementById('playlistNowPlaying');
-      if (box) box.innerHTML = `<div class="word-main">${it.lemma}</div><div class="word-ipa">${it.ipa}</div><div>${it.meaning}</div>`;
-      await AudioHelper.speak(it.lemma, 1.0, 'en-US');
-      if (!this._playlistRunning) break;
-      await AudioHelper.speak(it.lemma, 0.65, 'en-US');
-      if (!this._playlistRunning) break;
-      await AudioHelper.speak(it.meaning, 1.0, 'vi-VN');
-      if (!this._playlistRunning) break;
-      await AudioHelper.speak(it.example, 0.95, 'en-US');
+  async finishFrozenGate(level, bossPassed) {
+    UI.closeModal();
+    if (bossPassed) {
+      this.state.cefrProgress[level] = { examScore: 90, bossDefeated: true };
+      await this.persist();
+      this.renderCefrGatePanel();
+      UI.toast(`🏆 Chúc mừng! Bạn đã đánh bại Level Boss & mở khóa Mastery Gate ${level}!`);
+    } else {
+      UI.toast('❌ Chưa hạ được Level Boss (yêu cầu ≥85%). Hãy ôn lại và thử lại!');
     }
   },
 
-  stopHandsFreePlaylist() {
-    this._playlistRunning = false;
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    UI.toast('⏹ Đã dừng Playlist.');
-  },
-
+  /* ---------------- ANALYTICS, LEADERBOARD, EXPORT & SYNC ---------------- */
   renderAnalyticsView() {
     const w = this.state.weaknessCounts;
     const total = w.SPELLING_LISTEN + w.PRONUNCIATION_SPEAK + w.MEANING_READ + w.GRAMMAR_TRAP;
@@ -2669,8 +3748,25 @@ const App = {
 
   startWeaknessDrill() {
     UI.switchMainTab('core', document.querySelectorAll('.nav-item')[0]);
-    this.startMicroSession();
-    UI.toast('🔥 Đã mở vòng luyện bù tập trung vào nhóm điểm yếu!');
+    this.startMiniDictation();
+  },
+
+  async renderLeaderboardView() {
+    const accounts = await StorageDB.getAll('accounts');
+    const rows = accounts
+      .map(a => a.publicStats || { userId: a.userId, role: a.role, xp: 0, streak: 0, completedSessions: 0 })
+      .sort((a, b) => (b.xp - a.xp) || (b.completedSessions - a.completedSessions));
+
+    document.getElementById('lbModeTag').textContent = this.state.backendEndpoint ? 'Đồng bộ Nhóm' : 'Hồ sơ trên máy';
+    document.getElementById('leaderboardList').innerHTML = rows.map((r, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border); background:${r.userId === this.state.userId ? 'var(--primary-soft)' : 'transparent'}; border-radius:8px;">
+        <div>
+          <strong>#${idx + 1} ${r.userId}</strong> <span class="badge badge-gray">${r.role}</span>
+          <div style="font-size:11px; color:var(--text-muted);">Tiến độ: ${r.completedSessions}/365 phiên • Streak: ${r.streak} 🔥</div>
+        </div>
+        <div style="font-size:15px; font-weight:800; color:var(--primary);">${r.xp} XP</div>
+      </div>
+    `).join('');
   },
 
   runAiTutorQuery() {
@@ -2690,7 +3786,7 @@ const App = {
     } else if (lower.includes('if') || lower.includes('should') || lower.includes('were')) {
       analysis += '• Phát hiện cấu trúc <b>Câu điều kiện / Giả định</b>: Kiểm tra sự lùi thì giữa mệnh đề điều kiện và mệnh đề chính.';
     } else {
-      analysis += `• Cụm từ <b>"${prompt}"</b> gồm ${prompt.split(/\s+/).length} từ. Hãy chú ý trọng âm nội dung và nối âm khi đọc tốc độ tự nhiên. <i>(Kết nối Backend AI Proxy trong tab Hệ Thống để mở khóa phân tích sâu bằng LLM).</i>`;
+      analysis += `• Cụm từ <b>"${prompt}"</b> gồm ${prompt.split(/\s+/).length} từ. Chú ý trọng âm nội dung và nối âm khi đọc tốc độ tự nhiên. <i>(Kết nối Backend AI Proxy để mở khóa phân tích sâu).</i>`;
     }
     out.innerHTML = analysis;
   },
@@ -2699,17 +3795,17 @@ const App = {
     const completed = Object.values(this.state.sessionStatuses).filter(s => s === 'COMPLETED').length;
     if (format === 'json') {
       const blob = new Blob([JSON.stringify(this.state, null, 2)], { type: 'application/json' });
-      this.downloadBlob(blob, `Master365_Backup_${Date.now()}.json`);
+      this.downloadBlob(blob, `Master365_${this.state.userId}_${Date.now()}.json`);
     } else if (format === 'xlsx') {
       const rows = [
-        ['Phien', 'Trang_Thai', 'Che_Do', 'Xac_Minh_Giong_Noi', 'Thoi_Gian_Hoan_Thanh'],
-        ...Object.entries(this.state.sessionRecords).map(([s, r]) => [s, 'COMPLETED', r.mode, r.speaking_verified ? 'VERIFIED' : 'FALLBACK', r.completedAt])
+        ['User_ID', 'Phien', 'Trang_Thai', 'Che_Do', 'Xac_Minh_Giong_Noi', 'Thoi_Gian_Hoan_Thanh'],
+        ...Object.entries(this.state.sessionRecords).map(([s, r]) => [this.state.userId, s, 'COMPLETED', r.mode, r.speaking_verified ? 'VERIFIED' : 'FALLBACK', r.completedAt])
       ];
       const csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
-      this.downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `Master365_Progress_${Date.now()}.csv`);
+      this.downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `Master365_${this.state.userId}_${Date.now()}.csv`);
     } else if (format === 'docx') {
-      const htmlDoc = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body><h1>Báo Cáo Học Tập DailySpeak & Master 365</h1><p>Tiến độ: ${completed}/365 phiên | Streak: ${this.state.streak} ngày</p></body></html>`;
-      this.downloadBlob(new Blob([htmlDoc], { type: 'application/msword' }), `Master365_Report_${Date.now()}.doc`);
+      const htmlDoc = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body><h1>Báo Cáo Học Tập — ${this.state.userId}</h1><p>Tiến độ: ${completed}/365 phiên | Streak: ${this.state.streak} ngày | Tổng XP: ${this.state.xp}</p></body></html>`;
+      this.downloadBlob(new Blob([htmlDoc], { type: 'application/msword' }), `Master365_${this.state.userId}_${Date.now()}.doc`);
     }
     UI.toast(`📥 Đã xuất báo cáo định dạng ${format.toUpperCase()}!`);
   },
@@ -2723,14 +3819,10 @@ const App = {
     URL.revokeObjectURL(url);
   },
 
-  /* ---------------- SYSTEM, SYNC, REMINDERS & BACKEND CONFIG ---------------- */
   async renderSystemView() {
     const quota = await StorageDB.getQuotaInfo();
     document.getElementById('storageQuotaBadge').textContent = `IndexedDB: ${quota}`;
     document.getElementById('backendEndpointInput').value = this.state.backendEndpoint || '';
-    document.getElementById('syncModeText').textContent = this.state.backendEndpoint
-      ? `CLOUD_CONNECTED (${this.state.backendEndpoint})`
-      : 'LOCAL_FIRST (Offline-Safe Event Log)';
 
     const confBox = document.getElementById('conflictAlertBox');
     if (this.state.conflicts && this.state.conflicts.length > 0) {
@@ -2751,11 +3843,16 @@ const App = {
   exportSyncPackage() {
     const pkg = JSON.stringify({
       schema: FROZEN_CONFIG.VERSION,
+      userId: this.state.userId,
       deviceId: this.state.deviceId,
       events: this.state.eventLog
     });
-    UI.openModal('📤 Gói Sự Kiện Đồng Bộ Đa Thiết Bị', `
-      <p style="font-size:12px; margin-top:0;">Sao chép chuỗi sự kiện định danh bên dưới và dán vào máy thứ hai:</p>
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pkg.slice(0, 900))}`;
+    UI.openModal('📤 Gói Đồng Bộ Đa Thiết Bị & Mã QR', `
+      <div style="text-align:center; margin-bottom:10px;">
+        <img src="${qrUrl}" alt="QR Sync" style="border:1px solid var(--border); border-radius:10px; padding:6px; background:#fff;" onerror="this.style.display='none'" />
+        <div style="font-size:11px; color:var(--text-muted);">Quét mã QR hoặc sao chép chuỗi sự kiện bên dưới (Chỉ gộp vào đúng ID: <b>${this.state.userId}</b>)</div>
+      </div>
       <textarea class="textarea-field" rows="4" readonly>${pkg}</textarea>
     `);
   },
@@ -2770,6 +3867,10 @@ const App = {
   async processImportSync() {
     try {
       const parsed = JSON.parse(document.getElementById('importSyncText').value);
+      if (parsed.userId && parsed.userId !== this.state.userId) {
+        UI.toast(`❌ Từ chối gộp chéo: Gói dữ liệu thuộc về "${parsed.userId}", không phải "${this.state.userId}"!`);
+        return;
+      }
       this.state = SyncEngine.mergeRemoteEvents(this.state, parsed.events || []);
       await this.persist();
       UI.closeModal();
@@ -2793,7 +3894,6 @@ const App = {
     this.state.backendEndpoint = url;
     await this.persist();
     this.renderDashboard();
-    this.renderSystemView();
     UI.toast(url ? '🔗 Đã lưu Backend Endpoint!' : 'Đã chuyển về chế độ LOCAL_FIRST.');
   },
 
@@ -2807,7 +3907,9 @@ const App = {
   },
 
   startInAppReminderWatcher() {
-    setInterval(() => {
+    clearInterval(this._remWatcher);
+    this._remWatcher = setInterval(() => {
+      if (!this.state) return;
       const now = new Date();
       const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const logicalDay = ProgressEngine.getLogicalStudyDay(now, this.state.timeZone);
@@ -2822,10 +3924,10 @@ const App = {
 };
 
 /* ============================================================================
-   BỘ KIỂM THỬ NGHIỆM THU TỰ ĐỘNG (ACCEPTANCE GATE RUNNER V2.4)
+   BỘ KIỂM THỬ NGHIỆM THU TỰ ĐỘNG (12 ACCEPTANCE GATES — V2.7.1)
    ============================================================================ */
 const AcceptanceRunner = {
-  runAll() {
+  async runAll() {
     const results = [];
     const assert = (name, cond, detail = '') => results.push({ name, passed: Boolean(cond), detail });
 
@@ -2833,56 +3935,80 @@ const AcceptanceRunner = {
     const gates = plan.filter(p => p.mode === 'MONTHLY_GATE').map(p => p.sessionNumber);
     const week1Vocab = plan.slice(0, 6).reduce((s, p) => s + p.vocabCount, 0);
     const week1Phrases = plan.slice(0, 6).reduce((s, p) => s + p.nativePhraseCount, 0);
-    assert('1. Toán học 365 phiên & 12 cổng tháng', plan.length === 365 && gates.length === 12 && gates[11] === 348, `Tổng=${plan.length}, Cổng=${gates.length}`);
-    assert('2. Chuẩn 26 từ + 2 câu bản địa/tuần', week1Vocab === 26 && week1Phrases === 2, `Từ=${week1Vocab}, Câu bản địa=${week1Phrases}`);
+    assert('1. Toán học 365 phiên & 12 cổng tháng', plan.length === 365 && gates.length === 12 && gates[11] === 348);
+    assert('2. Chuẩn 26 từ + 2 câu bản địa/tuần', week1Vocab === 26 && week1Phrases === 2);
 
     const k1 = CurriculumEngine.buildCanonicalKey('bank', 'en', 'noun', 'finance');
     const k2 = CurriculumEngine.buildCanonicalKey('bank', 'en', 'noun', 'river');
-    assert('3. Chống gộp nhầm từ đa nghĩa', k1 !== k2, `${k1} !== ${k2}`);
+    assert('3. Chống gộp nhầm từ đa nghĩa', k1 !== k2);
 
-    const fb = LearningEngine.evaluateSpeakingAttempt({ expectedText: 'dispatch', recognizedText: '', fallbackUsed: true });
-    assert('4. Mic Fallback không tạo điểm phát âm giả', fb.status === 'SPEAKING_FALLBACK' && fb.speaking_verified === false && fb.pronunciation_score === null);
+    // 4. Native phrase is PREVIEW_ONLY and excluded from Speed Combo 5A
+    const bp3 = CurriculumEngine.getSessionBlueprint(3);
+    const pkg3 = CurriculumBank.getSessionPackage(bp3);
+    const sc3 = AssessmentEngine.buildAndValidateSpeedCombo(bp3, pkg3.previewCards, false);
+    assert('4. Câu bản địa chỉ PREVIEW_ONLY, không đưa vào 5A', sc3.valid && sc3.tasks.every(t => t.item.contentType === 'CORE_VOCAB'));
 
-    const bp6 = CurriculumEngine.getSessionBlueprint(1);
-    const items6 = CurriculumBank.getSessionItems(bp6);
-    const sc = AssessmentEngine.buildAndValidateSpeedCombo(bp6, items6, false);
-    assert('5. Kiểm định ngân sách 5A (120s cho 6 từ)', sc.valid && sc.totalEstimatedTime <= 120, `${sc.totalEstimatedTime}s / ${sc.budget}s`);
+    const fb = LearningEngine.evaluateSpeakingAttempt({ expectedText: 'apply', recognizedText: '', fallbackUsed: true });
+    assert('5. Mic Fallback không tạo điểm phát âm giả', fb.status === 'SPEAKING_FALLBACK' && fb.speaking_verified === false && fb.pronunciation_score === null);
 
     const before3am = new Date('2026-11-23T00:30:00+07:00');
     const logical = ProgressEngine.getLogicalStudyDay(before3am, 'Asia/Ho_Chi_Minh');
-    assert('6. Ngày học logic cắt lúc 03:00 sáng', logical === '2026-11-22', `00:30 ngày 23 -> ${logical}`);
+    assert('6. Ngày học logic cắt lúc 03:00 sáng', logical === '2026-11-22');
 
-    let simState = App.getDefaultState();
-    simState = ProgressEngine.applyDailyActivity(simState, 'MICRO_SESSION', '2026-11-22');
-    simState = ProgressEngine.applyDailyActivity(simState, 'SESSION_COMPLETE', '2026-11-22');
-    assert('7. Trần +1 Streak/ngày & Micro-Session không tự tăng phiên', simState.streak === 1 && simState.currentQueueSession === 1);
+    // 7. Busy deferral + Micro-Session in same day does not double-count Streak
+    let busySim = App.getDefaultState('test_u');
+    busySim = ProgressEngine.applyDailyActivity(busySim, 'BUSY_DEFERRAL', '2026-11-22');
+    busySim = ProgressEngine.applyDailyActivity(busySim, 'MICRO_SESSION', '2026-11-22');
+    assert('7. Báo bận + Micro-Session cùng ngày không trùng Streak', busySim.streak === 0 && busySim.dailyLogs['2026-11-22'].streakCounted === true);
 
-    let busyState = App.getDefaultState();
-    busyState = ProgressEngine.applyDailyActivity(busyState, 'BUSY_DEFERRAL', '2026-11-22');
-    assert('8. Báo bận giữ nguyên hàng đợi tuần tự', busyState.currentQueueSession === 1 && busyState.dailyLogs['2026-11-22'].frozen === true);
+    // 8. SRS Fairness Policy (30 cards/day cap + never drop overdue items)
+    const srsMap = {};
+    for (let i = 0; i < 40; i++) {
+      srsMap[`k_${i}`] = { canonicalKey: `k_${i}`, lemma: `w_${i}`, dueDate: '2026-11-10', intervalDays: i < 25 ? 1 : 7, lapseCount: i < 25 ? 2 : 0 };
+    }
+    const fairQueue = ProgressEngine.getFairSrsDueQueue(srsMap, '2026-11-22');
+    const agedIncluded = fairQueue.some(c => c.lapseCount === 0);
+    assert('8. SRS Trần 30 thẻ/ngày & chống đói lịch thẻ quá hạn', fairQueue.length === 30 && agedIncluded);
 
-    const evt = SyncEngine.createEvent('dev_other', 'SESSION_COMPLETED', 'session_1', { sessionNumber: 1, xp: 100 });
-    let syncState = SyncEngine.mergeRemoteEvents(App.getDefaultState(), [evt, evt]);
-    assert('9. Đồng bộ Idempotent chống đúp XP', syncState.xp === 100 && syncState.currentQueueSession === 2, `XP=${syncState.xp}`);
+    // 9. Cross-user event isolation
+    const evtOther = SyncEngine.createEvent('user_B', 'dev_2', 'SESSION_COMPLETED', 'session_1', { sessionNumber: 1, xp: 100 });
+    const isoState = SyncEngine.mergeRemoteEvents(App.getDefaultState('user_A'), [evtOther]);
+    assert('9. Cô lập sự kiện đồng bộ theo user_id', isoState.xp === 0 && isoState.currentQueueSession === 1);
 
-    const gateCheck = AssessmentEngine.evaluateMasteryGate({ totalItems: 10, masteredItems: 10, finalExamScore: 84, bossDefeated: true });
-    assert('10. Mastery Gate chặn dưới 85%', gateCheck.unlocked === false);
+    // 10. Frozen Snapshot Mastery Gate
+    const snap = AssessmentEngine.createFrozenGateSnapshot('B1', [{ lemma: 'apply', level: 'B1', contentType: 'CORE_VOCAB', canonicalKey: 'k_apply' }], { k_apply: { mastered: true } }, CurriculumBank.GRAMMAR_BANK);
+    assert('10. Đóng băng đề thi Mastery Gate (Frozen Snapshot)', Object.isFrozen(snap) && snap.allMasteredAtStart === true);
+
+    // 11. ECDSA P-256 Asymmetric Invitation Verification
+    const { pubJwk, privJwk } = await CryptoVault.generateSigningKeyPair();
+    const invPayload = { invitation_id: 'inv_1', role: 'MEMBER' };
+    const sig = await CryptoVault.signPayload(invPayload, privJwk);
+    const verified = await CryptoVault.verifyPayload(invPayload, sig, pubJwk);
+    assert('11. Xác minh chữ ký bất đối xứng ECDSA P-256', verified === true);
+
+    // 12. AES-GCM Profile Encryption Roundtrip
+    const salt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
+    const aes = await CryptoVault.deriveAesKey('secret123', salt);
+    const enc = await CryptoVault.encryptJson({ xp: 250 }, aes);
+    const dec = await CryptoVault.decryptJson(enc, aes);
+    assert('12. Mã hóa dữ liệu hồ sơ AES-GCM 256-bit', dec.xp === 250);
 
     const passedAll = results.every(r => r.passed);
     document.getElementById('acceptanceResults').innerHTML = `
       <div style="margin-bottom:8px; font-weight:800; color:${passedAll ? '#047857' : '#b91c1c'};">
-        ${passedAll ? '✅ VƯỢT QUA 10/10 ACCEPTANCE GATES!' : '❌ CÓ BÀI KIỂM THỬ THẤT BẠI'}
+        ${passedAll ? '✅ VƯỢT QUA 12/12 ACCEPTANCE GATES (V2.7.1)!' : '❌ CÓ BÀI KIỂM THỬ THẤT BẠI'}
       </div>
-      ${results.map(r => `
-        <div style="padding:4px 0; border-bottom:1px solid var(--border);">
-          ${r.passed ? '✅' : '❌'} <strong>${r.name}</strong> ${r.detail ? `<span style="color:var(--text-muted);">(${r.detail})</span>` : ''}
-        </div>
-      `).join('')}
+      ${results.map(r => `<div style="padding:4px 0; border-bottom:1px solid var(--border);">${r.passed ? '✅' : '❌'} <strong>${r.name}</strong></div>`).join('')}
     `;
   }
 };
 
-window.addEventListener('DOMContentLoaded', () => App.init());
+window.addEventListener('DOMContentLoaded', () => {
+  AuthController.bootstrap();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+});
 </script>
 </body>
 </html>
