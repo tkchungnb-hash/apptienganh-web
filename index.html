@@ -9,7 +9,6 @@
   <title>DailySpeak & Master 365 — V2.7.1</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%232563eb'/%3E%3Ctext x='64' y='78' font-family='system-ui,sans-serif' font-size='44' font-weight='800' fill='%23fff' text-anchor='middle'%3E365%3C/text%3E%3C/svg%3E" />
-  <!-- Thư viện đọc trực tiếp PDF & DOCX trên trình duyệt (tải nhẹ khi online, fallback an toàn khi offline) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
   <style>
@@ -197,7 +196,6 @@
     .btn-block { width: 100%; }
     .action-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
-    /* MAP & STEPPER */
     .month-selector {
       display: flex;
       gap: 6px;
@@ -460,9 +458,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- ========================================================================
-       CỔNG XÁC THỰC & MÃ HÓA HỒ SƠ (AUTH GATE — ZERO CLIENT SECRETS V2.7.1)
-       ======================================================================== -->
+  <!-- CỔNG XÁC THỰC & MÃ HÓA HỒ SƠ (AUTH GATE — ZERO CLIENT SECRETS V2.7.1) -->
   <div id="authGateOverlay" class="auth-gate">
     <div class="auth-card">
       <div style="text-align:center; margin-bottom:14px;">
@@ -529,9 +525,7 @@
     </div>
   </div>
 
-  <!-- ========================================================================
-       GIAO DIỆN CHÍNH (CHỈ HIỂN THỊ SAU KHI MỞ KHÓA HỒ SƠ)
-       ======================================================================== -->
+  <!-- GIAO DIỆN CHÍNH -->
   <div id="mainAppShell" class="hidden">
     <header class="app-header">
       <div class="header-top">
@@ -565,7 +559,6 @@
     </header>
 
     <main class="container">
-
       <!-- TAB 1: LỘ TRÌNH 365 PHIÊN, SRS & DAILY LISTENING BOARD -->
       <section id="view-core">
         <div id="activeSessionCard" class="card">
@@ -589,7 +582,7 @@
           </div>
         </div>
 
-        <!-- BẢNG NGHE CHỦ ĐỘNG & THỤ ĐỘNG MỖI NGÀY (DAILY LISTENING BOARD) -->
+        <!-- BẢNG NGHE CHỦ ĐỘNG & THỤ ĐỘNG MỖI NGÀY -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -777,7 +770,6 @@
 
       <!-- TAB 5: HỆ THỐNG & QUẢN TRỊ NHÓM (ADMIN PANEL) -->
       <section id="view-system" class="hidden">
-        <!-- KHỐI DÀNH RIÊNG CHO ADMIN -->
         <div id="adminOnlyCard" class="card hidden" style="border-color:#93c5fd; background:#f8faff;">
           <div class="card-header">
             <div>
@@ -803,7 +795,6 @@
           <div id="generatedInviteBox"></div>
         </div>
 
-        <!-- ĐỒNG BỘ, MÃ QR & BẢO VỆ DỮ LIỆU -->
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">🔄 Đồng Bộ Sự Kiện, Mã QR & Bảo Vệ Dữ Liệu</h2>
@@ -820,7 +811,6 @@
           <div id="conflictAlertBox" class="hidden" style="background:var(--danger-soft); border:1px solid #fecaca; padding:10px; border-radius:10px; font-size:12px;"></div>
         </div>
 
-        <!-- CẤU HÌNH BACKEND -->
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">🔗 Cấu Hình Backend & AI Proxy</h3>
@@ -832,7 +822,6 @@
           </div>
         </div>
 
-        <!-- KIỂM THỬ NGHIỆM THU -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -846,7 +835,6 @@
           </div>
         </div>
       </section>
-
     </main>
 
     <nav class="bottom-nav">
@@ -1103,7 +1091,6 @@ const LearningEngine = {
 
 const AssessmentEngine = {
   buildAndValidateSpeedCombo(blueprint, coreVocabItems, accessibilityFallback = false) {
-    // Khóa quy tắc V2.7.1: Tuyệt đối chỉ kiểm tra CORE_VOCAB (assessed = true), không bao giờ đưa NATIVE_PHRASE vào 5A
     const testableItems = coreVocabItems.filter(it => it.contentType === 'CORE_VOCAB' && it.assessed === true);
     const budget = blueprint.speedComboBudget || 90;
     if (testableItems.length === 0) return { valid: false, reason: 'Không có CORE_VOCAB hợp lệ cho bài kiểm tra 5A.' };
@@ -1165,7 +1152,6 @@ const AssessmentEngine = {
     };
   },
 
-  // Đóng băng phiên bản đề thi & tập từ khi bắt đầu đánh giá Mastery Gate (Frozen Snapshot)
   createFrozenGateSnapshot(level, coreVocabList, itemMasteryMap, grammarPool) {
     const levelVocab = coreVocabList.filter(v => v.level === level && v.contentType === 'CORE_VOCAB');
     const masteredCount = levelVocab.filter(v => itemMasteryMap[v.canonicalKey]?.mastered).length;
@@ -1259,13 +1245,11 @@ const ProgressEngine = {
       next.weeklyBusyCount[weekKey] = used + 1;
       dayLog.frozen = true;
       dayLog.scheduleState = 'DEFERRED';
-      // Giữ nguyên 1 ngày hoạt động bảo vệ Streak (chống cộng trùng nếu sau đó làm thêm Micro-Session)
       dayLog.streakCounted = true;
     }
     return next;
   },
 
-  // SRS Fairness Policy: overdue_age + lapse_priority (Trần 30 thẻ/ngày, chống đói lịch, không mất thẻ)
   getFairSrsDueQueue(srsCardsMap, logicalDayStr) {
     const allCards = Object.values(srsCardsMap || {});
     const dueCards = allCards.filter(c => c.dueDate <= logicalDayStr);
@@ -1283,7 +1267,6 @@ const ProgressEngine = {
     const lapsePool = scored.filter(c => (c.lapseCount || 0) > 0 && c.intervalDays <= 1).sort((a, b) => b.priorityScore - a.priorityScore);
     const agedPool = scored.filter(c => !((c.lapseCount || 0) > 0 && c.intervalDays <= 1)).sort((a, b) => b.priorityScore - a.priorityScore);
 
-    // Phân bổ công bằng: tối đa 18 thẻ sai ưu tiên + tối thiểu 12 thẻ quá hạn lâu ngày (tổng trần 30 thẻ)
     const maxLapseQuota = 18;
     const selectedLapse = lapsePool.slice(0, maxLapseQuota);
     const remainingCap = FROZEN_CONFIG.SRS_DAILY_CAPACITY - selectedLapse.length;
@@ -1309,7 +1292,6 @@ const ProgressEngine = {
       baseDt.setUTCDate(baseDt.getUTCDate() + nextInterval);
       next.dueDate = baseDt.toISOString().slice(0, 10);
     } else {
-      // Giữ nguyên lịch sử sai (lapseCount++), đưa về lượt ôn ưu tiên (interval = 1 ngày)
       next.lapseCount = (next.lapseCount || 0) + 1;
       next.intervalDays = 1;
       baseDt.setUTCDate(baseDt.getUTCDate() + 1);
@@ -1341,7 +1323,6 @@ const SyncEngine = {
     const sorted = [...incomingEvents].sort((a, b) => a.logical_clock - b.logical_clock);
 
     for (const evt of sorted) {
-      // Cô lập tuyệt đối theo user_id: không bao giờ gộp chéo dữ liệu thành viên khác
       if (evt.user_id && next.userId && evt.user_id !== next.userId) continue;
       if (processedSet.has(evt.event_id)) continue;
 
@@ -1443,8 +1424,11 @@ const StorageDB = {
 };
 
 /* ============================================================================
-   LỚP 3: AUTH CONTROLLER (ECDSA P-256 INVITES, AES-GCM PROFILE VAULT, RECOVERY)
+   LỚP 3: AUTH CONTROLLER (KHÓA CỨNG ROOT_ORG_PUBLIC_KEY & CHUYỂN QUYỀN ADMIN)
    ============================================================================ */
+// DÁN CHUỖI PUBLIC KEY CỦA BẠN THAY CHO CHỮ null BÊN DƯỚI ĐỂ KHÓA CHẶT NGƯỜI LẠ:
+const ROOT_ORG_PUBLIC_KEY = null;
+
 const AuthController = {
   activeUser: null,
   activeAesKey: null,
@@ -1452,13 +1436,22 @@ const AuthController = {
 
   async bootstrap() {
     await StorageDB.init();
+    if (ROOT_ORG_PUBLIC_KEY) {
+      await StorageDB.put('meta', { key: 'org_public_key', pubJwk: ROOT_ORG_PUBLIC_KEY });
+    }
     const accounts = await StorageDB.getAll('accounts');
-    if (accounts.length === 0) {
+    const metaPub = await StorageDB.get('meta', 'org_public_key');
+
+    if (accounts.length === 0 && !ROOT_ORG_PUBLIC_KEY && !metaPub) {
       document.getElementById('firstRunSetupBanner').classList.remove('hidden');
     }
   },
 
   switchAuthTab(tab, btn) {
+    if (tab === 'setupAdmin' && ROOT_ORG_PUBLIC_KEY) {
+      UI.toast('🔒 Hệ thống đã khóa quyền khởi tạo Admin công khai. Vui lòng dùng Mã mời!');
+      return;
+    }
     ['login', 'setupAdmin', 'activate', 'recover'].forEach(p => {
       document.getElementById(`auth-pane-${p}`).classList.toggle('hidden', p !== tab);
     });
@@ -1469,6 +1462,10 @@ const AuthController = {
   },
 
   async setupOwnerAdmin() {
+    if (ROOT_ORG_PUBLIC_KEY) {
+      UI.toast('🔒 Không thể tạo thêm Admin chủ sở hữu mới.');
+      return;
+    }
     const userId = document.getElementById('setupAdminId').value.trim().toLowerCase();
     const pass = document.getElementById('setupAdminPass').value;
     if (!userId || pass.length < 6) {
@@ -1482,7 +1479,6 @@ const AuthController = {
       return;
     }
 
-    // Sinh cặp khóa bất đối xứng ECDSA P-256 cho Admin ký mã mời thành viên
     const { pubJwk, privJwk } = await CryptoVault.generateSigningKeyPair();
     await StorageDB.put('meta', { key: 'org_public_key', pubJwk });
 
@@ -1493,7 +1489,6 @@ const AuthController = {
     const passKey = await CryptoVault.deriveAesKey(pass, salt);
     const recAesKey = await CryptoVault.deriveAesKey(recoveryKey, recoverySalt);
 
-    // Tạo Master Profile Encryption Key ngẫu nhiên và bọc bằng cả Mật khẩu cá nhân lẫn Recovery Key
     const rawMasterKey = crypto.getRandomValues(new Uint8Array(32));
     const masterKeyB64 = CryptoVault.bufToBase64(rawMasterKey);
     const wrappedByPass = await CryptoVault.encryptJson({ masterKeyB64, privJwk }, passKey);
@@ -1520,7 +1515,7 @@ const AuthController = {
 
     UI.openModal('🛡️ Khởi Tạo Admin Thành Công — Lưu Khóa Khôi Phục!', `
       <div style="font-size:13px;">
-        <p style="margin-top:0;">Hồ sơ <b>${userId}</b> đã được mã hóa AES-GCM 256-bit. Hãy lưu lại <b>Khóa Khôi Phục 24 ký tự</b> bên dưới ở nơi an toàn (dùng để mở khóa dữ liệu nếu bạn quên mật khẩu):</p>
+        <p style="margin-top:0;">Hồ sơ <b>${userId}</b> đã được mã hóa AES-GCM 256-bit. Hãy lưu lại <b>Khóa Khôi Phục 24 ký tự</b> bên dưới:</p>
         <div style="background:var(--warning-soft); border:1.5px dashed #f59e0b; padding:12px; border-radius:10px; font-family:monospace; font-size:15px; font-weight:800; text-align:center; margin-bottom:12px; user-select:all;">
           ${recoveryKey}
         </div>
@@ -1539,7 +1534,7 @@ const AuthController = {
 
     const acc = await StorageDB.get('accounts', userId);
     if (!acc) {
-      UI.toast('❌ Không tìm thấy tài khoản trên thiết bị này. Nếu có Mã mời, hãy sang tab "Kích hoạt Mã mời".');
+      UI.toast('❌ Không tìm thấy tài khoản trên máy này. Hãy dùng Mã mời để kích hoạt!');
       return;
     }
 
@@ -1566,6 +1561,7 @@ const AuthController = {
     const note = document.getElementById('inviteNoteInput').value.trim() || 'Thành viên';
     const days = Number(document.getElementById('inviteDaysSelect').value || 30);
     const metaPub = await StorageDB.get('meta', 'org_public_key');
+    const pubJwk = ROOT_ORG_PUBLIC_KEY || (metaPub && metaPub.pubJwk);
 
     const payload = {
       invitation_id: `inv_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -1579,24 +1575,24 @@ const AuthController = {
       type: 'MASTER365_SIGNED_INVITE',
       payload,
       signature,
-      pubJwk: metaPub.pubJwk
+      pubJwk
     });
 
     document.getElementById('generatedInviteBox').innerHTML = `
       <div style="background:#fff; border:1px solid var(--border); padding:10px; border-radius:10px; font-size:12px;">
         <strong>🎟️ Gói Mã Mời Ký Số (${note} — Hạn ${days} ngày):</strong>
-        <p style="color:var(--text-muted); margin:4px 0;">Gửi chuỗi này cho thành viên để kích hoạt tài khoản trên máy của họ:</p>
-        <textarea class="textarea-field" rows="3" readonly style="font-size:11px;">${inviteBundle}</textarea>
+        <textarea class="textarea-field" rows="3" readonly style="font-size:11px; margin-top:4px;">${inviteBundle}</textarea>
       </div>
     `;
   },
 
   exportPublicKeyBundle() {
     StorageDB.get('meta', 'org_public_key').then(meta => {
-      if (!meta) return;
+      const pub = ROOT_ORG_PUBLIC_KEY || (meta && meta.pubJwk);
+      if (!pub) return;
       UI.openModal('🔑 Khóa Công Khai Xác Minh (Public Key)', `
-        <p style="font-size:12px; margin-top:0;">Khóa công khai ECDSA P-256 dùng để xác minh chữ ký mã mời ngoại tuyến (an toàn để chia sẻ):</p>
-        <textarea class="textarea-field" rows="5" readonly>${JSON.stringify(meta.pubJwk)}</textarea>
+        <p style="font-size:12px; margin-top:0;">Copy chuỗi này dán thay thế chữ <code>null</code> ở biến <code>ROOT_ORG_PUBLIC_KEY</code> trong <code>index.html</code> để khóa vĩnh viễn nút tạo Admin với người ngoài:</p>
+        <textarea class="textarea-field" rows="5" readonly style="user-select:all;">${JSON.stringify(pub)}</textarea>
       `);
     });
   },
@@ -1613,21 +1609,25 @@ const AuthController = {
 
     try {
       const parsed = JSON.parse(rawToken);
-      if (parsed.type !== 'MASTER365_SIGNED_INVITE' || !parsed.payload || !parsed.signature || !parsed.pubJwk) {
+      if (parsed.type !== 'MASTER365_SIGNED_INVITE' || !parsed.payload || !parsed.signature) {
         throw new Error('Định dạng mã mời không hợp lệ.');
       }
       if (new Date(parsed.payload.expires_at).getTime() < Date.now()) {
         throw new Error('Gói mã mời đã hết thời hạn hiệu lực!');
       }
-      const validSig = await CryptoVault.verifyPayload(parsed.payload, parsed.signature, parsed.pubJwk);
+
+      const trustedPubJwk = ROOT_ORG_PUBLIC_KEY || parsed.pubJwk;
+      if (!trustedPubJwk) throw new Error('Thiếu khóa công khai xác minh.');
+
+      const validSig = await CryptoVault.verifyPayload(parsed.payload, parsed.signature, trustedPubJwk);
       if (!validSig) {
-        throw new Error('Chữ ký số ECDSA P-256 không hợp lệ hoặc mã mời đã bị chỉnh sửa!');
+        throw new Error('Chữ ký số không khớp với Admin chủ sở hữu! Mã mời bị từ chối.');
       }
 
       const existing = await StorageDB.get('accounts', userId);
       if (existing) throw new Error('ID thành viên này đã tồn tại trên thiết bị.');
 
-      await StorageDB.put('meta', { key: 'org_public_key', pubJwk: parsed.pubJwk });
+      await StorageDB.put('meta', { key: 'org_public_key', pubJwk: trustedPubJwk });
 
       const salt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
       const recoveryKey = CryptoVault.generateRandomCode(24);
@@ -1662,7 +1662,7 @@ const AuthController = {
 
       UI.openModal('✅ Kích Hoạt Hồ Sơ Thành Công — Lưu Khóa Khôi Phục!', `
         <div style="font-size:13px;">
-          <p style="margin-top:0;">Chữ ký mã mời hợp lệ! Hồ sơ <b>${userId}</b> đã được tạo và mã hóa riêng biệt. Hãy lưu lại <b>Khóa Khôi Phục 24 ký tự</b> này:</p>
+          <p style="margin-top:0;">Chữ ký mã mời của Admin hợp lệ! Hồ sơ <b>${userId}</b> đã được tạo và mã hóa riêng biệt. Hãy lưu lại <b>Khóa Khôi Phục 24 ký tự</b> này:</p>
           <div style="background:var(--warning-soft); border:1.5px dashed #f59e0b; padding:12px; border-radius:10px; font-family:monospace; font-size:15px; font-weight:800; text-align:center; margin-bottom:12px; user-select:all;">
             ${recoveryKey}
           </div>
@@ -1830,7 +1830,6 @@ const CurriculumBank = {
     }
   ],
 
-  // Câu bản địa (NATIVE_PHRASE): assessed = false, preview_only = true, roleplay_eligible = true
   NATIVE_PHRASES: [
     {
       lemma: 'That makes sense.', pos: 'native_phrase', ipa: '/ðæt meɪks sens/', meaning: 'Điều đó hợp lý đấy / Tôi hiểu ý bạn rồi.',
@@ -1919,7 +1918,6 @@ const CurriculumBank = {
     return { previewCards, coreVocabItems };
   },
 
-  // Trích xuất đúng tập kiến thức đã học cho Phiên Ôn tập Tuần (7) / Tháng (29) / Cuối khóa (363-365)
   getReviewPoolForSession(blueprint, learnedCanonicalKeys) {
     const targetCount = blueprint.grammarMinQuestions || 40;
     const grammarPool = this.GRAMMAR_BANK;
@@ -2164,7 +2162,6 @@ const App = {
     const cipher = await CryptoVault.encryptJson(this.state, AuthController.activeAesKey);
     await StorageDB.put('profiles', { profileKey: `profile::${this.state.userId}`, cipher });
 
-    // Cập nhật chỉ số công khai tối thiểu cho Bảng Xếp Hạng nội bộ trên máy
     const acc = await StorageDB.get('accounts', this.state.userId);
     if (acc) {
       const completedSessions = Object.values(this.state.sessionStatuses).filter(s => s === 'COMPLETED').length;
@@ -2186,13 +2183,11 @@ const App = {
     return evt;
   },
 
-  /* ---------------- DASHBOARD, SRS QUEUE & PACE FORECAST ---------------- */
   renderDashboard() {
     const completedCount = Object.values(this.state.sessionStatuses).filter(s => s === 'COMPLETED').length;
     const pct = ((completedCount / FROZEN_CONFIG.TOTAL_SESSIONS) * 100).toFixed(1);
     const cur = this.state.currentQueueSession;
 
-    // Dự báo ngày tốt nghiệp (Pace Forecaster)
     const daysElapsed = Math.max(1, (Date.now() - (this.state.startedAtMs || Date.now())) / 86400000);
     const pacePerDay = completedCount > 0 ? (completedCount / daysElapsed) : (6 / 7);
     const remainingSessions = Math.max(0, FROZEN_CONFIG.TOTAL_SESSIONS - completedCount);
@@ -2290,7 +2285,6 @@ const App = {
     this.launchSession(sessionNumber, false);
   },
 
-  /* ---------------- SRS DAILY QUEUE RUNNER (FAIRNESS POLICY) ---------------- */
   startSrsReviewSession() {
     const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
     const dueCards = ProgressEngine.getFairSrsDueQueue(this.state.srsCards, logicalDay);
@@ -2362,9 +2356,7 @@ const App = {
     this.renderSrsCardQuestion();
   },
 
-  /* ---------------- DAILY LISTENING BOARD & MINI DICTATION ---------------- */
   buildDailyListeningQueue(durationMinutes = 30) {
-    // Ưu tiên: recent_errors -> due_srs -> current_session; chống trùng theo canonical_item_id
     const seen = new Set();
     const queue = [];
     const pushUnique = (item, sourceTag) => {
@@ -2385,7 +2377,6 @@ const App = {
       CurriculumBank.CORE_WORDS.slice(0, 6).forEach(it => pushUnique(it, 'Ôn tập cốt lõi'));
     }
 
-    // Mỗi mục mất ~25 giây trong vòng lặp nghe; cắt danh sách vừa khớp thời lượng 15/30/45 phút
     const maxItems = Math.max(4, Math.floor((durationMinutes * 60) / 25));
     return queue.slice(0, maxItems);
   },
@@ -2527,7 +2518,6 @@ const App = {
     this.state.recentErrorItems = [item, ...this.state.recentErrorItems.filter(x => x.canonicalKey !== item.canonicalKey)].slice(0, 15);
   },
 
-  /* ---------------- BUSY DEFERRAL & MICRO-SESSION ---------------- */
   async triggerBusyDeferral() {
     try {
       const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
@@ -2599,7 +2589,6 @@ const App = {
     this.renderMicroQuestion();
   },
 
-  /* ---------------- CORE SESSION LAUNCHER & STAGES 0 -> 5B ---------------- */
   startCurrentSession() {
     this.launchSession(this.state.currentQueueSession, false);
   },
@@ -2631,7 +2620,6 @@ const App = {
           ? (bp.grammarTier > 0 ? CurriculumBank.GRAMMAR_BANK.filter(g => g.tier <= bp.grammarTier).slice(0, bp.grammarMinQuestions) : [])
           : CurriculumBank.getReviewPoolForSession(bp, learnedKeys));
 
-    // Đảm bảo đủ số câu ngữ pháp theo định mức phiên NEW_LEARNING (20/25/30/35)
     if (bp.mode === 'NEW_LEARNING' && bp.grammarTier > 0) {
       const pool = CurriculumBank.GRAMMAR_BANK.filter(g => g.tier <= bp.grammarTier);
       while (grammarQuestions.length < bp.grammarMinQuestions) {
@@ -2650,7 +2638,7 @@ const App = {
       isCustomPool: Boolean(customItemsOverride),
       blueprint: bp,
       previewCards: pkg.previewCards,
-      items: pkg.coreVocabItems, // Chỉ CORE_VOCAB được kiểm tra ở Chặng 1-5A
+      items: pkg.coreVocabItems,
       stage: bp.mode === 'NEW_LEARNING' ? 0 : 6,
       studyIdx: 0,
       queue: pkg.coreVocabItems.map((_, i) => i),
@@ -2714,7 +2702,6 @@ const App = {
     else if (r.stage === 7) this.renderStage5BRoleplay();
   },
 
-  /* STAGE 0: PREVIEW_ONLY (Không chấm điểm, phân tách từ chuẩn vs biến thể & câu bản địa) */
   renderStage0Study() {
     const r = this.activeRun;
     const cards = r.previewCards;
@@ -2795,7 +2782,6 @@ const App = {
         const logicalDay = ProgressEngine.getLogicalStudyDay(new Date(), this.state.timeZone);
         r.items.forEach(it => {
           this.state.itemMastery[it.canonicalKey].mastered = true;
-          // Nạp từ chuẩn đã học vào hàng đợi SRS ngày kế tiếp
           if (!this.state.srsCards[it.canonicalKey]) {
             this.state.srsCards[it.canonicalKey] = ProgressEngine.updateSrsCardResult({
               canonicalKey: it.canonicalKey,
@@ -2814,7 +2800,6 @@ const App = {
     return true;
   },
 
-  /* STAGE 1..4 (Chỉ kiểm tra CORE_VOCAB của phiên) */
   renderStage1() {
     const r = this.activeRun;
     const item = r.items[r.queue[0]];
@@ -3035,7 +3020,6 @@ const App = {
     }
   },
 
-  /* STAGE 5A: Speed Combo */
   renderStage5AIntro() {
     const r = this.activeRun;
     const plan = AssessmentEngine.buildAndValidateSpeedCombo(r.blueprint, r.items, r.accessibilityFallback);
@@ -3189,7 +3173,6 @@ const App = {
     }
   },
 
-  /* STAGE 6: Chunked Grammar / Review / Gate Exam */
   renderGrammarStage() {
     const r = this.activeRun;
     const total = r.grammarQuestions.length;
@@ -3288,7 +3271,6 @@ const App = {
     `);
   },
 
-  /* FINALIZE SESSION COMPLETION & UNLOCK STAGE 5B */
   async finalizeSessionCompletion(examScore = null) {
     const r = this.activeRun;
     if (r.isCustomPool) {
@@ -3367,7 +3349,6 @@ const App = {
     }
   },
 
-  /* STAGE 5B: Non-Blocking AI Roleplay (Dùng cả Từ chuẩn, Collocations & Câu bản địa; Bonus XP 1 lần/phiên) */
   renderStage5BRoleplay() {
     const r = this.activeRun;
     const alreadyClaimed = (this.state.bonusClaimedSessions || []).includes(r.sessionNumber);
@@ -3421,7 +3402,6 @@ const App = {
     }
   },
 
-  /* ---------------- EXTENSION HUB, PDF/DOCX READER & MASTERY GATE ---------------- */
   renderExtensionViews() {
     this.renderCustomVocabList();
     this.renderWorkplacePatterns();
@@ -3559,7 +3539,6 @@ const App = {
     this.renderGrammarStage();
   },
 
-  /* BOOK READER (Đọc trực tiếp PDF, DOCX, TXT, MD + Click-to-Lookup) */
   async toggleBookBinarySync(checked) {
     this.state.syncBookBinaryOptIn = Boolean(checked);
     await this.persist();
@@ -3664,7 +3643,6 @@ const App = {
     this.runAiTutorQuery();
   },
 
-  /* MASTERY GATE WITH FROZEN SNAPSHOT */
   renderCefrGatePanel() {
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
     document.getElementById('cefrGatePanel').innerHTML = `
@@ -3725,7 +3703,6 @@ const App = {
     }
   },
 
-  /* ---------------- ANALYTICS, LEADERBOARD, EXPORT & SYNC ---------------- */
   renderAnalyticsView() {
     const w = this.state.weaknessCounts;
     const total = w.SPELLING_LISTEN + w.PRONUNCIATION_SPEAK + w.MEANING_READ + w.GRAMMAR_TRAP;
@@ -3942,7 +3919,6 @@ const AcceptanceRunner = {
     const k2 = CurriculumEngine.buildCanonicalKey('bank', 'en', 'noun', 'river');
     assert('3. Chống gộp nhầm từ đa nghĩa', k1 !== k2);
 
-    // 4. Native phrase is PREVIEW_ONLY and excluded from Speed Combo 5A
     const bp3 = CurriculumEngine.getSessionBlueprint(3);
     const pkg3 = CurriculumBank.getSessionPackage(bp3);
     const sc3 = AssessmentEngine.buildAndValidateSpeedCombo(bp3, pkg3.previewCards, false);
@@ -3955,13 +3931,11 @@ const AcceptanceRunner = {
     const logical = ProgressEngine.getLogicalStudyDay(before3am, 'Asia/Ho_Chi_Minh');
     assert('6. Ngày học logic cắt lúc 03:00 sáng', logical === '2026-11-22');
 
-    // 7. Busy deferral + Micro-Session in same day does not double-count Streak
     let busySim = App.getDefaultState('test_u');
     busySim = ProgressEngine.applyDailyActivity(busySim, 'BUSY_DEFERRAL', '2026-11-22');
     busySim = ProgressEngine.applyDailyActivity(busySim, 'MICRO_SESSION', '2026-11-22');
     assert('7. Báo bận + Micro-Session cùng ngày không trùng Streak', busySim.streak === 0 && busySim.dailyLogs['2026-11-22'].streakCounted === true);
 
-    // 8. SRS Fairness Policy (30 cards/day cap + never drop overdue items)
     const srsMap = {};
     for (let i = 0; i < 40; i++) {
       srsMap[`k_${i}`] = { canonicalKey: `k_${i}`, lemma: `w_${i}`, dueDate: '2026-11-10', intervalDays: i < 25 ? 1 : 7, lapseCount: i < 25 ? 2 : 0 };
@@ -3970,23 +3944,19 @@ const AcceptanceRunner = {
     const agedIncluded = fairQueue.some(c => c.lapseCount === 0);
     assert('8. SRS Trần 30 thẻ/ngày & chống đói lịch thẻ quá hạn', fairQueue.length === 30 && agedIncluded);
 
-    // 9. Cross-user event isolation
     const evtOther = SyncEngine.createEvent('user_B', 'dev_2', 'SESSION_COMPLETED', 'session_1', { sessionNumber: 1, xp: 100 });
     const isoState = SyncEngine.mergeRemoteEvents(App.getDefaultState('user_A'), [evtOther]);
     assert('9. Cô lập sự kiện đồng bộ theo user_id', isoState.xp === 0 && isoState.currentQueueSession === 1);
 
-    // 10. Frozen Snapshot Mastery Gate
     const snap = AssessmentEngine.createFrozenGateSnapshot('B1', [{ lemma: 'apply', level: 'B1', contentType: 'CORE_VOCAB', canonicalKey: 'k_apply' }], { k_apply: { mastered: true } }, CurriculumBank.GRAMMAR_BANK);
     assert('10. Đóng băng đề thi Mastery Gate (Frozen Snapshot)', Object.isFrozen(snap) && snap.allMasteredAtStart === true);
 
-    // 11. ECDSA P-256 Asymmetric Invitation Verification
     const { pubJwk, privJwk } = await CryptoVault.generateSigningKeyPair();
     const invPayload = { invitation_id: 'inv_1', role: 'MEMBER' };
     const sig = await CryptoVault.signPayload(invPayload, privJwk);
     const verified = await CryptoVault.verifyPayload(invPayload, sig, pubJwk);
     assert('11. Xác minh chữ ký bất đối xứng ECDSA P-256', verified === true);
 
-    // 12. AES-GCM Profile Encryption Roundtrip
     const salt = CryptoVault.bufToBase64(crypto.getRandomValues(new Uint8Array(16)));
     const aes = await CryptoVault.deriveAesKey('secret123', salt);
     const enc = await CryptoVault.encryptJson({ xp: 250 }, aes);
