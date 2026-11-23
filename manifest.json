@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Master 365 — Lộ Trình 365 Phiên",
   "short_name": "Master 365",
-  "description": "Ứng dụng PWA LOCAL_FIRST học tiếng Anh 365 phiên chuẩn FINAL V3.2: Từ vựng 4 kỹ năng, Ngữ pháp phân tầng, 4 Nhóm Mở Rộng và SRS.",
+  "description": "Ứng dụng PWA LOCAL_FIRST học tiếng Anh 365 phiên chuẩn FINAL V3.4: Từ vựng 4 kỹ năng, Ngữ pháp phân tầng, 4 Nhóm Mở Rộng, SRS và Backup 30 ngày.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
