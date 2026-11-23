@@ -1,71 +1,23 @@
 {
-  "name": "Master 365 — Học Tiếng Anh & Lộ Trình 365 Phiên",
+  "name": "Master 365 — Lộ Trình Học Tiếng Anh",
   "short_name": "Master 365",
-  "description": "Ứng dụng học tiếng Anh LOCAL_FIRST theo lộ trình 365 phiên, SRS, nạp học liệu TXT chuẩn Schema 2, đồng bộ đa thiết bị và khu mở rộng.",
-  "start_url": "./index.html",
+  "description": "Ứng dụng học tiếng Anh 365 phiên LOCAL_FIRST",
+  "start_url": "./",
   "scope": "./",
-  "id": "./master365-app",
   "display": "standalone",
-  "display_override": [
-    "standalone",
-    "minimal-ui"
-  ],
-  "orientation": "any",
-  "background_color": "#0f172a",
+  "background_color": "#0b1120",
   "theme_color": "#0f172a",
   "lang": "vi",
-  "dir": "ltr",
-  "categories": [
-    "education",
-    "productivity"
-  ],
-  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./icon-192.svg",
+      "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "./icon-512.svg",
+      "src": "./icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-maskable.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Phiên học hiện tại",
-      "short_name": "Phiên học",
-      "description": "Mở nhanh phiên học hiện tại trong lộ trình 365 phiên",
-      "url": "./index.html#session",
-      "icons": [
-        {
-          "src": "./icon-192.svg",
-          "sizes": "192x192",
-          "type": "image/svg+xml"
-        }
-      ]
-    },
-    {
-      "name": "Ôn tập SRS",
-      "short_name": "Ôn SRS",
-      "description": "Vào nhanh lượt ôn tập lặp lại ngắt quãng (tối đa 30 thẻ/ngày)",
-      "url": "./index.html#srs",
-      "icons": [
-        {
-          "src": "./icon-192.svg",
-          "sizes": "192x192",
-          "type": "image/svg+xml"
-        }
-      ]
+      "type": "image/png"
     }
   ]
 }
