@@ -1,23 +1,29 @@
 {
-  "name": "Master 365 — Lộ Trình Học Tiếng Anh",
+  "id": "./",
+  "name": "Master 365 — Lộ Trình 365 Phiên",
   "short_name": "Master 365",
-  "description": "Ứng dụng học tiếng Anh 365 phiên LOCAL_FIRST",
-  "start_url": "./",
+  "description": "Ứng dụng PWA LOCAL_FIRST học tiếng Anh 365 phiên chuẩn FINAL V3.2: Từ vựng 4 kỹ năng, Ngữ pháp phân tầng, 4 Nhóm Mở Rộng và SRS.",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0b1120",
-  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "background_color": "#f6f8fb",
+  "theme_color": "#1d4ed8",
   "lang": "vi",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%231d4ed8'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='system-ui,sans-serif' font-size='64' font-weight='800'%3EM365%3C/text%3E%3C/svg%3E",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "./icon-512.png",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='104' fill='%231d4ed8'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='system-ui,sans-serif' font-size='168' font-weight='800'%3EM365%3C/text%3E%3C/svg%3E",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
