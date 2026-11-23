@@ -1,6 +1,6 @@
-/* Master 365 — Service Worker FINAL V3.2 (Safe Network-First for GitHub Pages) */
-const APP_SHELL_CACHE = 'master365-shell-v3.2.0';
-const CONTENT_CACHE = 'master365-content-v3.2.0';
+/* Master 365 — Service Worker FINAL V3.4 (Safe Network-First, Zero IndexedDB Interference) */
+const APP_SHELL_CACHE = 'master365-shell-v3.4.0';
+const CONTENT_CACHE = 'master365-content-v3.4.0';
 const VALID_CACHES = [APP_SHELL_CACHE, CONTENT_CACHE];
 
 const CORE_ASSETS = [
@@ -42,7 +42,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/* Chỉ cho phép cache phản hồi hợp lệ (chặn 404/500, tệp rỗng, JSON lỗi) */
+/* Chặn triệt để việc cache tệp lỗi, tệp rỗng hoặc JSON hỏng */
 async function isValidResponseToCache(response, urlPathname) {
   if (!response || !response.ok || response.status !== 200) return false;
   if (response.type !== 'basic' && response.type !== 'cors') return false;
@@ -61,15 +61,15 @@ async function isValidResponseToCache(response, urlPathname) {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
 
-  // Chỉ xử lý GET cùng nguồn; không can thiệp IndexedDB hay API ngoài
+  // Chỉ xử lý GET cùng nguồn; tuyệt đối không chặn Cloud Sync (Firebase/API ngoài) hay IndexedDB
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  // 1. Điều hướng trang (mở link / Reload / F5): Network-First tuyệt đối
+  // 1. Điều hướng / Reload / F5: Luôn Network-First để không bao giờ lỗi ERR_FAILED sau khi nạp file
   if (req.mode === 'navigate') {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then(async (networkRes) => {
           if (await isValidResponseToCache(networkRes, url.pathname)) {
             const cache = await caches.open(APP_SHELL_CACHE);
@@ -88,7 +88,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Học liệu .txt và cấu hình rời .json: Network-First, chỉ cache bản hợp lệ
+  // 2. Học liệu .txt và tệp .json cùng nguồn: Network-First, chỉ cache bản hợp lệ
   if (url.pathname.endsWith('.txt') || url.pathname.endsWith('.json')) {
     event.respondWith(
       fetch(req, { cache: 'no-store' })
@@ -104,7 +104,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Tài nguyên tĩnh khác: Network-First fallback cache
+  // 3. Tài nguyên tĩnh khác: Network-First dự phòng cache
   event.respondWith(
     fetch(req)
       .then(async (networkRes) => {
