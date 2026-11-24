@@ -992,16 +992,13 @@
   'use strict';
 
   const {
-    EXT_ROTATION, SPEC_PRIORITY, FLOOR_QUOTAS, ACTIVITY_40, GRAMMAR_BUDGET, VOCAB_QUOTA_BY_DAY, SESSION_MAP,
+    EXT_ROTATION, SPEC_PRIORITY, ACTIVITY_40, GRAMMAR_BUDGET, VOCAB_QUOTA_BY_DAY, SESSION_MAP,
     getLogicalDay, getLogicalWeekKey, addDays, makeImmutableId, ceilScore, escHtml,
     dbGetAll, dbPut, dbDelete, dbBulkWrite, reloadContentFromDB, loadAllState, saveProfile, saveActiveSession,
     STATE, DEFAULT_PROFILE, createAutoBackup, pickPcBackupFolder, buildFullPayload, applyFullPayload,
     cloudPushAll, cloudPullAll, parseSchema2, toast, openModal, closeModal, speakText, toggleBpm, hasPcFolder
   } = window.M365;
 
-  /* =========================================================
-     1. CHỌN TUẦN KHÓ/NHẸ LINH HOẠT & CẤP PHÁT SNAPSHOT FAIL-FAST
-  ========================================================= */
   function getEffectiveWeekType(meta) {
     if (!meta || !meta.week_index) return null;
     return STATE.profile.week_choices[meta.week_index] || meta.default_week_type;
@@ -1065,7 +1062,6 @@
         else chosenVocab.push(...pool.slice(0, need));
       }
 
-      // 4 Nhóm mở rộng ở P3 & P6
       let chosenExt = null;
       if (meta.ext_group) {
         const extPool = pubVocab.filter(v => v.target_pool === 'EXTENSION_ONLY' && v.tier_group === meta.ext_group && !STATE.profile.ext_allocations[v.canonical_identity]);
@@ -1073,7 +1069,6 @@
         else chosenExt = extPool[0];
       }
 
-      // Ngữ pháp: 2 ngân sách Luyện & Thi độc lập (Quy tắc A)
       const gBudget = GRAMMAR_BUDGET[weekType][meta.day_index];
       let chosenGramPrac = [], chosenGramAssess = [], chosenGramRetake = [];
       if (gBudget.prac > 0) {
@@ -1086,14 +1081,12 @@
         } else {
           chosenGramPrac = orderedG.slice(0, gBudget.prac).map(g => g.grammar_id);
           chosenGramAssess = orderedG.slice(gBudget.prac, totalNeed).map(g => g.grammar_id);
-          // Chuẩn bị nguồn dự phòng thi lại (ưu tiên 0% trùng, tối đa retake_overlap_cap <= 30%)
           const spare = orderedG.slice(totalNeed).map(g => g.grammar_id);
           const maxOverlap = Math.floor(gBudget.assess * 0.3);
           const retakeList = [...spare.slice(0, gBudget.assess)];
           if (retakeList.length < gBudget.assess) {
             const needFill = gBudget.assess - retakeList.length;
-            const allowFromAssess = chosenGramAssess.slice(0, Math.min(maxOverlap, needFill));
-            retakeList.push(...allowFromAssess);
+            retakeList.push(...chosenGramAssess.slice(0, Math.min(maxOverlap, needFill)));
             if (retakeList.length < gBudget.assess) {
               retakeList.push(...chosenGramPrac.slice(0, gBudget.assess - retakeList.length));
             }
@@ -1106,7 +1099,6 @@
         return { ok: false, error: `BLOCKED_CONTENT (Fail-fast — Thiếu nguồn PUBLISHED):\n• ${missing.join('\n• ')}` };
       }
 
-      // Chốt cấp phát 1 lần duy nhất
       chosenVocab.forEach(v => { STATE.profile.allocations[v.canonical_identity] = sessionId; });
       if (chosenExt) STATE.profile.ext_allocations[chosenExt.canonical_identity] = sessionId;
 
@@ -1127,7 +1119,6 @@
       saveProfile();
       return { ok: true, snapshot };
     } else {
-      // WEEKLY_REVIEW / MONTHLY_GATE / FINAL_REVIEW / GRADUATION
       const learnedVocab = STATE.vocab.filter(v => v.status === 'PUBLISHED' && STATE.profile.allocations[v.canonical_identity]);
       const scopeVocab = learnedVocab.length ? learnedVocab : pubVocab.filter(v => v.target_pool === 'SESSION_POOL');
       const missing = [];
@@ -1151,9 +1142,6 @@
     }
   }
 
-  /* =========================================================
-     2. KHỞI TẠO PHIÊN HỌC & MỞ KHÓA PHIÊN (8 TRẠNG THÁI)
-  ========================================================= */
   function startOrResumeSession(sessionId, isPracticeReview = false) {
     if (STATE.activeSession && STATE.activeSession.session_id === sessionId) {
       STATE.tab = 'today'; render(); return;
@@ -1225,18 +1213,15 @@
         completed_at: new Date().toISOString()
       };
 
-      // Trường hợp biên #4: Cùng ngày vừa Báo bận vừa học hợp lệ -> ưu tiên học, hoàn lượt Báo bận
       if (STATE.profile.busy_days[today] && !STATE.profile.busy_days[today].refunded) {
         STATE.profile.busy_days[today].refunded = true;
       }
-      // Streak tối đa +1 / ngày logic (chặn nếu giờ bị lùi bất thường)
       if (STATE.profile.last_study_logical_day !== today) {
         STATE.profile.streak += 1;
         STATE.profile.last_study_logical_day = today;
       }
       awardXp(`session_complete_${a.session_id}`, a.is_exam ? 200 : 100);
 
-      // Đưa từ mới của phiên vào lịch SRS
       const snap = STATE.profile.snapshots[a.session_id];
       if (!a.is_exam && snap && snap.vocab_ids) {
         snap.vocab_ids.forEach(vid => {
@@ -1263,7 +1248,7 @@
   }
 
   /* =========================================================
-     3. BỘ SINH BÀI TẬP 40 HOẠT ĐỘNG TỪ VỰNG + NGỮ PHÁP + 4 MỞ RỘNG
+     BỘ SINH BÀI TẬP 40 HOẠT ĐỘNG + 8 INTEGRATED (9 KIỂU TƯƠNG TÁC)
   ========================================================= */
   function shuffle(arr) {
     const a = arr.slice();
@@ -1279,12 +1264,66 @@
   }
 
   function buildQuestionFromActivity(v, act, allPub, idxSeed) {
-    const others = shuffle(allPub.filter(x => x.vocab_id !== v.vocab_id && x.target_pool === 'SESSION_POOL'));
+    const poolMain = allPub.filter(x => x.target_pool === 'SESSION_POOL');
+    const others = shuffle(poolMain.filter(x => x.vocab_id !== v.vocab_id));
     const d3 = others.slice(0, 3);
     const ex = (v.example && v.example.length > 8) ? v.example : `In daily work, we often apply ${v.lemma} clearly.`;
     const masked = ex.replace(new RegExp(v.lemma.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), '_____');
 
-    if (act.engine === 'listen_mcq' || act.engine === 'listen_ctx' || act.engine === 'listen_pair') {
+    // 1. Nghe phân biệt từ gần chữ / gần âm (#5)
+    if (act.engine === 'listen_pair') {
+      const similar = poolMain
+        .filter(x => x.vocab_id !== v.vocab_id && x.lemma.length >= 2)
+        .sort((a, b) => {
+          const sa = (a.lemma[0].toLowerCase() === v.lemma[0].toLowerCase() ? 2 : 0) + Math.abs(a.lemma.length - v.lemma.length);
+          const sb = (b.lemma[0].toLowerCase() === v.lemma[0].toLowerCase() ? 2 : 0) + Math.abs(b.lemma.length - v.lemma.length);
+          return sb - sa;
+        })
+        .slice(0, 3);
+      const distractors = similar.length >= 3 ? similar : d3;
+      return {
+        id: `act_${act.id}_${v.vocab_id}_${idxSeed}`, vocab_id: v.vocab_id, skill: 'Listening', primary_domain: 'listening',
+        activity_label: `#${act.id} ${act.name}`, engine: 'mcq', speakText: v.lemma,
+        prompt: `Nghe kỹ phát âm và chọn đúng từ tiếng Anh (Nghĩa: ${v.meaning}):`,
+        options: shuffle([v.lemma, ...distractors.map(x => x.lemma)]),
+        answer: v.lemma
+      };
+    }
+
+    // 2. Nối cặp Từ ↔ Nghĩa (#15 Đọc nối tiêu đề/nghĩa, #19 Đọc đối chiếu)
+    if (act.id === 15 || act.id === 19) {
+      const pairItems = shuffle([v, ...others.slice(0, 3)]);
+      return {
+        id: `act_${act.id}_${v.vocab_id}_${idxSeed}`, vocab_id: v.vocab_id, skill: 'Reading', primary_domain: 'reading',
+        activity_label: `#${act.id} ${act.name}`, engine: 'match',
+        prompt: `Nối đúng từng từ tiếng Anh với nghĩa tiếng Việt tương ứng:`,
+        pairs: pairItems.map((it, idx) => ({ left: it.lemma, right: it.meaning, key: idx })),
+        rightOptions: shuffle(pairItems.map((it, idx) => ({ text: it.meaning, key: idx }))),
+        answer: 'MATCH_ALL'
+      };
+    }
+
+    // 3. Bắt lỗi sai trong câu (#17 Đọc tìm lỗi dùng từ, #36 Sửa lỗi từ vựng)
+    if (act.id === 17 || act.id === 36) {
+      const wrongWord = d3[0]?.lemma || 'delay';
+      const wrongSentence = `In today's report, the team used "${wrongWord}" instead of "${v.lemma}" (${v.meaning}).`;
+      const spots = shuffle([
+        { label: `Cụm sai: "${wrongWord}" (lẽ ra là "${v.lemma}")`, isErr: true },
+        { label: `Mốc thời gian: "In today's report"`, isErr: false },
+        { label: `Chủ ngữ: "the team"`, isErr: false },
+        { label: `Cấu trúc: "instead of"`, isErr: false }
+      ]);
+      return {
+        id: `act_${act.id}_${v.vocab_id}_${idxSeed}`, vocab_id: v.vocab_id,
+        skill: act.id === 17 ? 'Reading' : 'Writing', primary_domain: act.id === 17 ? 'reading' : 'writing',
+        activity_label: `#${act.id} ${act.name}`, engine: 'mcq',
+        prompt: `Tìm phần lỗi dùng từ trong câu sau (từ đúng cần dùng là "${v.lemma}" = ${v.meaning}):\n"${wrongSentence}"`,
+        options: spots.map(s => s.label),
+        answer: spots.find(s => s.isErr).label
+      };
+    }
+
+    if (act.engine === 'listen_mcq' || act.engine === 'listen_ctx') {
       const opts = shuffle([v.meaning, ...d3.map(x => x.meaning)]);
       return {
         id: `act_${act.id}_${v.vocab_id}_${idxSeed}`, vocab_id: v.vocab_id, skill: 'Listening', primary_domain: 'listening',
@@ -1332,7 +1371,6 @@
           tokens: shuffle(tokens), answer: tokens.join(' ')
         };
       }
-      // Fallback sang điền từ nếu ví dụ quá dài/ngắn
       return {
         id: `act_${act.id}_${v.vocab_id}_${idxSeed}`, vocab_id: v.vocab_id, skill: 'Writing', primary_domain: 'writing',
         activity_label: `#${act.id} ${act.name}`, engine: 'text',
@@ -1357,7 +1395,6 @@
         answer: v.lemma
       };
     }
-    // Mặc định: write_spell / write_cloze
     return {
       id: `act_${act.id}_${v.vocab_id}_${idxSeed}`, vocab_id: v.vocab_id, skill: 'Writing', primary_domain: 'writing',
       activity_label: `#${act.id} ${act.name}`, engine: 'text',
@@ -1366,11 +1403,18 @@
     };
   }
 
-  function buildVocabPractice(vocabIds, sessionId) {
+  function buildVocabPractice(vocabIds, sessionId, specificAct = null) {
     const items = vocabIds.map(id => STATE.vocab.find(v => v.vocab_id === id)).filter(Boolean);
     const allPub = STATE.vocab.filter(v => v.status === 'PUBLISHED');
     const qs = [];
-    // Xoay vòng đa dạng từ đủ 40 dạng + 8 INTEGRATED theo session_id
+
+    if (specificAct) {
+      items.forEach((v, idx) => {
+        qs.push(buildQuestionFromActivity(v, specificAct, allPub, sessionId * 13 + idx));
+      });
+      return qs;
+    }
+
     items.forEach((v, idx) => {
       const seed = sessionId * 7 + idx;
       const lAct = ACTIVITY_40.Listening[seed % ACTIVITY_40.Listening.length];
@@ -1390,17 +1434,16 @@
   }
 
   function buildVocabAssessment(vocabIds, attemptNum) {
-    // >= 2 bằng chứng đánh giá độc lập/từ, phủ 100% từ mới, thay đổi dạng khi thi lại
     const items = vocabIds.map(id => STATE.vocab.find(v => v.vocab_id === id)).filter(Boolean);
     const allPub = STATE.vocab.filter(v => v.status === 'PUBLISHED');
     const qs = [];
     items.forEach((v, idx) => {
       const q1Act = (attemptNum % 2 === 0)
-        ? ACTIVITY_40.Listening[(idx + attemptNum) % 2]        // listen_mcq / listen_ctx
-        : ACTIVITY_40.Reading[(idx + attemptNum) % 2];         // read_mcq / read_cloze
+        ? ACTIVITY_40.Listening[(idx + attemptNum) % 2]
+        : ACTIVITY_40.Reading[(idx + attemptNum) % 2];
       const q2Act = (attemptNum % 2 === 0)
-        ? ACTIVITY_40.Writing[2]                               // write_cloze
-        : ACTIVITY_40.Listening[2];                            // listen_fill
+        ? ACTIVITY_40.Writing[2]
+        : ACTIVITY_40.Listening[2];
       const q1 = buildQuestionFromActivity(v, q1Act, allPub, attemptNum * 31 + idx);
       const q2 = buildQuestionFromActivity(v, q2Act, allPub, attemptNum * 47 + idx + 9);
       q1.primary_domain = 'vocab';
@@ -1424,7 +1467,6 @@
     }));
   }
 
-  // Bộ bài tập tương tác 5 câu/lượt cho 4 Nhóm Mở rộng (3 dạng bài thực tế)
   function buildExtensionQuiz(sourceMode) {
     const allPubExt = STATE.vocab.filter(v => v.status === 'PUBLISHED' && v.target_pool === 'EXTENSION_ONLY');
     const pool = sourceMode === 'learned'
@@ -1465,7 +1507,6 @@
     });
   }
 
-  // Ma trận đề Tổng ôn tuần (40 câu) / Cổng tháng (50) / Đại tổng ôn (60) / Tốt nghiệp (80)
   function buildExamQuestions(snap) {
     const meta = snap.meta;
     const totalTarget = meta.min_q || 40;
@@ -1473,7 +1514,6 @@
     const vocabPool = snap.vocab_ids.map(id => STATE.vocab.find(v => v.vocab_id === id)).filter(Boolean);
     const gramPool = snap.grammar_assess_ids.map(id => STATE.grammar.find(g => g.grammar_id === id)).filter(Boolean);
 
-    // Tỷ trọng chuẩn: 30% Vocab, 30% Grammar, 15% Listening, 15% Reading, 10% Writing (mỗi câu 1 primary_domain duy nhất)
     const nVoc = Math.round(totalTarget * 0.30);
     const nGram = Math.round(totalTarget * 0.30);
     const nLis = Math.round(totalTarget * 0.15);
@@ -1517,7 +1557,7 @@
   }
 
   /* =========================================================
-     4. RENDER GIAO DIỆN CHÍNH (4 TAB)
+     RENDER GIAO DIỆN CHÍNH (4 TAB)
   ========================================================= */
   function updateHeader() {
     document.getElementById('hdrSub').textContent = `FINAL V3.4 • Ngày logic (03:00): ${getLogicalDay()}`;
@@ -1542,7 +1582,6 @@
     }
   }
 
-  /* --- TAB 1A: MÀN HÌNH HỌC HẰNG NGÀY (3 KHỐI GỌN) --- */
   function renderTodayHome() {
     const sid = STATE.profile.current_session_id;
     const meta = SESSION_MAP[sid - 1];
@@ -1556,7 +1595,6 @@
       .sort((a, b) => (b[1].lapses - a[1].lapses) || a[1].due_day.localeCompare(b[1].due_day));
     const dueSrs = allDue.slice(0, 30);
     const backlogCount = Math.max(0, allDue.length - 30);
-
     const hasChosenWeek = meta.week_index && !!STATE.profile.week_choices[meta.week_index];
 
     return `
@@ -1603,7 +1641,6 @@
     `;
   }
 
-  /* --- TAB 1B: PHIÊN HỌC (3 MẢNG TÁCH BẠCH + 2 KHU TỰ LUYỆN) --- */
   function renderActiveSession() {
     const a = STATE.activeSession;
     const snap = STATE.profile.snapshots[a.session_id];
@@ -1645,10 +1682,11 @@
 
           <div class="item-card">
             <div class="between"><h3>Mảng 1: TỪ VỰNG (${snap.vocab_ids.length} từ mới)</h3>${badge(a.tracks.vocab)}</div>
-            <p class="muted">Chặng 0 nạp từ/nghe/BPM → Luyện 40 dạng 4 kỹ năng → Đánh giá độc lập (≥80%, ≥2 câu/từ, mỗi từ ≥1 đúng).</p>
+            <p class="muted">Chặng 0 nạp từ/nghe/BPM → Luyện 40 dạng 4 kỹ năng + 8 INTEGRATED → Đánh giá độc lập (≥80%, ≥2 câu/từ, mỗi từ ≥1 đúng).</p>
             <div class="row">
               <button class="sm" onclick="window._setView('v_stage0')">1. Chặng 0: Nạp & Nghe</button>
               <button class="sm" onclick="window._startQuiz('v_prac')">2. Luyện 4 kỹ năng</button>
+              <button class="sm" onclick="window._openActivityPicker()">🎯 Chọn riêng 1/48 dạng</button>
               <button class="sm primary" onclick="window._startQuiz('v_assess')">3. Đánh giá Từ vựng</button>
             </div>
           </div>
@@ -1688,7 +1726,6 @@
       `;
     }
 
-    // CHẶNG 0 TỪ VỰNG (Listening Studio + Ẩn biến thể)
     if (a.view === 'v_stage0') {
       const words = snap.vocab_ids.map(id => STATE.vocab.find(v => v.vocab_id === id)).filter(Boolean);
       const rate = a.audio_rate || 1.0;
@@ -1731,7 +1768,6 @@
       `;
     }
 
-    // CHẶNG 0 NGỮ PHÁP (TỰ ĐỔ LÝ THUYẾT TỪ KHO [GRAMMAR] — KHÔNG BAO GIỜ TRỐNG)
     if (a.view === 'g_stage0') {
       const gBudget = GRAMMAR_BUDGET[snap.meta.week_type][snap.meta.day_index];
       const pracItems = snap.grammar_prac_ids.map(id => STATE.grammar.find(g => g.grammar_id === id)).filter(Boolean);
@@ -1765,13 +1801,12 @@
               <div style="margin-top:6px;"><b>Ví dụ / Cấu trúc:</b> ${escHtml(r.sampleQ)} → <span style="color:var(--success);font-weight:700;">${escHtml(r.sampleAns)}</span></div>
               ${r.explanation ? `<div class="muted" style="margin-top:4px;"><b>Giải thích & bẫy:</b> ${escHtml(r.explanation)}</div>` : ''}
             </div>
-          `).join('') || '<div class="banner warn">Các câu ngữ pháp trong kho chưa điền cột giải thích (explanation). Bạn có thể bổ sung thêm trong tab Kho & Nhập → Ngữ pháp.</div>'}
+          `).join('') || '<div class="banner warn">Các câu ngữ pháp trong kho chưa điền cột giải thích (explanation).</div>'}
           <button class="success" style="width:100%;margin-top:12px;" onclick="window._confirmGStage0()">✅ Đã hiểu lý thuyết — Quay lại để Luyện tập</button>
         </section>
       `;
     }
 
-    // MẢNG 3: XÁC NHẬN MỤC MỞ RỘNG (P3 & P6)
     if (a.view === 'ext_stage0') {
       const ext = STATE.vocab.find(v => v.vocab_id === snap.ext_id);
       return `
@@ -1793,7 +1828,6 @@
       `;
     }
 
-    // KHU TỰ LUYỆN 1: LUYỆN 4 NHÓM MỞ RỘNG (5 CÂU/LƯỢT TƯƠNG TÁC)
     if (a.view === 'ch_ext') {
       const learnedExt = STATE.vocab.filter(v => v.status === 'PUBLISHED' && v.target_pool === 'EXTENSION_ONLY' && STATE.profile.ext_allocations[v.canonical_identity]);
       const allPubExt = STATE.vocab.filter(v => v.status === 'PUBLISHED' && v.target_pool === 'EXTENSION_ONLY');
@@ -1813,7 +1847,6 @@
       `;
     }
 
-    // KHU TỰ LUYỆN 2: SPEED ROUND (30s / 60s / 90s / KHÔNG GIỚI HẠN)
     if (a.view === 'ch_speed') {
       if (!a.speed) {
         return `
@@ -1859,7 +1892,6 @@
       `;
     }
 
-    // MÀN HÌNH LÀM BÀI TẬP / ĐÁNH GIÁ CHÍNH (40 DẠNG + NGỮ PHÁP + MỞ RỘNG + TỔNG ÔN)
     if (a.view === 'quiz' && a.quiz) {
       const qz = a.quiz;
       const q = qz.questions[qz.idx];
@@ -1878,6 +1910,19 @@
 
           ${q.engine === 'mcq' ? `
             ${q.options.map((opt, i) => `<button class="opt-btn" onclick="window._answerQuizOpt(${i})">${escHtml(opt)}</button>`).join('')}
+          ` : ''}
+
+          ${q.engine === 'match' ? `
+            ${q.pairs.map((p, idx) => `
+              <div class="item-card">
+                <div><b>${idx + 1}. ${escHtml(p.left)}</b></div>
+                <select id="matchSel_${idx}" style="margin-top:6px;">
+                  <option value="">-- Chọn nghĩa tiếng Việt tương ứng --</option>
+                  ${q.rightOptions.map(ro => `<option value="${ro.key}">${escHtml(ro.text)}</option>`).join('')}
+                </select>
+              </div>
+            `).join('')}
+            <button class="primary" style="width:100%;margin-top:10px;" onclick="window._submitMatch()">Xác nhận nối 4 cặp</button>
           ` : ''}
 
           ${q.engine === 'text' ? `
@@ -1917,7 +1962,6 @@
     return '';
   }
 
-  /* --- TAB 2: KHO & NHẬP LIỆU (3 TAB CON TÁCH BẠCH + HEALTH DASHBOARD + ROLLBACK) --- */
   function renderContentTab() {
     const coreVocab = STATE.vocab.filter(v => v.target_pool === 'SESSION_POOL');
     const extVocab = STATE.vocab.filter(v => v.target_pool === 'EXTENSION_ONLY');
@@ -1926,7 +1970,6 @@
     const countPub = (arr, fn = () => true) => arr.filter(x => x.status === 'PUBLISHED' && fn(x)).length;
     const countDraft = (arr) => arr.filter(x => x.status === 'DRAFT').length;
     const totalDraft = countDraft(coreVocab) + countDraft(extVocab) + countDraft(gramAll);
-
     const extBreakdown = EXT_ROTATION.map(g => `${g.replace('EXT_', '')}: ${countPub(extVocab, v => v.tier_group === g)}/25`).join(' • ');
 
     let listHtml = '';
@@ -2075,7 +2118,6 @@
     `;
   }
 
-  /* --- TAB 3: LỘ TRÌNH 365 PHIÊN ĐẦY ĐỦ --- */
   function renderRoadmapTab() {
     const cur = STATE.profile.current_session_id;
     const rf = STATE.roadmapFilter;
@@ -2120,7 +2162,6 @@
     `;
   }
 
-  /* --- TAB 4: HỒ SƠ, SKILL MAP, BACKUP 30 NGÀY & 1 MÃ ĐỒNG BỘ CHUNG --- */
   function renderProfileTab() {
     const st = STATE.profile.skill_stats;
     const cfg = STATE.profile.sync_cfg || {};
@@ -2224,9 +2265,6 @@
     `;
   }
 
-  /* =========================================================
-     5. XỬ LÝ QUIZ, ĐÁNH GIÁ & SỰ KIỆN TOÀN CỤC
-  ========================================================= */
   function recordSkill(skill, ok, topic = null) {
     const key = STATE.profile.skill_stats[skill] ? skill : 'Reading';
     if (ok) STATE.profile.skill_stats[key].ok++;
@@ -2246,8 +2284,8 @@
     const score = qz.correct;
 
     if (qz.mode === 'v_prac') {
-      if (a.tracks.vocab !== 'COMPLETED') a.tracks.vocab = 'READY_FOR_ASSESSMENT';
-      toast('✅ Hoàn tất Luyện Từ vựng 4 kỹ năng! Bạn có thể vào Đánh giá Từ vựng.');
+      if (!qz.freePick && a.tracks.vocab !== 'COMPLETED') a.tracks.vocab = 'READY_FOR_ASSESSMENT';
+      toast(qz.freePick ? `🎯 Xong lượt luyện dạng ${qz.title}: ${score}/${total} đúng!` : '✅ Hoàn tất Luyện Từ vựng 4 kỹ năng! Bạn có thể vào Đánh giá Từ vựng.');
     } else if (qz.mode === 'v_assess') {
       const minNeed = ceilScore(total, 80);
       const allWords1Ok = snap.vocab_ids.every(vid => (qz.perVocabOk[vid] || 0) >= 1);
@@ -2315,7 +2353,6 @@
         prompt: q.prompt.slice(0, 120), wrong: userAns || '(Bỏ trống)', correct: q.answer, date: getLogicalDay()
       });
       if (qz.isPractice) {
-        // wrongQueue chỉ cho phần luyện, không làm biến lượt thi trượt thành đạt
         qz.questions.push({ ...q });
       }
       toast(`❌ Chưa đúng! Đáp án: ${q.answer}`);
@@ -2330,7 +2367,7 @@
   }
 
   /* =========================================================
-     6. CÁC HÀM GẮN LÊN WINDOW (HANDLERS)
+     HANDLERS
   ========================================================= */
   window._closeModal = closeModal;
   window._startSession = startOrResumeSession;
@@ -2401,17 +2438,57 @@
     toast('✅ Đã xác nhận hoàn thành mục Mở rộng.');
   };
 
+  // Mở bộ chọn 1 trong 48 dạng bài (40 hoạt động + 8 INTEGRATED)
+  window._openActivityPicker = () => {
+    const groups = [
+      ['Listening (1–10)', 'Listening'],
+      ['Reading (11–20)', 'Reading'],
+      ['Speaking (21–30)', 'Speaking'],
+      ['Writing (31–40)', 'Writing'],
+      ['INTEGRATED (41–48)', 'Integrated']
+    ];
+    openModal(`
+      <h3>🎯 Tự chọn luyện riêng 1 trong 48 dạng bài</h3>
+      <p class="muted">Luyện tự do theo từ vựng phiên hiện tại (không tính trượt phiên, không cộng trùng XP).</p>
+      ${groups.map(([title, key]) => `
+        <div class="item-card">
+          <b>${title}</b>
+          <div class="row" style="margin-top:6px;">
+            ${ACTIVITY_40[key].map(act => `<button class="sm" onclick="window._closeModal();window._startSpecificActivity('${key}', ${act.id})">#${act.id} ${escHtml(act.name)}</button>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+      <button style="width:100%;margin-top:10px;" onclick="window._closeModal()">Đóng</button>
+    `);
+  };
+
+  window._startSpecificActivity = (groupKey, actId) => {
+    const act = (ACTIVITY_40[groupKey] || []).find(x => x.id === actId);
+    if (!act) return;
+    const a = STATE.activeSession;
+    const snap = STATE.profile.snapshots[a.session_id];
+    const qs = buildVocabPractice(snap.vocab_ids, a.session_id, act);
+    if (!qs.length) return;
+    a.quiz = {
+      mode: 'v_prac', freePick: true, title: `Tự luyện #${act.id} ${act.name}`,
+      isPractice: false, questions: qs, initialCount: qs.length, idx: 0, correct: 0,
+      perVocabOk: {}, domainScores: { vocab: { ok: 0, tot: qs.length }, grammar: { ok: 0, tot: 0 } },
+      scramblePicked: []
+    };
+    a.view = 'quiz';
+    saveActiveSession(); render();
+  };
+
   window._startQuiz = (mode) => {
     const a = STATE.activeSession;
     const snap = STATE.profile.snapshots[a.session_id];
-    // Nếu đang có quiz dở cùng mode -> tiếp tục đúng câu đang làm
     if (a.quiz && a.quiz.mode === mode && a.quiz.idx < a.quiz.questions.length) {
       a.view = 'quiz'; render(); return;
     }
     let questions = [], title = '', isPractice = false;
     if (mode === 'v_prac') {
-      questions = buildVocabPractice(snap.vocab_ids, a.session_id);
-      title = 'Luyện Từ vựng (40 dạng 4 kỹ năng)'; isPractice = true;
+      questions = buildVocabPractice(snap.vocab_ids, a.session_id, null);
+      title = 'Luyện Từ vựng (40 dạng + 8 INTEGRATED)'; isPractice = true;
     } else if (mode === 'v_assess') {
       questions = buildVocabAssessment(snap.vocab_ids, (a.attempts.vocab || []).length);
       title = 'Đánh giá Từ vựng độc lập'; isPractice = false;
@@ -2433,7 +2510,7 @@
     const domainScores = { vocab: { ok: 0, tot: 0 }, grammar: { ok: 0, tot: 0 }, listening: { ok: 0, tot: 0 }, reading: { ok: 0, tot: 0 }, writing: { ok: 0, tot: 0 }, speaking: { ok: 0, tot: 0 }, ext: { ok: 0, tot: 0 } };
     questions.forEach(q => { if (q.primary_domain && domainScores[q.primary_domain]) domainScores[q.primary_domain].tot++; });
 
-    a.quiz = { mode, title, isPractice, questions, initialCount: questions.length, idx: 0, correct: 0, perVocabOk: {}, domainScores, scramblePicked: [] };
+    a.quiz = { mode, freePick: false, title, isPractice, questions, initialCount: questions.length, idx: 0, correct: 0, perVocabOk: {}, domainScores, scramblePicked: [] };
     a.view = 'quiz';
     saveActiveSession(); render();
   };
@@ -2454,6 +2531,19 @@
     const q = STATE.activeSession.quiz.questions[STATE.activeSession.quiz.idx];
     const picked = q.options[i];
     advanceQuiz(normalizeAns(picked) === normalizeAns(q.answer), picked, q);
+  };
+  window._submitMatch = () => {
+    const q = STATE.activeSession.quiz.questions[STATE.activeSession.quiz.idx];
+    let allRight = true;
+    const summary = [];
+    for (let i = 0; i < q.pairs.length; i++) {
+      const sel = document.getElementById(`matchSel_${i}`)?.value;
+      if (sel === '' || Number(sel) !== q.pairs[i].key) allRight = false;
+      const chosenTxt = q.rightOptions.find(r => String(r.key) === String(sel))?.text || '(Chưa chọn)';
+      summary.push(`${q.pairs[i].left}→${chosenTxt}`);
+    }
+    const rightAnsText = q.pairs.map(p => `${p.left}: ${p.right}`).join(' | ');
+    advanceQuiz(allRight, summary.join(', '), { ...q, answer: rightAnsText });
   };
   window._answerQuizText = () => {
     const q = STATE.activeSession.quiz.questions[STATE.activeSession.quiz.idx];
@@ -2506,7 +2596,6 @@
     advanceQuiz(true, 'SPEAKING_FALLBACK (Hoạt động thay thế)', q);
   };
 
-  /* --- SPEED ROUND --- */
   function nextSpeedQuestion() {
     const snap = STATE.profile.snapshots[STATE.activeSession.session_id];
     const allPub = STATE.vocab.filter(v => v.status === 'PUBLISHED' && v.target_pool === 'SESSION_POOL');
@@ -2547,7 +2636,6 @@
   };
   window._resetSpeedRound = () => { STATE.activeSession.speed = null; render(); };
 
-  /* --- SRS, WEAK WORDS, BÁO BẬN, WORD PROFILE --- */
   window._markBusyDay = async () => {
     const today = getLogicalDay(), weekKey = getLogicalWeekKey();
     const used = Object.values(STATE.profile.busy_days).filter(b => b.week_key === weekKey && !b.refunded).length;
@@ -2638,7 +2726,6 @@
     await saveProfile(); closeModal(); toast('Đã lưu ghi chú cá nhân.');
   };
 
-  /* --- TAB KHO & NHẬP: PREVIEW, COMMIT (READ-AFTER-WRITE), PUBLISH, SỬA TAY --- */
   window._setContentSubTab = (t) => { STATE.contentSubTab = t; STATE.contentFilter.group = 'ALL'; render(); };
   window._setFilter = (k, val) => { STATE.contentFilter[k] = val; render(); };
   window._setRoadmapFilter = (v) => { STATE.roadmapFilter = v; render(); };
@@ -2675,7 +2762,6 @@
     if (!prev.vocab.length && !prev.grammar.length) { toast('Không có dòng hợp lệ nào để ghi.'); return; }
     await createAutoBackup('Trước khi nạp tệp TXT');
     await dbBulkWrite(prev.vocab, prev.grammar, false);
-    // Read-After-Write Verification: đọc ngược lại từ IndexedDB mới báo thành công
     const verified = await reloadContentFromDB();
     STATE.importPreview = null;
     await saveProfile();
@@ -2786,7 +2872,6 @@
     closeModal(); render(); toast('✅ Đã lưu chỉnh sửa câu ngữ pháp (giữ nguyên ID bất biến).');
   };
 
-  /* --- SYNC 1 MÃ CHUNG + BACKUP 30 NGÀY + PC FOLDER --- */
   window._saveSyncCfg = async () => {
     STATE.profile.sync_cfg = {
       firebase_url: (document.getElementById('syncUrl')?.value || '').trim(),
@@ -2893,9 +2978,6 @@
     closeModal(); render(); toast('✅ Đã reset tiến độ về Phiên 1 (đã lưu Backup dự phòng).');
   };
 
-  /* =========================================================
-     7. KHỞI CHẠY & ĐĂNG KÝ SERVICE WORKER AN TOÀN
-  ========================================================= */
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       STATE.tab = btn.dataset.tab;
